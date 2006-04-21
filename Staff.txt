@@ -1,0 +1,4 @@
+--= Staff =--
+
+Developers: Rowne, Ramble, industrial
+Testers: Ramble, Sariash

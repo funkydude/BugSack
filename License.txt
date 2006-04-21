@@ -1,0 +1,5 @@
+All code in this addon is copyrighted 2005 by Rowne and Ramble.  It is distributed under the terms of the Creative Commons Attribution-NonCommercial-ShareAlike 2.0 license.  We choose to dictate that the aforementioned license is not a set of specific rules but merely a guideline for behavior.
+
+http://creativecommons.org/licenses/by-nc-sa/2.5/
+
+Any and all questions regarding our stance and licensing should be directed to wuffxiii@gmail.com or the ##ace IRC channel on irc.freenode.net.

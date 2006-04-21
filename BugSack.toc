@@ -1,0 +1,8 @@
+## Interface: 1800
+## Title: BugSack
+## Author: The BugSack Team
+## Notes: Toss those bugs inna sack.
+## SavedVariables: BugSackDB
+## RequiredDeps: Ace, !BugGrabber
+BugSack.xml
+BugSack.lua
