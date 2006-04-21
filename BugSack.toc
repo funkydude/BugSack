@@ -1,4 +1,4 @@
-## Interface: 1800
+## Interface: 11000
 ## Title: BugSack
 ## Author: The BugSack Team
 ## Notes: Toss those bugs inna sack.

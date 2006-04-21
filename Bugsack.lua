@@ -43,6 +43,11 @@ BugSack.Const         = {
          method       = "AutoShow"
       },
       {
+         option       = "msg",
+         desc         = "toggle printing of messages to chat frame",
+         method       = "PrintMsg"
+      },
+      {
          option       = "sound",
          desc         = "enable/disable audible warning.",
          method       = "Sound"
@@ -108,6 +113,7 @@ BugSack.Const         = {
       SaveErrors  = "Permanent saving is [%s].",
       ToggleSound = "Audible warnings are [%s].",
       ToggleAuto  = "Automatic frame-popping is [%s].",
+      ToggleMsg   = "Printing of error message is [%s].",
       ListTitle   = "List of Errors",
       GenError    = "BugSack generated this fake error.",
       Generated   = "An error has been generated.",
@@ -237,6 +243,10 @@ BugSack.Obj      = AceAddonClass:new({
       self:Tog("auto", const.Chat.ToggleAuto)
    end,
 
+   PrintMsg = function(self)
+      self:Tog("msg", const.Chat.ToggleMsg)
+   end,
+
    ScriptBug = function(self)
       RunScript(const.Chat.GenError)
       self:Msg(const.Chat.Generated)
@@ -275,7 +285,11 @@ BugSack.Obj      = AceAddonClass:new({
       if not self:Get("save") then self.errDB = db
       else self:Set("errors", db) end
       if self:Get("auto") then self:ShowFrame(TRUE) else
-         self:Msg(const.Misc.ErrorNotice, "")
+         if self:Get("msg") then
+            self.cmd:error("\n"..err)
+	 else
+            self:Msg(const.Misc.ErrorNotice, "")
+         end
       end
    end,
 
