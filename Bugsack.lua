@@ -1,356 +1,391 @@
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
--- Chapter I: Localized Constants.                       --
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
+--
+-- $Id: BugSack.lua 6442 2006-08-01 09:40:05Z fritti $
+--
+-- Developers: Rowne, Ramble, industrial, Fritti, kergoth
+-- Testers: Ramble, Sariash
+--
+-- Credits to AceGUI & LuaPad for the scrollbar knowledge.
+--
 
-if not ace:LoadTranslation("BugSack") then
+local L = AceLibrary("AceLocale-2.0"):new("BugSack")
+BugSack = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0")
 
---<< ================================================= >>--
--- Page I: Keybindings.                                  --
---<< ================================================= >>--
-
-BINDING_HEADER_BUGSACK           = "BugSack"
-BINDING_NAME_BUGSACK_SHOW_ALL    = "Show All"
-BINDING_NAME_BUGSACK_SHOW_LATEST = "Show Latest"
-
---<< ================================================= >>--
--- Page II: Chat Options.                                --
---<< ================================================= >>--
-
-BugSack.Const         = {
-
-   ChatCmd            = {"/bugsack", "/bs"},
-
-   ChatOpt            = {
-      {
-         option       = "show",
-         desc         = "show the BugSack display frame.",
-         method       = "ShowFrame",
-         args         = {
-            {
-               option = "curr",
-               desc   = "highlight the current error."
-            }
-         }         
-      },
-      {
-         option       = "save",
-         desc         = "toggle whether to save bugs or not.",
-         method       = "Save"
-      },
-      {
-         option       = "auto",
-         desc         = "toggle auto-popping of the frame.",
-         method       = "AutoShow"
-      },
-      {
-         option       = "msg",
-         desc         = "toggle printing of messages to chat frame",
-         method       = "PrintMsg"
-      },
-      {
-         option       = "sound",
-         desc         = "enable/disable audible warning.",
-         method       = "Sound"
-      },
-      {
-         option       = "list",
-         desc         = "list the current-session errors.",
-         method       = "ListErrors",
-         args         = {
-            {
-               option = "all",
-               desc   = "list all the errors."
-            },
-            {
-               option = "previous",
-               desc   = "list previous errors."
-            },
-            {
-               option = "#",
-               desc   = "list from session #."
-            }
-         }
-      },
-      {
-         option       = "bug",
-         desc         = "generate a fake bug (testing).",
-         method       = "Bug",
-         input        = TRUE,
-         args         = {
-            {
-               option = "script",
-               desc   = "generate a script bug.",
-               method = "ScriptBug"
-            },
-            {
-               option = "addon",
-               desc   = "generate an Addon bug.",
-               method = "AddonBug"
-            }
-         }
-      },
-      {
-         option       = "reset",
-         desc         = "clear out the errors database.",
-         method       = "Reset"
-      }
-   },
-
---<< ================================================= >>--
--- Page III: AddOn Information.                          --
---<< ================================================= >>--
-
-   Team    = "The BugSack Team",
-   Name    = "BugSack",
-   Version = "a/R.4F.8",
-   Desc    = "Toss those bugs inna sack.",
-
---<< ================================================= >>--
--- Page IV: Chat Option Variables.                       --
---<< ================================================= >>--
-
-   Chat           = {
-      SaveErrors  = "Permanent saving is [%s].",
-      ToggleSound = "Audible warnings are [%s].",
-      ToggleAuto  = "Automatic frame-popping is [%s].",
-      ToggleMsg   = "Printing of error message is [%s].",
-      ListTitle   = "List of Errors",
-      GenError    = "BugSack generated this fake error.",
-      Generated   = "An error has been generated.",
-      Cleared     = "All errors were wiped."
-   },
-
---<< ================================================= >>--
--- Page V: Miscellaneous Function Variables.             --
---<< ================================================= >>--
-
-   Misc           = {
-      ErrorNotice = "An error has been recorded.",
-      NoErrors    = "You have no errors, yay!"
-   }
-}
-
---<< ================================================= >>--
--- Page VI: Register Shared Constants.                   --
---<< ================================================= >>--
-
-ace:RegisterGlobals({
-   version  = 1.0,
-   ACEG_ON  = "On",
-   ACEG_OFF = "Off"
-})
-
---<< ================================================= >>--
--- Page Omega: Closure.                                  --
---<< ================================================= >>--
-
+function BugSack:OnInitialize()
+	self:RegisterDB("BugSackDB")
+	self:RegisterDefaults("profile", {
+		save = false,
+		sound = true,
+		auto = false,
+		backtrace = false,
+		showmsg = false,
+		errors = {}
+	})
+	self.optionsTable = {
+		type = "group",
+		handler = BugSack,
+		args = {
+			show = {
+				type = "execute",
+				name = L"Show all errors",
+				desc = L"Show the BugSack frame with all errors.",
+				func = "ShowFrame",
+			},
+			curr = {
+				type = "execute",
+				name = L"Show current error",
+				desc = L"Show the BugSack frame with the current error.",
+				func = "CurrFrame",
+			},
+			save = {
+				type = "toggle",
+				name = L"Save bugs",
+				desc = L"Toggle whether to save bugs or not.",
+				get = "GetSave",
+				set = "ToggleSave"
+			},
+			backtrace = {
+				type = "toggle",
+				name = L"Backtrace",
+				desc = L"Show a backtrace for each error.",
+				get = "GetBacktrace",
+				set = "ToggleBacktrace"
+			},
+			auto = {
+				type = "toggle",
+				name = L"Auto popup",
+				desc = L"Toggle auto BugSack frame popup.",
+				get = "GetAuto",
+				set = "ToggleAuto"
+			},
+			msg = {
+				type = "toggle",
+				name = L"Chat frame output",
+				desc = L"Toggle printing of messages to the chat frame.",
+				get = "GetShowmsg",
+				set = "ToggleShowmsg"
+			},
+			sound = {
+				type = "toggle",
+				name = L"Audible warning",
+				desc = L"Toggle an audible warning everytime an error occurs.",
+				get = "GetSound",
+				set = "ToggleSound"
+			},
+			list = {
+				type = "group",
+				name = L"List errors",
+				desc = L"List errors from a specific session.",
+				args = {
+					all = {
+						type = "execute",
+						name = L"Current session",
+						desc = L"List errors from the current session.",
+						func = "ListAll",
+					},
+				},
+			},
+			bug = {
+				type = "group",
+				name = L"Generate bug",
+				desc = L"Generate a fake bug for testing.",
+				args = {
+					script = {
+						type = "execute",
+						name = L"Script bug",
+						desc = L"Generate a script bug.",
+						func = "ScriptBug"
+					},
+					addon = {
+						type = "execute",
+						name = L"Addon bug",
+						desc = L"Generate an addon bug.",
+						func = "AddonBug"
+					}
+				}
+			},
+			reset = {
+				type = "execute",
+				name = L"Clear errors",
+				desc = L"Clear out the errors database.",
+				func = "Reset"
+			}
+		}
+	}
+	if self.db.profile.save then
+		self:SetSave(true)
+	end
+	self:RegisterChatCommand({"/bugsack", "/bs"}, self.optionsTable)
 end
 
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
--- Chapter II: Addon Object and Functions.               --
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
+function BugSack:OnEnable()
+	self.db.profile.session = (self.db.profile.session or 0) + 1
+	ScriptErrors_Message.SetText = function(_, err) self:Error(err) end
+	ScriptErrors.Show = function() end
 
---<< ================================================= >>--
--- Page I: Initialize the AddOn Object.                  --
---<< ================================================= >>--
+	-- If we have BugGrabber, swipe the load time errors from it
+	if BugGrabber then
+		for k, v in BugGrabber do self:Error(v) end
+		BugGrabber = nil
+	end
 
-local const      = BugSack.Const
+	-- Clear our current session error database
+	self.errDB = {}
+end
 
-BugSack.Obj      = AceAddonClass:new({
-   name          = const.Name,
-   version       = const.Version,
-   description   = const.Desc,
-   author        = const.Team,
-   aceCompatible = "102",
-   category      = ACE_CATEGORY_INTERFACE,
-   db            = AceDbClass:new("BugSackDB"),
-   defaults      = { save = 1, sound = 1, errors = {} },
-   cmd           = AceChatCmdClass:new(const.ChatCmd, const.ChatOpt),
+function BugSack:OnDisable()
+	ScriptErrors_Message.SetText = nil
+	ScriptErrors.Show = nil
+end
 
---<< ================================================= >>--
--- Page II(a): The Enable Function.                      --
--- Page II(b): Hook/Replace the Error Functions.         --
---<< ================================================= >>--
+function BugSack:GetDB()
+	if self.db.profile.save then
+		return self.db.profile.errors
+	else
+		return self.errDB
+	end
+end
 
-   Initialize = function(self)
-      if self.disabled then 
-         self:Disable()
-    if BugSack.tmperrDB[1] then
-            ScriptErrors_Message:SetText(BugSack.tmperrDB[1])
-            ScriptErrors:Show()
-            BugSack.tmperrDB = {}
-         end
-      end
-   end, 
+-- The command handlers
 
-   Enable = function(self)
-      self:Set("session", (self:Get("session") or 0) + 1)
-      ScriptErrors_Message.SetText = function(_, err) self:Error(err) end
-      ScriptErrors.Show            = function() end
-      for k, v in BugSack.tmperrDB do self:Error(v) end
-      BugSack.tmperrDB = {}
-   end,
-   
-   Disable = function(self)
-      ScriptErrors_Message.SetText = nil
-      ScriptErrors.Show            = nil
-   end,
+function BugSack:GetSave()
+	return self.db.profile.save
+end
 
---<< ================================================= >>--
--- Page III: The Chat Options.                           --
---<< ================================================= >>--
+function BugSack:ToggleSave()
+	self.db.profile.save = not self.db.profile.save
+	self:SetSave(self.db.profile.save)
+end
 
-   ListErrors = function(self, i)
-      local tmpDB, cs = {}, self:Get("session")
-      local db = self:Get("save") and self:Get("errors") or BugSack.tmperrDB or {}
-      local title = format(ACE_CMD_RESULT, const.Name, const.Chat.ListTitle)
-      ace:print(title) for _, v in db do
-         local _, _, ses = strfind(v, "-(.+)] ")
-         if i == "all" or i == "" and cs == tonumber(ses)
-         or i == "previous" and cs - 1 == tonumber(ses)
-         or ses == i then v = "- "..v ace:print(v) end
-      end
-   end,
-   
-   ShowFrame = function(self, i)
-      local cs = self:Get("session")
-      local db = self:Get("save") and self:Get("errors") or self.errDB or {}
-      local f  = BugSackFrameScrollText
-      self.str = ""
-      if strlen(i) > 0 then self.str = db[getn(db)] else
-         for _, v in db do
-            local _, _, ses = strfind(v, "-(.+)] ")
-            if cs == tonumber(ses) then
-               v = ({strfind(v, "(%a+.lua.*)")})[3] or v
-               self.str = self.str..v.."\n"
-            end
-         end
-      end
-      self.str = strlen(self.str or "") > 0 and self.str or const.Misc.NoErrors
-      f:SetText(self.str) BugSackFrame:Show()
-      if strlen(i) > 0 then f:HighlightText() end
-   end,
-   
-   Save = function(self)
-      self:Tog("save", const.Chat.SaveErrors)
-   end,
-   
-   Sound = function(self)
-      self:Tog("sound", const.Chat.ToggleSound)
-   end,
-   
-   AutoShow = function(self)
-      self:Tog("auto", const.Chat.ToggleAuto)
-   end,
+function BugSack:SetSave(arg)
+	local l = self.optionsTable.args.list.args
+	if arg then
+		l.previous = {
+			type = "execute",
+			name = L"Previous session",
+			desc = L"List errors from the previous session.",
+			func = "ListPrevious",
+		}
+		l.number = {
+			type = "text",
+			usage = "#",
+			name = L"By Session number",
+			desc = L"List errors by session number.",
+			get = false,
+			set = "ListByNumber",
+			validate = function(arg)
+				arg = tonumber(arg)
+				if arg and arg > 0 and math.floor(arg) == arg then
+					return true
+				end
 
-   PrintMsg = function(self)
-      self:Tog("msg", const.Chat.ToggleMsg)
-   end,
+				return false
+			end
+		}
+	else
+		l.previous = nil
+		l.number = nil
+	end
+end
 
-   ScriptBug = function(self)
-      RunScript(const.Chat.GenError)
-      self:Msg(const.Chat.Generated)
-   end,
-   
-   AddonBug = function(self)
-      self:Msg(const.Chat.Generated)
-      self:BugGeneratedByBugSack()
-   end,
+function BugSack:GetBacktrace()
+	return self.db.profile.backtrace
+end
 
-   Reset = function(self)
-      self.db:reset(self.profilePath, self.defaults)
-      self:Msg(const.Chat.Cleared) self:Enable()
-   end,
+function BugSack:ToggleBacktrace()
+	self.db.profile.backtrace = not self.db.profile.backtrace
+end
 
---<< ================================================= >>--
--- Page IV: The Error Sacking Function.                  --
---<< ================================================= >>--
+function BugSack:GetAuto()
+	return self.db.profile.auto
+end
 
-   Error = function(self, err)
-      local db = self:Get("save") and self:Get("errors") or self.errDB or {}
-      local cs = self:Get("session")
-      err      = gsub(err or "", "[Ii]nterface\\", "")
-      err      = gsub(err or "", "[Aa]dd[Oo]ns\\", "")
-      local oe = err
-      err      = "["..date("%H:%M").."-"..cs.."] "..err.."\n   ---"
-      for _, v in db do
-         local _, _, ses, ee = strfind(v, "-(.+)] (.+)\n")
-         if cs == tonumber(ses) and ee == oe then
-            return
-         end
-      end tinsert(db, err)
-      if self:Get("sound") then
-         PlaySoundFile("Interface\\AddOns\\BugSack\\error.wav")
-      end
-      if not self:Get("save") then self.errDB = db
-      else self:Set("errors", db) end
-      if self:Get("auto") then self:ShowFrame(TRUE) else
-         if self:Get("msg") then
-            self.cmd:error("\n"..err)
-	 else
-            self:Msg(const.Misc.ErrorNotice, "")
-         end
-      end
-   end,
+function BugSack:ToggleAuto()
+	self.db.profile.auto = not self.db.profile.auto
+end
 
---<< ================================================= >>--
--- Page V: The EditBox Handler.                          --
---<< ================================================= >>--
+function BugSack:GetShowmsg()
+	return self.db.profile.showmsg
+end
 
-   OnTextChanged = function(self)
-      if this:GetText() ~= self.str then
-         this:SetText(self.str)
-      end
-      local s = BugSackFrameScrollScrollBar
-      this:GetParent():UpdateScrollChildRect()
-      local _, m = s:GetMinMaxValues()
-      if m > 0 and this.max ~= m then
-         this.max = m s:SetValue(m)
-      end
-   end
+function BugSack:ToggleShowmsg()
+	self.db.profile.showmsg = not self.db.profile.showmsg
+end
 
-})
+function BugSack:GetSound()
+	return self.db.profile.sound
+end
 
---<< ================================================= >>--
--- Page Omega: Register the AddOn Object.                --
---<< ================================================= >>--
+function BugSack:ToggleSound()
+	self.db.profile.sound = not self.db.profile.sound
+end
 
-BugSack.Obj:RegisterForLoad()
+function BugSack:ListAll()
+    self:ListErrors("all")
+end
 
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
--- Chapter III: Register Shared Util Functions.          --
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
+function BugSack:ListPrevious()
+    self:ListErrors("previous")
+end
 
-ace:RegisterFunctions(BugSack.Obj, {
-   version = 1.0,
+function BugSack:ListByNumber(n)
+    self:ListErrors(n)
+end
 
---<< ================================================= >>--
--- Page I: The Addon Closures.                           --
---<< ================================================= >>--
+function BugSack:ListErrors(i)
+	local cs = self.db.profile.session
+	local db = self:GetDB()
+	local f = false
+	self:Print(L"List of errors:")
+	for _, v in db do
+		local _, _, ses = strfind(v, "-(.+)] ")
+		if i == "all" or i == "" and cs == tonumber(ses)
+		  or i == "previous" and cs - 1 == tonumber(ses)
+		  or ses == i then
+			v = "- "..v
+			self:Print(v)
+			f = true
+		end
+	end
+	if not f then
+		self:Print(L"You have no errors, yay!")
+	end
+end
 
-   Msg = function(self, ...)
-      self.cmd:msg(unpack(arg))
-   end,
-   Get = function(self, var)
-      if type(self) == "string" then
-         ace:print("! ERROR: "..self)
-      end
-      return self.db:get(self.profilePath, var)
-   end,
-   Set = function(self, var, val)
-      self.db:set(self.profilePath, var, val)
-   end,
-   Tog = function(self, v, c)
-      self.cmd:result(format(c, self.db:toggle(
-      self.profilePath, v) and ACEG_ON or ACEG_OFF))
-   end
+function BugSack:CurrFrame(i)
+	self:ShowFrame("curr")
+end
 
---<< ================================================= >>--
--- Page Omega: Closure.                                  --
---<< ================================================= >>--
+function BugSack:ShowFrame(i)
+	local cs = self.db.profile.session
+	local db = self:GetDB()
+	self.str = ""
+	if i and strlen(i) > 0 then
+		self.str = db[getn(db)]
+	else
+		for _, v in db do
+			local _, _, ses = strfind(v, "-(.+)] ")
+			if cs == tonumber(ses) then
+				v = ({strfind(v, "(%a+.lua.*)")})[3] or v
+				self.str = self.str..v.."\n"
+			end
+		end
+	end
+	self.str = strlen(self.str or "") > 0 and self.str or L"You have no errors, yay!"
 
-})
+	local f = BugSackFrameScrollText
+	f:SetText(self.str)
+	if i and strlen(i) > 0 then
+		f:HighlightText()
+	end
+	BugSackFrame:Show()
+end
 
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
--- Fin.                                                  --
--->> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <<--
+function BugSack:ScriptBug()
+	self:Print(L"An error has been generated.")
+	RunScript(L"BugSack generated this fake error.")
+end
+
+function BugSack:AddonBug()
+	self:BugGeneratedByBugSack()
+	self:Print(L"An error has been generated.")
+end
+
+function BugSack:Reset()
+	self.db.profile.errors = {}
+	self.errDB = {}
+	self:Print(L"All errors were wiped.")
+
+	if BugSackFu then
+		BugSackFu:UpdateText()
+	end
+end
+
+-- The Error catching function.
+
+function BugSack:Error(err)
+	local cs = self.db.profile.session
+	local db = self:GetDB()
+	local oe
+
+	-- Put some effort into normalizing the full paths to the lua files
+	-- into just the last directory component and filename.
+	if self.db.profile.backtrace then
+		oe = ""
+		err = err .. "\n" .. debugstack(4)
+		for line in string.gfind(err, "(.-)\n") do
+			local _, _, path, file, msg = string.find(line, "^.-([^\\]+\\)([^\\]-):(.*)$")
+			-- "path\\to\\file.lua:linenum:message"
+			if not msg then
+				_, _, path, file, msg = string.find(line, "^[string \".-([^\\]+\\)([^\\]-):(.*)$")
+				if path then
+					-- "[string \"path\\to\\file.lua:<foo>\":linenum:message"
+					path = "[string \""..path
+				else
+					-- "[string \"FOO\":linenum:message"
+					_, _, path, file, msg = string.find(line, "^([string )(\"[^\"]+\"]):(.*)$")
+				end
+			end
+			if msg then
+				msg = string.gsub(msg, "<.-([^\\]+\\)([^\\]-):(.*)>", "<%1%2:%3>")
+				oe = oe .. string.format("%s%s:%s\n", path, file, msg)
+			end
+		end
+	else
+		local _, _, path, file, msg = string.find(err, "^.-([^\\]+\\)([^\\]-):(.*)$")
+		oe = string.format("%s%s:%s\n", path, file, msg)
+	end
+
+	oe = "[" .. date("%H:%M") .. "-" .. cs .. "] " .. oe .. "\n   ---"
+	for _, v in db do
+		local _, _, ses, ee = strfind(v, "-(.+)] (.-)\n")
+		local _, _, _, oeline = strfind(oe, "-(.+)] (.-)\n")
+		if cs == tonumber(ses) and ee == oeline then
+			return
+		end
+	end
+	tinsert(db, oe)
+	if self.db.profile.sound then
+		PlaySoundFile("Interface\\AddOns\\BugSack\\error.wav")
+	end
+	if not self.db.profile.save then
+		self.errDB = db
+	else
+		self.db.profile.errors = db
+	end
+	if self.db.profile.auto then
+		self:ShowFrame()
+	else
+		if self.db.profile.showmsg then
+			self:Print(oe)
+		else
+            self:Print(L"An error has been recorded.")
+		end
+	end
+
+	if BugSackFu then
+		BugSackFu:UpdateText()
+	end
+end
+
+-- Editbox handler
+
+function BugSack:OnTextChanged()
+	if this:GetText() ~= self.str then
+		this:SetText(self.str)
+	end
+	local s = BugSackFrameScrollScrollBar
+	this:GetParent():UpdateScrollChildRect()
+	local _, m = s:GetMinMaxValues()
+	if m > 0 and this.max ~= m then
+		this.max = m
+		s:SetValue(m)
+	end
+end
+
+-- Keybindings
+
+BINDING_HEADER_BUGSACK           = "BugSack"
+BINDING_NAME_BUGSACK_SHOW_ALL    = L"Show All"
+BINDING_NAME_BUGSACK_SHOW_LATEST = L"Show Latest"
+
+-- vim:set ts=4:

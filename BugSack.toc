@@ -1,8 +1,21 @@
-## Interface: 11000
-## Title: BugSack
+## Interface: 11100
+## Title: BugSack  |cff7fff7f -Ace2-|r
+## Version: 2.0.$Revision: 6326 $
 ## Author: The BugSack Team
 ## Notes: Toss those bugs inna sack.
 ## SavedVariables: BugSackDB
-## RequiredDeps: Ace, !BugGrabber
+## OptionalDeps: FuBar, !BugGrabber
+Libs\AceLibrary\AceLibrary.lua
+Libs\AceOO\AceOO-2.0.lua
+Libs\AceEvent\AceEvent-2.0.lua
+Libs\AceDB\AceDB-2.0.lua
+Libs\AceConsole\AceConsole-2.0.lua
+Libs\AceAddon\AceAddon-2.0.lua
+Libs\AceLocale\AceLocale-2.0.lua
 BugSack.xml
+BugSack-enUS.lua
 BugSack.lua
+Libs\Dewdrop\Dewdrop-2.0.lua
+Libs\Tablet\Tablet-2.0.lua
+Libs\FuBarPlugin\FuBarPlugin-2.0.lua
+BugSackFu.lua
