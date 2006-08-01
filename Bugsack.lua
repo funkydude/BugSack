@@ -138,7 +138,8 @@ function BugSack:OnDisable()
 end
 
 function BugSack:GetDB()
-	if self.db.profile.save then
+	if self.db.profile.save and self.db.profile.errors and
+	  type(self.db.profile.errors) == "table" then
 		return self.db.profile.errors
 	else
 		return self.errDB
