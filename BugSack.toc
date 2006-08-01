@@ -4,7 +4,7 @@
 ## Author: The BugSack Team
 ## Notes: Toss those bugs inna sack.
 ## SavedVariables: BugSackDB
-## OptionalDeps: FuBar, !BugGrabber
+## OptionalDeps: FuBar, BugGrabber
 Libs\AceLibrary\AceLibrary.lua
 Libs\AceOO\AceOO-2.0.lua
 Libs\AceEvent\AceEvent-2.0.lua
