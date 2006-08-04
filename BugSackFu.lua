@@ -25,30 +25,21 @@ function BugSackFu:OnEnable()
 end
 
 function BugSackFu:OnTextUpdate()
-	local text
-	local db = BugSack:GetDB()
-	local f = 0
-	for _, v in db do
-		local _, _, ses = strfind(v, "-(.+)] ")
-		if BugSack.db.profile.session == tonumber(ses) then
-			f = f + 1
-		end
-	end
-	if f > 0 then
-		text = tostring(f)
+	local errs = table.getn(BugGrabberDB.errors)
+	if errs > 0 then
+		self:SetText(tostring(errs))
 	else
-		text = ""
+		self:SetText("")
 	end
-	self:SetText(text)
 	self:SetIcon(true)
 end
 
 function BugSackFu:OnClick()
-	BugSack:ShowFrame("curr")
+	BugSack:ShowFrame("last")
 end
 
 function BugSackFu:OnTooltipUpdate()
-	Tablet:SetHint(L"Click to open the BugSack frame with the current error.")
+	Tablet:SetHint(L"Click to open the BugSack frame with the last error.")
 	local cat = Tablet:AddCategory(
 		"columns", 1,
 		"child_textR", 1,
@@ -56,19 +47,12 @@ function BugSackFu:OnTooltipUpdate()
 		"child_textB", 1
 	)
 
-	local db = BugSack:GetDB()
-
-	local f
-	for _, v in db do
-		local _, _, ses = strfind(v, "-(.+)] ")
-		if BugSack.db.profile.session == tonumber(ses) then
-			v = "- "..v
-			cat:AddLine("text", v)
-			f = true
+	local text = BugSack:GetErrors("session")
+	if text then
+		for line in string.gfind(text, "(.-)\n") do
+			cat:AddLine("text", line)
 		end
-	end
-
-	if not f then
+	else
 		cat:AddLine(
 			"text", L"You have no errors, yay!"
 		)

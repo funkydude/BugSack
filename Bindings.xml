@@ -1,8 +1,8 @@
 <Bindings>
-   <Binding name="BUGSACK_SHOW_ALL" header="BUGSACK">
-      BugSack:ShowFrame()
+   <Binding name="BUGSACK_SHOW_CURRENT" header="BUGSACK">
+      BugSack:ShowCurrent()
    </Binding>
-   <Binding name="BUGSACK_SHOW_LATEST">
-      BugSack:CurrFrame()
+   <Binding name="BUGSACK_SHOW_SESSION">
+      BugSack:ShowSession()
    </Binding>
 </Bindings>
