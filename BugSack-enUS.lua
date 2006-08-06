@@ -53,6 +53,9 @@ L:RegisterTranslations("enUS", function()
 		["All errors were wiped."] = true,
 		["An error has been recorded."] = true,
 
+		-- Frame messages,
+		[" (... more ...)"] = true,
+
 		-- FuBar plugin
 		["Click to open the BugSack frame with the last error."] = true,
 	}

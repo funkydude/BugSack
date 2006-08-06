@@ -25,24 +25,28 @@ function BugSack:OnInitialize()
 				type = "group",
 				name = L"Show sack",
 				desc = L"Show errors in the sack.",
+				order = 1,
 				args = {
 					curr = {
 						type = "execute",
 						name = L"Current error",
 						desc = L"Show the current error.",
 						func = "ShowCurrent",
+						order = 1,
 					},
 					session = {
 						type = "execute",
 						name = L"Current session",
 						desc = L"Show errors from the current session.",
 						func = "ShowSession",
+						order = 2,
 					},
 					previous = {
 						type = "execute",
 						name = L"Previous session",
 						desc = L"Show errors from the previous session.",
 						func = "ShowPrevious",
+						order = 3,
 					},
 					number = {
 						type = "text",
@@ -58,13 +62,15 @@ function BugSack:OnInitialize()
 							end
 
 							return false
-						end
+						end,
+						order = 4,
 					},
 					all = {
 						type = "execute",
 						name = L"All errors",
 						desc = L"Show all errors.",
 						func = "ShowAll",
+						order = 5,
 					},
 				},
 			},
@@ -72,24 +78,28 @@ function BugSack:OnInitialize()
 				type = "group",
 				name = L"List errors",
 				desc = L"List errors to the chat frame.",
+				order = 2,
 				args = {
 					curr = {
 						type = "execute",
 						name = L"Current error",
 						desc = L"List the current error.",
 						func = "ListCurrent",
+						order = 1,
 					},
 					session = {
 						type = "execute",
 						name = L"Current session",
 						desc = L"List errors from the current session.",
 						func = "ListSession",
+						order = 2,
 					},
 					previous = {
 						type = "execute",
 						name = L"Previous session",
 						desc = L"List errors from the previous session.",
 						func = "ListPrevious",
+						order = 3,
 					},
 					number = {
 						type = "text",
@@ -105,13 +115,15 @@ function BugSack:OnInitialize()
 							end
 
 							return false
-						end
+						end,
+						order = 4,
 					},
 					all = {
 						type = "execute",
 						name = L"All errors",
 						desc = L"List all errors.",
 						func = "ListAll",
+						order = 5,
 					},
 				},
 			},
@@ -120,38 +132,44 @@ function BugSack:OnInitialize()
 				name = L"Auto popup",
 				desc = L"Toggle auto BugSack frame popup.",
 				get = "GetAuto",
-				set = "ToggleAuto"
+				set = "ToggleAuto",
+				order = 3,
 			},
 			msg = {
 				type = "toggle",
 				name = L"Auto chat output",
 				desc = L"Toggle auto printing of messages to the chat frame.",
 				get = "GetShowMsg",
-				set = "ToggleShowMsg"
+				set = "ToggleShowMsg",
+				order = 4,
 			},
 			mute = {
 				type = "toggle",
 				name = L"Mute",
 				desc = L"Toggle an audible warning everytime an error occurs.",
 				get = "GetMute",
-				set = "ToggleMute"
+				set = "ToggleMute",
+				order = 5,
 			},
 			bug = {
 				type = "group",
 				name = L"Generate bug",
 				desc = L"Generate a fake bug for testing.",
+				order = 6,
 				args = {
 					script = {
 						type = "execute",
 						name = L"Script bug",
 						desc = L"Generate a script bug.",
-						func = "ScriptBug"
+						func = "ScriptBug",
+						order = 1,
 					},
 					addon = {
 						type = "execute",
 						name = L"Addon bug",
 						desc = L"Generate an addon bug.",
-						func = "AddonBug"
+						func = "AddonBug",
+						order = 2,
 					}
 				}
 			},
@@ -159,7 +177,8 @@ function BugSack:OnInitialize()
 				type = "execute",
 				name = L"Clear errors",
 				desc = L"Clear out the errors database.",
-				func = "Reset"
+				func = "Reset",
+				order = 7,
 			}
 		}
 	}
@@ -176,6 +195,36 @@ function BugSack:OnEnable()
 	end
 end
 
+function BugSack:GetNrErrors(i)
+	local cs = BugGrabberDB.session
+
+	if not i or (type(i) ~= "string" and type(i) ~= "number") then
+		return
+	end
+
+	if i == "current" then
+		local current = table.getn(BugGrabberDB.errors)
+		if current == 0 then
+			return 0
+		end
+		if BugGrabberDB.errors[current].session ~= cs then
+			return 0
+		end
+		return 1
+	end
+
+	local nr = 0
+	for _, err in pairs(BugGrabberDB.errors) do
+		if (i == "all")
+		  or (i == "session" and cs == tonumber(err.session))
+		  or (i == "previous" and cs - 1 == tonumber(err.session))
+		  or (i == err.session) then
+			nr = nr + 1
+		end
+	end
+	return nr
+end
+
 function BugSack:GetErrors(i)
 	local cs = BugGrabberDB.session
 
@@ -186,6 +235,9 @@ function BugSack:GetErrors(i)
 	if i == "current" then
 		local current = table.getn(BugGrabberDB.errors)
 		if current == 0 then
+			return
+		end
+		if BugGrabberDB.errors[current].session ~= cs then
 			return
 		end
 		return BugGrabber.FormatError(BugGrabberDB.errors[current])
@@ -251,7 +303,12 @@ end
 
 function BugSack:ShowFrame(i)
 	local err = self:GetErrors(i)
+
 	if err then
+		if string.len(err) > 4096 then
+			err = string.sub(err, 1, 4000)
+			err = err .. L" (... more ...)"
+		end
 		self.str = err
 	else
 		self.str = L"You have no errors, yay!"

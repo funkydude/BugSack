@@ -25,7 +25,7 @@ function BugSackFu:OnEnable()
 end
 
 function BugSackFu:OnTextUpdate()
-	local errs = table.getn(BugGrabberDB.errors)
+	local errs = BugSack:GetNrErrors("session")
 	if errs > 0 then
 		self:SetText(tostring(errs))
 	else
@@ -35,7 +35,7 @@ function BugSackFu:OnTextUpdate()
 end
 
 function BugSackFu:OnClick()
-	BugSack:ShowFrame("last")
+	BugSack:ShowFrame("current")
 end
 
 function BugSackFu:OnTooltipUpdate()
