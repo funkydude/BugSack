@@ -34,6 +34,10 @@ L:RegisterTranslations("enUS", function()
 		["Toggle auto printing of messages to the chat frame."] = true,
 		["Mute"] = true,
 		["Toggle an audible warning everytime an error occurs."] = true,
+		["Save errors"] = true,
+		["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = true,
+		["Limit"] = true,
+		["Set the limit on the nr of errors saved."] = true,
 
 		["Generate bug"] = true,
 		["Generate a fake bug for testing."] = true,

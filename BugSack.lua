@@ -151,11 +151,30 @@ function BugSack:OnInitialize()
 				set = "ToggleMute",
 				order = 5,
 			},
+			save = {
+				type = "toggle",
+				name = L"Save errors",
+				desc = L"Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file.",
+				get = BugGrabber.GetSave,
+				set = BugGrabber.ToggleSave,
+				order = 6,
+			},
+			limit = {
+				type = "range",
+				name = L"Limit",
+				desc = L"Set the limit on the nr of errors saved.",
+				get = BugGrabber.GetLimit,
+				set = BugGrabber.SetLimit,
+				min = 10,
+				max = 100,
+				step = 1,
+				order = 7,
+			},
 			bug = {
 				type = "group",
 				name = L"Generate bug",
 				desc = L"Generate a fake bug for testing.",
-				order = 6,
+				order = 8,
 				args = {
 					script = {
 						type = "execute",
@@ -178,7 +197,7 @@ function BugSack:OnInitialize()
 				name = L"Clear errors",
 				desc = L"Clear out the errors database.",
 				func = "Reset",
-				order = 7,
+				order = 9,
 			}
 		}
 	}
@@ -197,14 +216,15 @@ end
 function BugSack:OnEnable()
 	self:RegisterEvent("BugGrabber_BugGrabbed", "OnError")
 
-	-- If we have BugGrabber, swipe the load time errors from it
-	if BugGrabber then
+	-- Swipe the load time errors from BugGrabber if there were any
+	if BugGrabber and BugGrabber.loadErrors then
 		for _, err in pairs(BugGrabber.loadErrors) do self:OnError(err) end
 		BugGrabber.loadErrors = nil
 	end
 end
 
 function BugSack:GetNrErrors(i)
+	local db = BugGrabber.GetDB()
 	local cs = BugGrabberDB.session
 
 	if not i or (type(i) ~= "string" and type(i) ~= "number") then
@@ -212,18 +232,18 @@ function BugSack:GetNrErrors(i)
 	end
 
 	if i == "current" then
-		local current = table.getn(BugGrabberDB.errors)
+		local current = table.getn(db)
 		if current == 0 then
 			return 0
 		end
-		if BugGrabberDB.errors[current].session ~= cs then
+		if db[current].session ~= cs then
 			return 0
 		end
 		return 1
 	end
 
 	local nr = 0
-	for _, err in pairs(BugGrabberDB.errors) do
+	for _, err in pairs(db) do
 		if (i == "all")
 		  or (i == "session" and cs == tonumber(err.session))
 		  or (i == "previous" and cs - 1 == tonumber(err.session))
@@ -235,6 +255,7 @@ function BugSack:GetNrErrors(i)
 end
 
 function BugSack:GetErrors(i)
+	local db = BugGrabber.GetDB()
 	local cs = BugGrabberDB.session
 
 	if not i or (type(i) ~= "string" and type(i) ~= "number") then
@@ -242,18 +263,18 @@ function BugSack:GetErrors(i)
 	end
 
 	if i == "current" then
-		local current = table.getn(BugGrabberDB.errors)
+		local current = table.getn(db)
 		if current == 0 then
 			return
 		end
-		if BugGrabberDB.errors[current].session ~= cs then
+		if db[current].session ~= cs then
 			return
 		end
-		return BugGrabber.FormatError(BugGrabberDB.errors[current])
+		return BugGrabber.FormatError(db[current])
 	end
 
 	local str = ""
-	for _, err in pairs(BugGrabberDB.errors) do
+	for _, err in pairs(db) do
 		if (i == "all")
 		  or (i == "session" and cs == tonumber(err.session))
 		  or (i == "previous" and cs - 1 == tonumber(err.session))
@@ -372,7 +393,8 @@ function BugSack:AddonBug()
 end
 
 function BugSack:Reset()
-	BugGrabberDB.errors = {}
+	local db = BugGrabber.GetDB()
+	db = {}
 	self:Print(L"All errors were wiped.")
 
 	if BugSackFu then
