@@ -183,6 +183,15 @@ function BugSack:OnInitialize()
 		}
 	}
 	self:RegisterChatCommand({"/bugsack", "/bs"}, self.optionsTable)
+
+	-- Remove old compatibility stuff
+	for _,i in pairs({ "profile", "char", "class", "realm" }) do
+		for _,j in pairs({ "errors", "save", "sound", "session" }) do
+			if self.db[i][j] then
+				self.db[i][j] = nil
+			end
+		end
+	end
 end
 
 function BugSack:OnEnable()
