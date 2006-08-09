@@ -211,80 +211,44 @@ function BugSack:OnInitialize()
 			end
 		end
 	end
-end
 
-function BugSack:OnEnable()
+	-- Set up our error event handler
 	self:RegisterEvent("BugGrabber_BugGrabbed", "OnError")
 
-	-- Swipe the load time errors from BugGrabber if there were any
-	if BugGrabber and BugGrabber.loadErrors then
-		for _, err in pairs(BugGrabber.loadErrors) do self:OnError(err) end
-		BugGrabber.loadErrors = nil
+	-- Swipe the load errors from BugGrabber if there were any
+	if BugGrabber and BugGrabber.bugsackErrors then
+		for _, err in pairs(BugGrabber.bugsackErrors) do self:OnError(err) end
+		BugGrabber.bugsackErrors = nil
 	end
 end
 
-function BugSack:GetNrErrors(i)
+function BugSack:GetErrors(which)
 	local db = BugGrabber.GetDB()
 	local cs = BugGrabberDB.session
+	local errs = {}
 
-	if not i or (type(i) ~= "string" and type(i) ~= "number") then
-		return
+	if not which or (type(which) ~= "string" and type(which) ~= "number") then
+		return errs
 	end
 
-	if i == "current" then
+	if which == "current" then
 		local current = table.getn(db)
-		if current == 0 then
-			return 0
+		if current ~= 0 and db[current].session == cs then
+			table.insert(errs, db[current])
 		end
-		if db[current].session ~= cs then
-			return 0
-		end
-		return 1
-	end
-
-	local nr = 0
-	for _, err in pairs(db) do
-		if (i == "all")
-		  or (i == "session" and cs == tonumber(err.session))
-		  or (i == "previous" and cs - 1 == tonumber(err.session))
-		  or (i == err.session) then
-			nr = nr + 1
-		end
-	end
-	return nr
-end
-
-function BugSack:GetErrors(i)
-	local db = BugGrabber.GetDB()
-	local cs = BugGrabberDB.session
-
-	if not i or (type(i) ~= "string" and type(i) ~= "number") then
-		return
-	end
-
-	if i == "current" then
-		local current = table.getn(db)
-		if current == 0 then
-			return
-		end
-		if db[current].session ~= cs then
-			return
-		end
-		return BugGrabber.FormatError(db[current])
+		return errs
 	end
 
 	local str = ""
-	for _, err in pairs(db) do
-		if (i == "all")
-		  or (i == "session" and cs == tonumber(err.session))
-		  or (i == "previous" and cs - 1 == tonumber(err.session))
-		  or (i == err.session) then
-			str = str .. "- " .. BugGrabber.FormatError(err) .. "\n"
+	for _, err in db do
+		if (which == "all")
+		  or (which == "session" and cs == tonumber(err.session))
+		  or (which == "previous" and cs - 1 == tonumber(err.session))
+		  or (which == err.session) then
+			table.insert(errs, err)
 		end
 	end
-	if str ~= "" then
-		return str
-	end
+	return errs
 end
 
 function BugSack:GetAuto()
@@ -331,25 +295,79 @@ function BugSack:ShowAll()
 	self:ShowFrame("all")
 end
 
-function BugSack:ShowFrame(i)
-	local err = self:GetErrors(i)
+function BugSack:ShowFrame(which)
+	self.which = which
+	self.errs = self:GetErrors(which)
+	self.max = table.getn(self.errs)
 
-	if err then
-		if string.len(err) > 4096 then
-			err = string.sub(err, 1, 4000)
-			err = err .. L" (... more ...)"
-		end
-		self.str = err
-	else
-		self.str = L"You have no errors, yay!"
-	end
+	self.cur = math.min(self.max, 1)
+	self:UpdateFrameText()
 
-	local f = BugSackFrameScrollText
-	f:SetText(self.str)
-	if i and i == "current" then
-		f:HighlightText()
-	end
 	BugSackFrame:Show()
+end
+
+function BugSack:UpdateFrameText()
+	if self.cur == 0 then
+		self.str = L"You have no errors, yay!"
+		BugSackErrorText:SetText("")
+	else
+		self.str = self.errs[self.cur].message
+		local caption = string.format("Error %d of %d", self.cur, self.max)
+		if self.which == "current" then
+			caption = caption .. " (viewing last error)"
+		elseif self.which == "session" then
+			caption = caption .. " (viewing session errors)"
+		elseif self.which == "previous" then
+			caption = caption .. " (viewing previous session errors)"
+		elseif self.which == "all" then
+			caption = caption .. " (viewing all errors)"
+		else
+			caption = caption .. string.format(" (viewing errors for session %d)", self.which)
+		end
+		BugSackErrorText:SetText(caption)
+	end
+
+	if string.len(self.str) > 4000 then
+		self.str = string.sub(self.str, 1, 3950) .. L" (... more ...)"
+	end
+
+	BugSackFrameScrollText:SetText(self.str)
+
+	if self.cur >= self.max then
+		BugSackNextButton:Disable()
+		BugSackLastButton:Disable()
+	else
+		BugSackNextButton:Enable()
+		BugSackLastButton:Enable()
+	end
+
+	if self.cur <= 1 then
+		BugSackPrevButton:Disable()
+		BugSackFirstButton:Disable()
+	else
+		BugSackPrevButton:Enable()
+		BugSackFirstButton:Enable()
+	end
+end
+
+function BugSack:OnFirstClick()
+	self.cur = math.min(self.max, 1)
+	self:UpdateFrameText()
+end
+
+function BugSack:OnPrevClick()
+	self.cur = self.cur - 1
+	self:UpdateFrameText()
+end
+
+function BugSack:OnLastClick()
+	self.cur = self.max
+	self:UpdateFrameText()
+end
+
+function BugSack:OnNextClick()
+	self.cur = self.cur + 1
+	self:UpdateFrameText()
 end
 
 function BugSack:ListCurrent()
@@ -372,13 +390,16 @@ function BugSack:ListAll()
     self:ListErrors("all")
 end
 
-function BugSack:ListErrors(i)
-	local err = self:GetErrors(i)
-	if err then
-		self:Print(L"List of errors:")
-		self:Print(err)
-	else
+function BugSack:ListErrors(which)
+	local errs = self:GetErrors(which)
+	if table.getn(errs) == 0 then
 		self:Print(L"You have no errors, yay!")
+		return
+	end
+
+	self:Print(L"List of errors:")
+	for i,err in ipairs(errs) do
+		self:Print("%d. %s", i, err.message)
 	end
 end
 
@@ -393,8 +414,9 @@ function BugSack:AddonBug()
 end
 
 function BugSack:Reset()
-	local db = BugGrabber.GetDB()
-	db = {}
+	BugGrabber.loadErrors = nil
+	BugGrabber.errors = {}
+	BugGrabberDB.errors = {}
 	self:Print(L"All errors were wiped.")
 
 	if BugSackFu then
@@ -414,7 +436,7 @@ function BugSack:OnError(err)
 	end
 
 	if self.db.profile.showmsg then
-		self:Print(BugGrabber.FormatError(err))
+		self:Print(err.message)
 	else
 		self:Print(L"An error has been recorded.")
 	end

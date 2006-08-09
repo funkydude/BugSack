@@ -17,8 +17,19 @@
 		</EdgeSize>
 	</Backdrop>
 	<Size>
-		<AbsDimension x="350" y="290"/>
+		<AbsDimension x="500" y="400"/>
 	</Size>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString name="BugSackErrorText" inherits="GameFontHighlight">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset> <AbsDimension x="5" y="-5" /> </Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
 	<Frames>
 		<ScrollFrame name="BugSackFrameScroll" inherits="UIPanelScrollFrameTemplate" toplevel="true">
 			<Anchors>
@@ -29,12 +40,12 @@
 				</Anchor>
 			</Anchors>
 			<Size>
-				<AbsDimension x="305" y="220"/>
+				<AbsDimension x="455" y="330"/>
 			</Size>
 			<ScrollChild>
 				<EditBox name="BugSackFrameScrollText" letters="4096" multiLine="true" autoFocus="true" enableMouse="true">
 					<Size>
-						<AbsDimension x="300" y="304"/>
+						<AbsDimension x="450" y="314"/>
 					</Size>
 					<FontString inherits="ChatFontNormal"/>
 					<Scripts>
@@ -48,6 +59,50 @@
 				</EditBox>
 			</ScrollChild>
 		</ScrollFrame>
+		<Button name="BugSackPrevButton" inherits="UIPanelButtonTemplate" text="Previous">
+			<Size> <AbsDimension x="64" y="24" /> </Size>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+					<Offset> <AbsDimension x="20" y="20" /> </Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick> BugSack:OnPrevClick() </OnClick>
+			</Scripts>
+		</Button>
+		<Button name="BugSackFirstButton" inherits="UIPanelButtonTemplate" text="First">
+			<Size> <AbsDimension x="64" y="24" /> </Size>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+					<Offset> <AbsDimension x="90" y="20" /> </Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick> BugSack:OnFirstClick() </OnClick>
+			</Scripts>
+		</Button>
+		<Button name="BugSackNextButton" inherits="UIPanelButtonTemplate" text="Next">
+			<Size> <AbsDimension x="64" y="24" /> </Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+					<Offset> <AbsDimension x="-20" y="20" /> </Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick> BugSack:OnNextClick() </OnClick>
+			</Scripts>
+		</Button>
+		<Button name="BugSackLastButton" inherits="UIPanelButtonTemplate" text="Last">
+			<Size> <AbsDimension x="64" y="24" /> </Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+					<Offset> <AbsDimension x="-90" y="20" /> </Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick> BugSack:OnLastClick() </OnClick>
+			</Scripts>
+		</Button>
 	</Frames>
 </Frame>
 

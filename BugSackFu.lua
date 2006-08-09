@@ -2,8 +2,8 @@
 -- BugSackFu -- a FuBar button interface to the BugSack
 --
 
--- Only load if we can find FuBar2
-if not FuBar2DB then
+-- Only load if we can find FuBar2 and BugSack
+if not FuBar or not FuBar2DB or not BugSack then
 	return
 end
 
@@ -25,9 +25,9 @@ function BugSackFu:OnEnable()
 end
 
 function BugSackFu:OnTextUpdate()
-	local errs = BugSack:GetNrErrors("session")
-	if errs > 0 then
-		self:SetText(tostring(errs))
+	local errs = BugSack:GetErrors("session")
+	if table.getn(errs) > 0 then
+		self:SetText(tostring(table.getn(errs)))
 	else
 		self:SetText("")
 	end
@@ -35,7 +35,7 @@ function BugSackFu:OnTextUpdate()
 end
 
 function BugSackFu:OnClick()
-	BugSack:ShowFrame("current")
+	BugSack:ShowFrame("session")
 end
 
 function BugSackFu:OnTooltipUpdate()
@@ -47,15 +47,14 @@ function BugSackFu:OnTooltipUpdate()
 		"child_textB", 1
 	)
 
-	local text = BugSack:GetErrors("session")
-	if text then
-		for line in string.gfind(text, "(.-)\n") do
-			cat:AddLine("text", line)
-		end
+	local errs = BugSack:GetErrors("session")
+	if table.getn(errs) == 0 then
+		cat:AddLine("text", L"You have no errors, yay!")
 	else
-		cat:AddLine(
-			"text", L"You have no errors, yay!"
-		)
+		for i, err in ipairs(errs) do
+			cat:AddLine("text",
+			  string.format("%d. %s", i, string.gfind(err.message, "(.-)\n")() ))
+		end
 	end
 end
 
