@@ -295,12 +295,16 @@ function BugSack:ShowAll()
 	self:ShowFrame("all")
 end
 
-function BugSack:ShowFrame(which)
+function BugSack:ShowFrame(which, nr)
 	self.which = which
 	self.errs = self:GetErrors(which)
 	self.max = table.getn(self.errs)
 
-	self.cur = math.min(self.max, 1)
+	if nr then
+		self.cur = math.min(self.max, math.abs(nr))
+	else
+		self.cur = math.min(self.max, 1)
+	end
 	self:UpdateFrameText()
 
 	BugSackFrame:Show()
@@ -442,7 +446,7 @@ function BugSack:OnError(err)
 	end
 
 	if BugSackFu then
-		BugSackFu:UpdateText()
+		BugSackFu:UpdateDisplay()
 	end
 end
 

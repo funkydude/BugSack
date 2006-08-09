@@ -52,8 +52,13 @@ function BugSackFu:OnTooltipUpdate()
 		cat:AddLine("text", L"You have no errors, yay!")
 	else
 		for i, err in ipairs(errs) do
-			cat:AddLine("text",
-			  string.format("%d. %s", i, string.gfind(err.message, "(.-)\n")() ))
+			cat:AddLine(
+				"text", string.format("%d. %s", i, string.gfind(err.message, "(.-)\n")() ),
+				"func", BugSack.ShowFrame,
+				"arg1", BugSack,
+				"arg2", "session",
+				"arg3", i
+			)
 		end
 	end
 end
