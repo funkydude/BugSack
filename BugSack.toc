@@ -5,7 +5,7 @@
 ## Notes: Toss those bugs inna sack.
 ## SavedVariables: BugSackDB
 ## RequiredDeps: !BugGrabber
-## OptionalDeps: FuBar
+## OptionalDeps: FuBar, Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib
 ## X-Category: Development Tools
 Libs\AceLibrary\AceLibrary.lua
 Libs\AceOO\AceOO-2.0.lua
