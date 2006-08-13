@@ -2,8 +2,8 @@
 -- BugSackFu -- a FuBar button interface to the BugSack
 --
 
--- Only load if we can find FuBar2 and BugSack
-if not FuBar or not FuBar2DB or not BugSack then
+-- Only load if BugSack is already loaded
+if not BugSack then
 	return
 end
 
@@ -13,13 +13,14 @@ local Tablet = AceLibrary("Tablet-2.0")
 local Dewdrop = AceLibrary("Dewdrop-2.0")
 
 BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0")
-
 function BugSackFu:OnInitialize()
 	self:RegisterDB("BugSackDB")
 	self.hasIcon = true
+	self.optionsTable = BugSack:ReturnOptionsTable()
 end
 
 function BugSackFu:OnEnable()
+	self.isEnabled = true
 	self:UpdateText()
 	self:SetIcon(true)
 end
@@ -64,7 +65,7 @@ function BugSackFu:OnTooltipUpdate()
 end
 
 function BugSackFu:OnMenuRequest(level, value, x, valueN_1, valueN_2, valueN_3, valueN_4)
-	Dewdrop:FeedAceOptionsTable(BugSack.optionsTable)
+	Dewdrop:FeedAceOptionsTable(self.optionsTable)
 end
 
 -- vim:set ts=4:

@@ -10,14 +10,8 @@
 local L = AceLibrary("AceLocale-2.0"):new("BugSack")
 BugSack = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEvent-2.0")
 
-function BugSack:OnInitialize()
-	self:RegisterDB("BugSackDB")
-	self:RegisterDefaults("profile", {
-		mute = nil,
-		auto = nil,
-		showmsg = nil
-	})
-	self.optionsTable = {
+function BugSack:ReturnOptionsTable()
+	return {
 		type = "group",
 		handler = BugSack,
 		args = {
@@ -201,6 +195,16 @@ function BugSack:OnInitialize()
 			}
 		}
 	}
+end
+
+function BugSack:OnInitialize()
+	self:RegisterDB("BugSackDB")
+	self:RegisterDefaults("profile", {
+		mute = nil,
+		auto = nil,
+		showmsg = nil
+	})
+	self.optionsTable = self:ReturnOptionsTable()
 	self:RegisterChatCommand({"/bugsack", "/bs"}, self.optionsTable)
 
 	-- Remove old compatibility stuff
@@ -311,30 +315,32 @@ function BugSack:ShowFrame(which, nr)
 end
 
 function BugSack:UpdateFrameText()
+	local caption
+
 	if self.cur == 0 then
 		self.str = L"You have no errors, yay!"
-		BugSackErrorText:SetText("")
+		caption = L"No errors found"
 	else
 		self.str = self.errs[self.cur].message
-		local caption = string.format("Error %d of %d", self.cur, self.max)
-		if self.which == "current" then
-			caption = caption .. " (viewing last error)"
-		elseif self.which == "session" then
-			caption = caption .. " (viewing session errors)"
-		elseif self.which == "previous" then
-			caption = caption .. " (viewing previous session errors)"
-		elseif self.which == "all" then
-			caption = caption .. " (viewing all errors)"
-		else
-			caption = caption .. string.format(" (viewing errors for session %d)", self.which)
-		end
-		BugSackErrorText:SetText(caption)
+		caption = string.format(L"Error %d of %d", self.cur, self.max)
 	end
+
+	if self.which == "current" then
+		caption = caption .. L" (viewing last error)"
+	elseif self.which == "session" then
+		caption = caption .. L" (viewing session errors)"
+	elseif self.which == "previous" then
+		caption = caption .. L" (viewing previous session errors)"
+	elseif self.which == "all" then
+		caption = caption .. L" (viewing all errors)"
+	else
+		caption = caption .. string.format(L" (viewing errors for session %d)", self.which)
+	end
+	BugSackErrorText:SetText(caption)
 
 	if string.len(self.str) > 4000 then
 		self.str = string.sub(self.str, 1, 3950) .. L" (... more ...)"
 	end
-
 	BugSackFrameScrollText:SetText(self.str)
 
 	if self.cur >= self.max then
@@ -445,7 +451,7 @@ function BugSack:OnError(err)
 		self:Print(L"An error has been recorded.")
 	end
 
-	if BugSackFu then
+	if BugSackFu and BugSackFu.isEnabled then
 		BugSackFu:UpdateDisplay()
 	end
 end

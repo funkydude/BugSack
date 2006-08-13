@@ -59,6 +59,13 @@ L:RegisterTranslations("enUS", function()
 
 		-- Frame messages,
 		[" (... more ...)"] = true,
+		["No errors found"] = true,
+		["Error %d of %d"] = true,
+		[" (viewing last error)"] = true,
+		[" (viewing session errors)"] = true,
+		[" (viewing previous session errors)"] = true,
+		[" (viewing all errors)"] = true,
+		[" (viewing errors for session %d)"] = true,
 
 		-- FuBar plugin
 		["Click to open the BugSack frame with the last error."] = true,
