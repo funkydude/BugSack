@@ -16,6 +16,7 @@ Libs\AceAddon\AceAddon-2.0.lua
 Libs\AceLocale\AceLocale-2.0.lua
 BugSack.xml
 BugSack-enUS.lua
+BugSack-zhCN.lua
 BugSack.lua
 Libs\Dewdrop\Dewdrop-2.0.lua
 Libs\Tablet\Tablet-2.0.lua
