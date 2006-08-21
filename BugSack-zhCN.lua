@@ -74,7 +74,9 @@ L:RegisterTranslations("zhCN", function()
    }
 end)
 
-BugSackNextButton:SetText("\228\184\139\228\184\128\228\184\170")
-BugSackLastButton:SetText("\230\156\128\229\144\142")
-BugSackPrevButton:SetText("\228\184\138\228\184\128\228\184\170")
-BugSackFirstButton:SetText("\230\156\128\229\136\157")
+if GetLocale() == "zhCN" then
+	BugSackNextButton:SetText("\228\184\139\228\184\128\228\184\170")
+	BugSackLastButton:SetText("\230\156\128\229\144\142")
+	BugSackPrevButton:SetText("\228\184\138\228\184\128\228\184\170")
+	BugSackFirstButton:SetText("\230\156\128\229\136\157")
+end
