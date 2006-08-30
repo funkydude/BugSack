@@ -32,8 +32,10 @@ L:RegisterTranslations("zhCN", function()
 
       ["Auto popup"] = "\232\135\170\229\138\168\229\188\185\229\135\186",
       ["Toggle auto BugSack frame popup."] = "\233\129\135\229\136\176\233\148\153\232\175\175\230\152\175\229\144\166\232\135\170\229\138\168\229\188\185\229\135\186 BugSack \231\170\151\229\143\163",
-      ["Auto chat output"] = "\232\135\170\229\138\168\232\129\138\229\164\169\232\190\147\229\135\186",
-      ["Toggle auto printing of messages to the chat frame."] = "\229\136\135\230\141\162\232\129\138\229\164\169\231\170\151\229\143\163\232\190\147\229\135\186\233\148\153\232\175\175\228\191\161\230\129\175.",
+      ["Chatframe output"] = true,
+      ["Print a warning to the chat frame when an error occurs."] = true,
+      ["Errors to chatframe"] = true,
+      ["Print the full error message to the chat frame instead of just a warning."] = true,
       ["Mute"] = "\233\157\153\233\159\179",
       ["Toggle an audible warning everytime an error occurs."] = "\229\136\135\230\141\162\233\148\153\232\175\175\229\143\145\231\148\159\230\151\182\229\143\145\229\135\186\232\173\166\229\145\138\229\163\176.",
       ["Save errors"] = "\228\191\157\229\173\152\233\148\153\232\175\175",

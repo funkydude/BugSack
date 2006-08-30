@@ -30,8 +30,10 @@ L:RegisterTranslations("deDE", function()
 
 		["Auto popup"] = "Auto aufspringen",
 		["Toggle auto BugSack frame popup."] = "Schaltet das automatische einblenden des Fehler Fensters ein/aus.",
-		["Auto chat output"] = "Auto Chat Ausgabe",
-		["Toggle auto printing of messages to the chat frame."] = "Schaltet das automatische einblenen der Fehlertexte im Chatfenster ein/aus.",
+		["Chatframe output"] = true,
+		["Print a warning to the chat frame when an error occurs."] = true,
+		["Errors to chatframe"] = true,
+		["Print the full error message to the chat frame instead of just a warning."] = true,
 		["Mute"] = "Stumm",
 		["Toggle an audible warning everytime an error occurs."] = "Schaltet den Audiosound bei Fehlern ein/aus.",
 		["Save errors"] = "Fehler speichern",

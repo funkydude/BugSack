@@ -30,8 +30,10 @@ L:RegisterTranslations("enUS", function()
 
 		["Auto popup"] = true,
 		["Toggle auto BugSack frame popup."] = true,
-		["Auto chat output"] = true,
-		["Toggle auto printing of messages to the chat frame."] = true,
+		["Chatframe output"] = true,
+		["Print a warning to the chat frame when an error occurs."] = true,
+		["Errors to chatframe"] = true,
+		["Print the full error message to the chat frame instead of just a warning."] = true,
 		["Mute"] = true,
 		["Toggle an audible warning everytime an error occurs."] = true,
 		["Save errors"] = true,

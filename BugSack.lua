@@ -17,36 +17,36 @@ function BugSack:ReturnOptionsTable()
 		args = {
 			show = {
 				type = "group",
-				name = L"Show sack",
-				desc = L"Show errors in the sack.",
+				name = L["Show sack"],
+				desc = L["Show errors in the sack."],
 				order = 1,
 				args = {
 					curr = {
 						type = "execute",
-						name = L"Current error",
-						desc = L"Show the current error.",
+						name = L["Current error"],
+						desc = L["Show the current error."],
 						func = "ShowCurrent",
 						order = 1,
 					},
 					session = {
 						type = "execute",
-						name = L"Current session",
-						desc = L"Show errors from the current session.",
+						name = L["Current session"],
+						desc = L["Show errors from the current session."],
 						func = "ShowSession",
 						order = 2,
 					},
 					previous = {
 						type = "execute",
-						name = L"Previous session",
-						desc = L"Show errors from the previous session.",
+						name = L["Previous session"],
+						desc = L["Show errors from the previous session."],
 						func = "ShowPrevious",
 						order = 3,
 					},
 					number = {
 						type = "text",
 						usage = "#",
-						name = L"By session number",
-						desc = L"Show errors by session number.",
+						name = L["By session number"],
+						desc = L["Show errors by session number."],
 						get = false,
 						set = "ShowByNumber",
 						validate = function(arg)
@@ -61,8 +61,8 @@ function BugSack:ReturnOptionsTable()
 					},
 					all = {
 						type = "execute",
-						name = L"All errors",
-						desc = L"Show all errors.",
+						name = L["All errors"],
+						desc = L["Show all errors."],
 						func = "ShowAll",
 						order = 5,
 					},
@@ -70,36 +70,36 @@ function BugSack:ReturnOptionsTable()
 			},
 			list = {
 				type = "group",
-				name = L"List errors",
-				desc = L"List errors to the chat frame.",
+				name = L["List errors"],
+				desc = L["List errors to the chat frame."],
 				order = 2,
 				args = {
 					curr = {
 						type = "execute",
-						name = L"Current error",
-						desc = L"List the current error.",
+						name = L["Current error"],
+						desc = L["List the current error."],
 						func = "ListCurrent",
 						order = 1,
 					},
 					session = {
 						type = "execute",
-						name = L"Current session",
-						desc = L"List errors from the current session.",
+						name = L["Current session"],
+						desc = L["List errors from the current session."],
 						func = "ListSession",
 						order = 2,
 					},
 					previous = {
 						type = "execute",
-						name = L"Previous session",
-						desc = L"List errors from the previous session.",
+						name = L["Previous session"],
+						desc = L["List errors from the previous session."],
 						func = "ListPrevious",
 						order = 3,
 					},
 					number = {
 						type = "text",
 						usage = "#",
-						name = L"By session number",
-						desc = L"List errors by session number.",
+						name = L["By session number"],
+						desc = L["List errors by session number."],
 						get = false,
 						set = "ListByNumber",
 						validate = function(arg)
@@ -114,8 +114,8 @@ function BugSack:ReturnOptionsTable()
 					},
 					all = {
 						type = "execute",
-						name = L"All errors",
-						desc = L"List all errors.",
+						name = L["All errors"],
+						desc = L["List all errors."],
 						func = "ListAll",
 						order = 5,
 					},
@@ -123,64 +123,72 @@ function BugSack:ReturnOptionsTable()
 			},
 			auto = {
 				type = "toggle",
-				name = L"Auto popup",
-				desc = L"Toggle auto BugSack frame popup.",
+				name = L["Auto popup"],
+				desc = L["Toggle auto BugSack frame popup."],
 				get = "GetAuto",
 				set = "ToggleAuto",
 				order = 3,
 			},
+			chat = {
+				type = "toggle",
+				name = L["Chatframe output"],
+				desc = L["Print a warning to the chat frame when an error occurs."],
+				get = "GetChatFrame",
+				set = "ToggleChatFrame",
+				order = 4,
+			},
 			msg = {
 				type = "toggle",
-				name = L"Auto chat output",
-				desc = L"Toggle auto printing of messages to the chat frame.",
+				name = L["Errors to chatframe"],
+				desc = L["Print the full error message to the chat frame instead of just a warning."],
 				get = "GetShowMsg",
 				set = "ToggleShowMsg",
-				order = 4,
+				order = 5,
 			},
 			mute = {
 				type = "toggle",
-				name = L"Mute",
-				desc = L"Toggle an audible warning everytime an error occurs.",
+				name = L["Mute"],
+				desc = L["Toggle an audible warning everytime an error occurs."],
 				get = "GetMute",
 				set = "ToggleMute",
-				order = 5,
+				order = 6,
 			},
 			save = {
 				type = "toggle",
-				name = L"Save errors",
-				desc = L"Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file.",
+				name = L["Save errors"],
+				desc = L["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."],
 				get = BugGrabber.GetSave,
 				set = BugGrabber.ToggleSave,
-				order = 6,
+				order = 7,
 			},
 			limit = {
 				type = "range",
-				name = L"Limit",
-				desc = L"Set the limit on the nr of errors saved.",
+				name = L["Limit"],
+				desc = L["Set the limit on the nr of errors saved."],
 				get = BugGrabber.GetLimit,
 				set = BugGrabber.SetLimit,
 				min = 10,
 				max = 100,
 				step = 1,
-				order = 7,
+				order = 8,
 			},
 			bug = {
 				type = "group",
-				name = L"Generate bug",
-				desc = L"Generate a fake bug for testing.",
-				order = 8,
+				name = L["Generate bug"],
+				desc = L["Generate a fake bug for testing."],
+				order = 9,
 				args = {
 					script = {
 						type = "execute",
-						name = L"Script bug",
-						desc = L"Generate a script bug.",
+						name = L["Script bug"],
+						desc = L["Generate a script bug."],
 						func = "ScriptBug",
 						order = 1,
 					},
 					addon = {
 						type = "execute",
-						name = L"Addon bug",
-						desc = L"Generate an addon bug.",
+						name = L["Addon bug"],
+						desc = L["Generate an addon bug."],
 						func = "AddonBug",
 						order = 2,
 					}
@@ -188,10 +196,10 @@ function BugSack:ReturnOptionsTable()
 			},
 			reset = {
 				type = "execute",
-				name = L"Clear errors",
-				desc = L"Clear out the errors database.",
+				name = L["Clear errors"],
+				desc = L["Clear out the errors database."],
 				func = "Reset",
-				order = 9,
+				order = 10,
 			}
 		}
 	}
@@ -202,7 +210,8 @@ function BugSack:OnInitialize()
 	self:RegisterDefaults("profile", {
 		mute = nil,
 		auto = nil,
-		showmsg = nil
+		showmsg = nil,
+		chatframe = nil
 	})
 	self.optionsTable = self:ReturnOptionsTable()
 	self:RegisterChatCommand({"/bugsack", "/bs"}, self.optionsTable)
@@ -271,6 +280,14 @@ function BugSack:ToggleShowMsg()
 	self.db.profile.showmsg = not self.db.profile.showmsg or nil
 end
 
+function BugSack:GetChatFrame()
+	return self.db.profile.chatframe
+end
+
+function BugSack:ToggleChatFrame()
+	self.db.profile.chatframe = not self.db.profile.chatframe or nil
+end
+
 function BugSack:GetMute()
 	return self.db.profile.mute
 end
@@ -318,28 +335,28 @@ function BugSack:UpdateFrameText()
 	local caption
 
 	if self.cur == 0 then
-		self.str = L"You have no errors, yay!"
-		caption = L"No errors found"
+		self.str = L["You have no errors, yay!"]
+		caption = L["No errors found"]
 	else
 		self.str = self.errs[self.cur].message
-		caption = string.format(L"Error %d of %d", self.cur, self.max)
+		caption = string.format(L["Error %d of %d"], self.cur, self.max)
 	end
 
 	if self.which == "current" then
-		caption = caption .. L" (viewing last error)"
+		caption = caption .. L[" (viewing last error)"]
 	elseif self.which == "session" then
-		caption = caption .. L" (viewing session errors)"
+		caption = caption .. L[" (viewing session errors)"]
 	elseif self.which == "previous" then
-		caption = caption .. L" (viewing previous session errors)"
+		caption = caption .. L[" (viewing previous session errors)"]
 	elseif self.which == "all" then
-		caption = caption .. L" (viewing all errors)"
+		caption = caption .. L[" (viewing all errors)"]
 	else
-		caption = caption .. string.format(L" (viewing errors for session %d)", self.which)
+		caption = caption .. string.format(L[" (viewing errors for session %d)"], self.which)
 	end
 	BugSackErrorText:SetText(caption)
 
 	if string.len(self.str) > 4000 then
-		self.str = string.sub(self.str, 1, 3950) .. L" (... more ...)"
+		self.str = string.sub(self.str, 1, 3950) .. L[" (... more ...)"]
 	end
 	BugSackFrameScrollText:SetText(self.str)
 
@@ -403,31 +420,31 @@ end
 function BugSack:ListErrors(which)
 	local errs = self:GetErrors(which)
 	if table.getn(errs) == 0 then
-		self:Print(L"You have no errors, yay!")
+		self:Print(L["You have no errors, yay!"])
 		return
 	end
 
-	self:Print(L"List of errors:")
+	self:Print(L["List of errors:"])
 	for i,err in ipairs(errs) do
 		self:Print("%d. %s", i, err.message)
 	end
 end
 
 function BugSack:ScriptBug()
-	self:Print(L"An error has been generated.")
-	RunScript(L"BugSack generated this fake error.")
+	self:Print(L["An error has been generated."])
+	RunScript(L["BugSack generated this fake error."])
 end
 
 function BugSack:AddonBug()
 	self:BugGeneratedByBugSack()
-	self:Print(L"An error has been generated.")
+	self:Print(L["An error has been generated."])
 end
 
 function BugSack:Reset()
 	BugGrabber.loadErrors = nil
 	BugGrabber.errors = {}
 	BugGrabberDB.errors = {}
-	self:Print(L"All errors were wiped.")
+	self:Print(L["All errors were wiped."])
 
 	if BugSackFu then
 		BugSackFu:UpdateText()
@@ -445,10 +462,10 @@ function BugSack:OnError(err)
 		self:ShowCurrent()
 	end
 
-	if self.db.profile.showmsg then
+	if self.db.profile.chatframe and self.db.profile.showmsg then
 		self:Print(err.message)
-	else
-		self:Print(L"An error has been recorded.")
+	elseif self.db.profile.chatframe then
+		self:Print(L["An error has been recorded."])
 	end
 
 	if BugSackFu and BugSackFu.isEnabled then
@@ -474,7 +491,7 @@ end
 -- Keybindings
 
 BINDING_HEADER_BUGSACK = "BugSack"
-BINDING_NAME_BUGSACK_SHOW_CURRENT = L"Show Current Error"
-BINDING_NAME_BUGSACK_SHOW_SESSION = L"Show Session Errors"
+BINDING_NAME_BUGSACK_SHOW_CURRENT = L["Show Current Error"]
+BINDING_NAME_BUGSACK_SHOW_SESSION = L["Show Session Errors"]
 
 -- vim:set ts=4:
