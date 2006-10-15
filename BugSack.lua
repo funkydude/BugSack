@@ -253,7 +253,7 @@ function BugSack:GetErrors(which)
 	end
 
 	local str = ""
-	for _, err in db do
+	for _, err in pairs(db) do
 		if (which == "all")
 		  or (which == "session" and cs == tonumber(err.session))
 		  or (which == "previous" and cs - 1 == tonumber(err.session))

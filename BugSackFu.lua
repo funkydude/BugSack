@@ -12,6 +12,8 @@ local L = AceLibrary("AceLocale-2.0"):new("BugSack")
 local Tablet = AceLibrary("Tablet-2.0")
 local Dewdrop = AceLibrary("Dewdrop-2.0")
 
+local string_gmatch = string.gmatch or string.gfind
+
 BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0")
 function BugSackFu:OnInitialize()
 	self:RegisterDB("BugSackDB")
@@ -54,7 +56,7 @@ function BugSackFu:OnTooltipUpdate()
 	else
 		for i, err in ipairs(errs) do
 			cat:AddLine(
-				"text", string.format("%d. %s", i, string.gfind(err.message, "(.-)\n")() ),
+				"text", string.format("%d. %s", i, string_gmatch(err.message, "(.-)\n")() ),
 				"func", BugSack.ShowFrame,
 				"arg1", BugSack,
 				"arg2", "session",
