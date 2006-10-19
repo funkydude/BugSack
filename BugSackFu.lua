@@ -7,7 +7,7 @@ if not BugSack then
 	return
 end
 
-local L = AceLibrary("AceLocale-2.0"):new("BugSack")
+local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 local Tablet = AceLibrary("Tablet-2.0")
 local Dewdrop = AceLibrary("Dewdrop-2.0")

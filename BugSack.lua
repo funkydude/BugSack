@@ -7,7 +7,7 @@
 -- Credits to AceGUI & LuaPad for the scrollbar knowledge.
 --
 
-local L = AceLibrary("AceLocale-2.0"):new("BugSack")
+local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 BugSack = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEvent-2.0")
 
 function BugSack:ReturnOptionsTable()

@@ -1,4 +1,4 @@
-local L = AceLibrary("AceLocale-2.0"):new("BugSack")
+local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("enUS", function()
 	return {
