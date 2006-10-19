@@ -42,7 +42,7 @@ function BugSackFu:OnClick()
 end
 
 function BugSackFu:OnTooltipUpdate()
-	Tablet:SetHint(L"Click to open the BugSack frame with the last error.")
+	Tablet:SetHint(L["Click to open the BugSack frame with the last error."])
 	local cat = Tablet:AddCategory(
 		"columns", 1,
 		"child_textR", 1,
@@ -52,7 +52,7 @@ function BugSackFu:OnTooltipUpdate()
 
 	local errs = BugSack:GetErrors("session")
 	if table.getn(errs) == 0 then
-		cat:AddLine("text", L"You have no errors, yay!")
+		cat:AddLine("text", L["You have no errors, yay!"])
 	else
 		for i, err in ipairs(errs) do
 			cat:AddLine(
