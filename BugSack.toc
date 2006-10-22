@@ -1,5 +1,6 @@
 ## Interface: 11200
 ## Title: BugSack  |cff7fff7f -Ace2-|r
+## Title-koKR: |CFF99FF99B|CFFFFFFFFug|CFF99FF99S|CFFFFFFFFack  |cff7fff7f -Ace2-|r
 ## Version: 2.0.$Revision: 6326 $
 ## Notes: Toss those bugs inna sack.
 ## Author: The BugSack Team
@@ -18,6 +19,7 @@ BugSack.xml
 BugSack-enUS.lua
 BugSack-zhCN.lua
 BugSack-deDE.lua
+BugSack-koKR.lua
 BugSack.lua
 Libs\Dewdrop\Dewdrop-2.0.lua
 Libs\Tablet\Tablet-2.0.lua

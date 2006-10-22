@@ -339,7 +339,11 @@ function BugSack:UpdateFrameText()
 		caption = L["No errors found"]
 	else
 		self.str = self.errs[self.cur].message
-		caption = string.format(L["Error %d of %d"], self.cur, self.max)
+		if ( GetLocale() == "koKR" ) then
+			caption = string.format(L["Error %d of %d"], self.max, self.cur)
+		else
+			caption = string.format(L["Error %d of %d"], self.cur, self.max)
+		end
 	end
 
 	if self.which == "current" then
