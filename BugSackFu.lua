@@ -15,17 +15,10 @@ local Dewdrop = AceLibrary("Dewdrop-2.0")
 local string_gmatch = string.gmatch or string.gfind
 
 BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0")
-function BugSackFu:OnInitialize()
-	self:RegisterDB("BugSackDB")
-	self.hasIcon = true
-	self.optionsTable = BugSack:ReturnOptionsTable()
-end
-
-function BugSackFu:OnEnable()
-	self.isEnabled = true
-	self:UpdateText()
-	self:SetIcon(true)
-end
+BugSackFu:RegisterDB("BugSackDB")
+BugSackFu.hasNoColor = true
+BugSackFu.clickableTooltip = true
+BugSackFu.hasIcon = true
 
 function BugSackFu:OnTextUpdate()
 	local errs = BugSack:GetErrors("session")
@@ -34,7 +27,6 @@ function BugSackFu:OnTextUpdate()
 	else
 		self:SetText("")
 	end
-	self:SetIcon(true)
 end
 
 function BugSackFu:OnClick()
@@ -42,9 +34,10 @@ function BugSackFu:OnClick()
 end
 
 function BugSackFu:OnTooltipUpdate()
-	Tablet:SetHint(L["Click to open the BugSack frame with the last error."])
 	local cat = Tablet:AddCategory(
 		"columns", 1,
+		"hideBlankLine", true,
+		"showWithoutChildren", false,
 		"child_textR", 1,
 		"child_textG", 1,
 		"child_textB", 1
@@ -54,20 +47,26 @@ function BugSackFu:OnTooltipUpdate()
 	if table.getn(errs) == 0 then
 		cat:AddLine("text", L["You have no errors, yay!"])
 	else
+		local output = "|cffffff00%d.|r |cffeda55f%s|r:|cff00ff00%s|r:%s"
+		local pattern = ".*%]: (.-):(%d+):(.-)\n"
 		for i, err in ipairs(errs) do
 			cat:AddLine(
-				"text", string.format("%d. %s", i, string_gmatch(err.message, "(.-)\n")() ),
+				"text", string.format(output, i, string_gmatch(err.message, pattern)()),
 				"func", BugSack.ShowFrame,
 				"arg1", BugSack,
 				"arg2", "session",
-				"arg3", i
+				"arg3", i,
+				"wrap", true
 			)
+			if i == 5 then break end
 		end
 	end
+
+	Tablet:SetHint(L["Click to open the BugSack frame with the last error."])
 end
 
-function BugSackFu:OnMenuRequest(level, value, x, valueN_1, valueN_2, valueN_3, valueN_4)
-	Dewdrop:FeedAceOptionsTable(self.optionsTable)
+function BugSackFu:OnMenuRequest()
+	Dewdrop:FeedAceOptionsTable(BugSack:ReturnOptionsTable())
 end
 
 -- vim:set ts=4:

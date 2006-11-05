@@ -213,8 +213,7 @@ function BugSack:OnInitialize()
 		showmsg = nil,
 		chatframe = nil
 	})
-	self.optionsTable = self:ReturnOptionsTable()
-	self:RegisterChatCommand({"/bugsack", "/bs"}, self.optionsTable)
+	self:RegisterChatCommand({"/bugsack", "/bs"}, self:ReturnOptionsTable())
 
 	-- Remove old compatibility stuff
 	for _,i in pairs({ "profile", "char", "class", "realm" }) do
@@ -450,8 +449,8 @@ function BugSack:Reset()
 	BugGrabberDB.errors = {}
 	self:Print(L["All errors were wiped."])
 
-	if BugSackFu then
-		BugSackFu:UpdateText()
+	if BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
+		BugSackFu:UpdateDisplay()
 	end
 end
 
@@ -472,7 +471,7 @@ function BugSack:OnError(err)
 		self:Print(L["An error has been recorded."])
 	end
 
-	if BugSackFu and BugSackFu.isEnabled then
+	if BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
 		BugSackFu:UpdateDisplay()
 	end
 end
