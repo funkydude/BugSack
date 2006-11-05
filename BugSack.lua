@@ -337,7 +337,7 @@ function BugSack:UpdateFrameText()
 		self.str = L["You have no errors, yay!"]
 		caption = L["No errors found"]
 	else
-		self.str = self.errs[self.cur].message
+		self.str = self:FormatError(self.errs[self.cur])
 		if ( GetLocale() == "koKR" ) then
 			caption = string.format(L["Error %d of %d"], self.max, self.cur)
 		else
@@ -429,8 +429,19 @@ function BugSack:ListErrors(which)
 
 	self:Print(L["List of errors:"])
 	for i,err in ipairs(errs) do
-		self:Print("%d. %s", i, err.message)
+		self:Print("%d. %s", i, self:FormatError(err))
 	end
+end
+
+function BugSack:FormatError(err)
+	if type(err) ~= "table" or not err.time or not err.session then
+		if type(err) == "string" then
+			return string.format("%q is not a valid BugGrabber error.", err)
+		else
+			return string.format("Tried to format an error of type %q, should be a table.", type(err))
+		end
+	end
+	return string.format("[%s-%s]: %s", err.time, err.session, err.message)
 end
 
 function BugSack:ScriptBug()
@@ -466,7 +477,7 @@ function BugSack:OnError(err)
 	end
 
 	if self.db.profile.chatframe and self.db.profile.showmsg then
-		self:Print(err.message)
+		self:Print(self:FormatError(err))
 	elseif self.db.profile.chatframe then
 		self:Print(L["An error has been recorded."])
 	end

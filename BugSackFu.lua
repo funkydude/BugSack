@@ -34,35 +34,34 @@ function BugSackFu:OnClick()
 end
 
 function BugSackFu:OnTooltipUpdate()
-	local cat = Tablet:AddCategory(
-		"columns", 1,
-		"hideBlankLine", true,
-		"showWithoutChildren", false,
-		"child_textR", 1,
-		"child_textG", 1,
-		"child_textB", 1
-	)
-
 	local errs = BugSack:GetErrors("session")
 	if table.getn(errs) == 0 then
+		local cat = Tablet:AddCategory("columns", 1)
 		cat:AddLine("text", L["You have no errors, yay!"])
 	else
-		local output = "|cffffff00%d.|r |cffeda55f%s|r:|cff00ff00%s|r:%s"
+		local cat = Tablet:AddCategory(
+			"columns", 1,
+			"justify", "LEFT",
+			"hideBlankLine", true,
+			"showWithoutChildren", false,
+			"child_textR", 1,
+			"child_textG", 1,
+			"child_textB", 1
+			--"child_wrap", true
+		)
+		local output = "|cffffff00%d.|r |cff999999(x%d)|r |cffeda55f%s|r:|cff00ff00%s|r:%s"
 		local pattern = ".*%]: (.-):(%d+):(.-)\n"
 		local counter = 0
 		for i, err in ipairs(errs) do
-			if not string.find(err.message, "last message repeated") then
-				cat:AddLine(
-					"text", string.format(output, i, string_gmatch(err.message, pattern)()),
-					"func", BugSack.ShowFrame,
-					"arg1", BugSack,
-					"arg2", "session",
-					"arg3", i,
-					"wrap", true
-				)
-				counter = counter + 1
-				if counter == 5 then break end
-			end
+			cat:AddLine(
+				"text", string.format(output, i, err.counter, string_gmatch(BugSack:FormatError(err), pattern)()),
+				"func", BugSack.ShowFrame,
+				"arg1", BugSack,
+				"arg2", "session",
+				"arg3", i
+			)
+			counter = counter + 1
+			if counter == 5 then break end
 		end
 	end
 
