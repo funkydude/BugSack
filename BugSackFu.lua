@@ -49,16 +49,20 @@ function BugSackFu:OnTooltipUpdate()
 	else
 		local output = "|cffffff00%d.|r |cffeda55f%s|r:|cff00ff00%s|r:%s"
 		local pattern = ".*%]: (.-):(%d+):(.-)\n"
+		local counter = 0
 		for i, err in ipairs(errs) do
-			cat:AddLine(
-				"text", string.format(output, i, string_gmatch(err.message, pattern)()),
-				"func", BugSack.ShowFrame,
-				"arg1", BugSack,
-				"arg2", "session",
-				"arg3", i,
-				"wrap", true
-			)
-			if i == 5 then break end
+			if not string.find(err.message, "last message repeated") then
+				cat:AddLine(
+					"text", string.format(output, i, string_gmatch(err.message, pattern)()),
+					"func", BugSack.ShowFrame,
+					"arg1", BugSack,
+					"arg2", "session",
+					"arg3", i,
+					"wrap", true
+				)
+				counter = counter + 1
+				if counter == 5 then break end
+			end
 		end
 	end
 
