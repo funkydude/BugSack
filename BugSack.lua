@@ -441,7 +441,25 @@ function BugSack:FormatError(err)
 			return string.format("Tried to format an error of type %q, should be a table.", type(err))
 		end
 	end
-	return string.format("[%s-%s]: %s", err.time, err.session, err.message)
+	return string.format("[%s-%d]: %s", err.time, err.session, self:ColorError(err.message))
+end
+
+local string_gmatch = string.gmatch or string.gfind
+function BugSack:ColorError(err)
+	local pattern = "(.-):(%d+):(.-)\n"
+	local output = "|cffeda55f%s|r:|cff00ff00%d|r:%s\n"
+	local quotePattern = "(.-)[`\'\"](.-)[`\'\"](.-)"
+	local quoteOutput = "%s\"|cff8888ff%s|r\"%s"
+	local retVal = ""
+	for file, line, text in string_gmatch(err, pattern) do
+		local coloredText = ""
+		for pre, str, app in string_gmatch(text, quotePattern) do
+			coloredText = coloredText .. string.format(quoteOutput, pre, str, app)
+		end
+		if coloredText == "" then coloredText = text end
+		retVal = retVal .. string.format(output, file, line, coloredText)
+	end
+	return retVal
 end
 
 function BugSack:ScriptBug()
