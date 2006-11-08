@@ -11,7 +11,7 @@ local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 local Tablet = AceLibrary("Tablet-2.0")
 local Dewdrop = AceLibrary("Dewdrop-2.0")
 
-local dupeCounter = nil
+local dupeCounter = 0
 
 local string_gmatch = string.gmatch or string.gfind
 
