@@ -8,22 +8,32 @@ if not BugSack then
 end
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
-
 local Tablet = AceLibrary("Tablet-2.0")
 local Dewdrop = AceLibrary("Dewdrop-2.0")
 
+local dupeCounter = nil
+
 local string_gmatch = string.gmatch or string.gfind
 
-BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0")
+BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0", "AceEvent-2.0")
 BugSackFu:RegisterDB("BugSackDB")
 BugSackFu.hasNoColor = true
 BugSackFu.clickableTooltip = true
 BugSackFu.hasIcon = true
+BugSackFu.hideWithoutStandby = true
+
+function BugSackFu:OnEnable()
+	dupeCounter = 0
+	self:RegisterEvent("BugGrabber_BugGrabbedAgain", function()
+		dupeCounter = dupeCounter + 1
+		self:UpdateText()
+	end)
+end
 
 function BugSackFu:OnTextUpdate()
-	local errs = BugSack:GetErrors("session")
-	if table.getn(errs) > 0 then
-		self:SetText(tostring(table.getn(errs)))
+	local errcount = table.getn(BugSack:GetErrors("session"))
+	if errcount > 0 or dupeCounter > 0 then
+		self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
 	else
 		self:SetText("")
 	end
@@ -47,7 +57,6 @@ function BugSackFu:OnTooltipUpdate()
 			"child_textR", 1,
 			"child_textG", 1,
 			"child_textB", 1
-			--"child_wrap", true
 		)
 		local output = "|cffffff00%d.|r |cff999999(x%d)|r %s"
 		local pattern = ".*%]: (.-)\n"
@@ -60,6 +69,7 @@ function BugSackFu:OnTooltipUpdate()
 				"arg2", "session",
 				"arg3", i
 			)
+			
 			counter = counter + 1
 			if counter == 5 then break end
 		end
