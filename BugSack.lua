@@ -1,7 +1,7 @@
 --
--- $Id: BugSack.lua 6442 2006-08-01 09:40:05Z fritti $
+-- $Id$
 --
--- Developers: Rowne, Ramble, industrial, Fritti, kergoth
+-- Developers: Rowne, Ramble, industrial, Fritti, kergoth, Rabbit
 -- Testers: Ramble, Sariash
 --
 -- Credits to AceGUI & LuaPad for the scrollbar knowledge.

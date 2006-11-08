@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: BugSack |cff7fff7f -Ace2-|r
 ## Title-koKR: |CFF99FF99B|CFFFFFFFFug|CFF99FF99S|CFFFFFFFFack  |cff7fff7f -Ace2-|r
-## Version: 2.0.$Revision: 6326 $
+## Version: 2.0.$Revision$
 ## Notes: Toss those bugs inna sack.
 ## Author: The BugSack Team
 ## X-Credits: Rowne, Ramble, Fritti, Rabbit
