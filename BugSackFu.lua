@@ -32,6 +32,7 @@ end
 
 function BugSackFu:OnTextUpdate()
 	local errcount = table.getn(BugSack:GetErrors("session"))
+	if not errcount then errcount = 0 end
 	if errcount > 0 or dupeCounter > 0 then
 		self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
 	else
