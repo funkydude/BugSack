@@ -448,7 +448,7 @@ local string_gmatch = string.gmatch or string.gfind
 function BugSack:ColorError(err)
 	local pattern = "(.-):(%d+):(.-)\n"
 	local output = "|cffeda55f%s|r:|cff00ff00%d|r:%s\n"
-	local quotePattern = "(.-)[`\'\"](.-)[`\'\"](.-)"
+	local quotePattern = "(.*)[`\'\"](.*)[`\'\"](.*)"
 	local quoteOutput = "%s\"|cff8888ff%s|r\"%s"
 	local retVal = ""
 	for file, line, text in string_gmatch(err, pattern) do
