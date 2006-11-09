@@ -60,7 +60,7 @@ function BugSackFu:OnTooltipUpdate()
 			"child_textB", 1
 		)
 		local output = "|cffffff00%d.|r |cff999999(x%d)|r %s"
-		local pattern = ".*%]: (.-)\n"
+		local pattern = ": (.-)\n"
 		local counter = 0
 		for i, err in ipairs(errs) do
 			cat:AddLine(

@@ -441,25 +441,16 @@ function BugSack:FormatError(err)
 			return string.format("Tried to format an error of type %q, should be a table.", type(err))
 		end
 	end
-	return string.format("[%s-%d]: %s", err.time, err.session, self:ColorError(err.message))
+	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time, err.session, err.counter, self:ColorError(err.message))
 end
 
-local string_gmatch = string.gmatch or string.gfind
 function BugSack:ColorError(err)
-	local pattern = "(.-):(%d+):(.-)\n"
-	local output = "|cffeda55f%s|r:|cff00ff00%d|r:%s\n"
-	local quotePattern = "(.*)[`\'\"](.*)[`\'\"](.*)"
-	local quoteOutput = "%s\"|cff8888ff%s|r\"%s"
-	local retVal = ""
-	for file, line, text in string_gmatch(err, pattern) do
-		local coloredText = ""
-		for pre, str, app in string_gmatch(text, quotePattern) do
-			coloredText = coloredText .. string.format(quoteOutput, pre, str, app)
-		end
-		if coloredText == "" then coloredText = text end
-		retVal = retVal .. string.format(output, file, line, coloredText)
-	end
-	return retVal
+	local ret = err
+	ret = string.gsub(ret, ":(%d+): ", ":|cff00ff00%1|r: ") -- Line numbers
+	ret = string.gsub(ret, "\n(.-):", "\n|cffeda55f%1|r:") -- Files
+	ret = string.gsub(ret, "([`'\"])(.-)([`'\"])", "|cff8888ff%1%2%3|r") -- Quotes
+	ret = string.gsub(ret, "^(.-):", "|cffeda55f%1|r:") -- First file after time and date
+	return ret
 end
 
 function BugSack:ScriptBug()
