@@ -3,8 +3,8 @@
 ## Title-koKR: |CFF99FF99B|CFFFFFFFFug|CFF99FF99S|CFFFFFFFFack  |cff7fff7f -Ace2-|r
 ## Version: 2.0.$Revision$
 ## Notes: Toss those bugs inna sack.
-## Author: The BugSack Team
-## X-Credits: Rowne, Ramble, Fritti, Rabbit
+## Author: Fritti, Rabbit
+## X-Credits: Rowne, Ramble, kergoth, Gamefaq, thomasmo, damjau
 ## SavedVariables: BugSackDB
 ## RequiredDeps: !BugGrabber
 ## OptionalDeps: FuBar, Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib

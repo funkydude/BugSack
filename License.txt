@@ -1,8 +1,13 @@
 The original BugSack code is copyrighted 2005 by Rowne and Ramble.
+Contributions by Fritti are copyrighted 2006 by Fritti.
 Contributions by Rabbit are copyrighted 2006 by Rabbit.
 
-This addon is distributed under the terms of the Creative Commons Attribution-NonCommercial-ShareAlike 2.0 license.  We choose to dictate that the aforementioned license is not a set of specific rules but merely a guideline for behavior.
+This addon is distributed under the terms of the Creative Commons
+Attribution-NonCommercial-ShareAlike 2.0 license. We choose to
+dictate that the aforementioned license is not a set of specific
+rules but merely a guideline for behavior.
 
 http://creativecommons.org/licenses/by-nc-sa/2.5/
 
-Any and all questions regarding our stance and licensing should be directed to wuffxiii@gmail.com or the #wowace IRC channel on irc.freenode.net.
+Any and all questions regarding our stance and licensing should be
+directed to the #wowace IRC channel on irc.freenode.net.
