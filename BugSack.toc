@@ -10,6 +10,9 @@
 ## OptionalDeps: FuBar, Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib
 ## X-Embeds: Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib
 ## X-Category: Development Tools
+## X-RelSite-WoWI: 5995
+## X-AceForum: 1769
+
 Libs\AceLibrary\AceLibrary.lua
 Libs\AceOO\AceOO-2.0.lua
 Libs\AceEvent\AceEvent-2.0.lua
@@ -17,13 +20,16 @@ Libs\AceDB\AceDB-2.0.lua
 Libs\AceConsole\AceConsole-2.0.lua
 Libs\AceAddon\AceAddon-2.0.lua
 Libs\AceLocale\AceLocale-2.2.lua
+
 BugSack.xml
 BugSack-enUS.lua
 BugSack-zhCN.lua
 BugSack-deDE.lua
 BugSack-koKR.lua
 BugSack.lua
+
 Libs\Dewdrop\Dewdrop-2.0.lua
 Libs\Tablet\Tablet-2.0.lua
 Libs\FuBarPlugin\FuBarPlugin-2.0.lua
 BugSackFu.lua
+
