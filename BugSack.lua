@@ -223,17 +223,18 @@ function BugSack:OnInitialize()
 			end
 		end
 	end
-end
 
-function BugSack:OnEnable()
-	-- Set up our error event handler
-	self:RegisterEvent("BugGrabber_BugGrabbed", "OnError")
 
 	-- Swipe the load errors from BugGrabber if there were any
 	if BugGrabber and BugGrabber.bugsackErrors then
 		for _, err in pairs(BugGrabber.bugsackErrors) do self:OnError(err) end
 		BugGrabber.bugsackErrors = nil
 	end
+end
+
+function BugSack:OnEnable()
+	-- Set up our error event handler
+	self:RegisterEvent("BugGrabber_BugGrabbed", "OnError")
 end
 
 function BugSack:GetErrors(which)
@@ -471,7 +472,7 @@ function BugSack:Reset()
 	BugGrabberDB.errors = {}
 	self:Print(L["All errors were wiped."])
 
-	if BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
+	if self:IsEventRegistered("BugGrabber_BugGrabbed") and BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
 		BugSackFu:UpdateDisplay()
 	end
 end
@@ -493,7 +494,7 @@ function BugSack:OnError(err)
 		self:Print(L["An error has been recorded."])
 	end
 
-	if BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
+	if self:IsEventRegistered("BugGrabber_BugGrabbed") and BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
 		BugSackFu:UpdateDisplay()
 	end
 end
