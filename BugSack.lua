@@ -223,7 +223,9 @@ function BugSack:OnInitialize()
 			end
 		end
 	end
+end
 
+function BugSack:OnEnable()
 	-- Set up our error event handler
 	self:RegisterEvent("BugGrabber_BugGrabbed", "OnError")
 
