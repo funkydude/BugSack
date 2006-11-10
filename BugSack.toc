@@ -12,6 +12,7 @@
 ## X-Category: Development Tools
 ## X-RelSite-WoWI: 5995
 ## X-AceForum: 1769
+## X-License: CC-BY-NC-SA-2.5
 
 Libs\AceLibrary\AceLibrary.lua
 Libs\AceOO\AceOO-2.0.lua
