@@ -30,6 +30,10 @@ function BugSackFu:OnEnable()
 	end)
 end
 
+function BugSackFu:Reset()
+	dupeCounter = 0
+end
+
 function BugSackFu:OnTextUpdate()
 	local errcount = table.getn(BugSack:GetErrors("session"))
 	if not errcount then errcount = 0 end

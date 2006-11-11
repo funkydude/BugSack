@@ -453,6 +453,7 @@ function BugSack:ColorError(err)
 	ret = string.gsub(ret, "\n(.-):", "\n|cffeda55f%1|r:") -- Files
 	ret = string.gsub(ret, "([`'\"])(.-)([`'\"])", "|cff8888ff%1%2%3|r") -- Quotes
 	ret = string.gsub(ret, "^(.-):", "|cffeda55f%1|r:") -- First file after time and date
+	--ret = string.gsub(ret, "||([cr])", "%|%1")
 	return ret
 end
 
@@ -473,6 +474,7 @@ function BugSack:Reset()
 	self:Print(L["All errors were wiped."])
 
 	if self:IsEventRegistered("BugGrabber_BugGrabbed") and BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
+		BugSackFu:Reset()
 		BugSackFu:UpdateDisplay()
 	end
 end
