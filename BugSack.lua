@@ -449,11 +449,12 @@ end
 
 function BugSack:ColorError(err)
 	local ret = err
+	ret = string.gsub(ret, "|([^chHr])", "||%1") -- pipe char
+	ret = string.gsub(ret, "|$", "||") -- pipe char
 	ret = string.gsub(ret, ":(%d+): ", ":|cff00ff00%1|r: ") -- Line numbers
 	ret = string.gsub(ret, "\n(.-):", "\n|cffeda55f%1|r:") -- Files
 	ret = string.gsub(ret, "([`'\"])(.-)([`'\"])", "|cff8888ff%1%2%3|r") -- Quotes
 	ret = string.gsub(ret, "^(.-):", "|cffeda55f%1|r:") -- First file after time and date
-	--ret = string.gsub(ret, "||([cr])", "%|%1")
 	return ret
 end
 
