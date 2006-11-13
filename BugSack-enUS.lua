@@ -57,6 +57,7 @@ L:RegisterTranslations("enUS", function() return {
 	["BugSack generated this fake error."] = true,
 	["All errors were wiped."] = true,
 	["An error has been recorded."] = true,
+	["%d errors have been recorded."] = true,
 
 	-- Frame messages,
 	[" (... more ...)"] = true,

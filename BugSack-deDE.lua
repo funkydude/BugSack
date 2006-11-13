@@ -60,6 +60,7 @@ L:RegisterTranslations("deDE", function()
 		["BugSack generated this fake error."] = "BugSack hat diesen Fehler generiert.",
 		["All errors were wiped."] = "Alle Fehler wurden gel\195\182scht.",
 		["An error has been recorded."] = "Ein Fehler wurde aufgezeichnet",
+		--["%d errors have been recorded."] = true,
 
 		-- Frame messages,
 		[" (... more ...)"] = " (... mehr ...)",

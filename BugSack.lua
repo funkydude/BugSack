@@ -234,7 +234,7 @@ end
 
 function BugSack:OnEnable()
 	-- Set up our error event handler
-	self:RegisterEvent("BugGrabber_BugGrabbed", "OnError")
+	self:RegisterBucketEvent("BugGrabber_BugGrabbed", 2, "OnError")
 end
 
 function BugSack:GetErrors(which)
@@ -490,10 +490,16 @@ function BugSack:OnError(err)
 		self:ShowCurrent()
 	end
 
-	if self.db.profile.chatframe and self.db.profile.showmsg then
+	local num = 0
+	for k in pairs(err) do num = num + 1 end
+	if self.db.profile.chatframe and self.db.profile.showmsg and num == 1 then
 		self:Print(self:FormatError(err))
 	elseif self.db.profile.chatframe then
-		self:Print(L["An error has been recorded."])
+		if num > 1 then
+			self:Print(string.format(L["%d errors have been recorded."], num))
+		else
+			self:Print(L["An error has been recorded."])
+		end
 	end
 
 	if self:IsEventRegistered("BugGrabber_BugGrabbed") and BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
