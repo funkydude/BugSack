@@ -59,7 +59,7 @@ L:RegisterTranslations("koKR", function()
 		["BugSack generated this fake error."] = "벌레자루가 이 거짓 오류를 생성해냈습니다",
 		["All errors were wiped."] = "모든 오류가 삭제되었습니다",
 		["An error has been recorded."] = "1개의 오류가 기록되었습니다",
-		--["%d errors have been recorded."] = true,
+		["%d errors have been recorded."] = "%d개의 오류가 기록되었습니다.",
 
 		-- Frame messages,
 		[" (... more ...)"] = " (... 이상 ...)",
