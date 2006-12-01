@@ -200,7 +200,15 @@ function BugSack:ReturnOptionsTable()
 				desc = L["Clear out the errors database."],
 				func = "Reset",
 				order = 10,
-			}
+			},
+			events = {
+				type = "toggle",
+				name = L["Filter addon mistakes"],
+				desc = L["Filters common mistakes that trigger the blocked/forbidden event."],
+				get = "GetFilter",
+				set = "ToggleFilter",
+				order = 11,
+			},
 		}
 	}
 end
@@ -211,7 +219,8 @@ function BugSack:OnInitialize()
 		mute = nil,
 		auto = nil,
 		showmsg = nil,
-		chatframe = nil
+		chatframe = nil,
+		filterAddonMistakes = true,
 	})
 	self:RegisterChatCommand({"/bugsack", "/bs"}, self:ReturnOptionsTable())
 
@@ -235,6 +244,10 @@ end
 function BugSack:OnEnable()
 	-- Set up our error event handler
 	self:RegisterBucketEvent("BugGrabber_BugGrabbed", 2, "OnError")
+
+	if not self:GetFilter() then
+		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
+	end
 end
 
 function BugSack:GetErrors(which)
@@ -264,6 +277,19 @@ function BugSack:GetErrors(which)
 		end
 	end
 	return errs
+end
+
+function BugSack:GetFilter()
+	return self.db.profile.filterAddonMistakes
+end
+
+function BugSack:ToggleFilter()
+	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes or nil
+	if not filter and not self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
+		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
+	elseif self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
+		self:UnregisterBucketEvent("BugGrabber_EventGrabbed")
+	end
 end
 
 function BugSack:GetAuto()

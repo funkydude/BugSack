@@ -39,6 +39,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = true,
 	["Limit"] = true,
 	["Set the limit on the nr of errors saved."] = true,
+	["Filter addon mistakes"] = true,
+	["Filters common mistakes that trigger the blocked/forbidden event."] = true,
 
 	["Generate bug"] = true,
 	["Generate a fake bug for testing."] = true,

@@ -41,6 +41,8 @@ L:RegisterTranslations("koKR", function()
 		["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = "SaveVariables\\!BugGrabber.lua 파일에 모든 오류를 저장할지 아닐지 토글합니다",
 		["Limit"] = "제한",
 		["Set the limit on the nr of errors saved."] = "저장된 오류의 갯수를 제한합니다",
+		--["Filter addon mistakes"] = true,
+		--["Filters common mistakes that trigger the blocked/forbidden event."] = true,
 
 		["Generate bug"] = "오류 생성",
 		["Generate a fake bug for testing."] = "시험용으로 거짓 오류를 생성합니다",

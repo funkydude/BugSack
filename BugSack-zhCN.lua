@@ -42,6 +42,8 @@ L:RegisterTranslations("zhCN", function()
       ["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = "\230\152\175\229\144\166\229\156\168 SavedVariables\\!BugGrabber.lua \230\150\135\228\187\182\228\184\173\228\191\157\229\173\152\233\148\153\232\175\175\228\191\161\230\129\175",
       ["Limit"] = "\233\153\144\229\136\182",
       ["Set the limit on the nr of errors saved."] = "\232\174\190\231\189\174\233\148\153\232\175\175\228\191\157\229\173\152\233\153\144\229\136\182",
+      --["Filter addon mistakes"] = true,
+      --["Filters common mistakes that trigger the blocked/forbidden event."] = true,
 
       ["Generate bug"] = "\230\168\161\230\139\159\233\148\153\232\175\175",
       ["Generate a fake bug for testing."] = "\230\168\161\230\139\159\228\186\167\231\148\159\228\184\128\228\184\170\230\168\161\230\139\159\233\148\153\232\175\175\232\191\155\232\161\140\230\181\139\232\175\149.",
