@@ -13,8 +13,6 @@ local Dewdrop = AceLibrary("Dewdrop-2.0")
 
 local dupeCounter = 0
 
-local string_gmatch = string.gmatch or string.gfind
-
 BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0", "AceEvent-2.0")
 BugSackFu:RegisterDB("BugSackDB")
 BugSackFu.hasNoColor = true
@@ -69,7 +67,7 @@ function BugSackFu:OnTooltipUpdate()
 		for i, err in ipairs(errs) do
 			if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
 				cat:AddLine(
-					"text", string.format(output, i, err.counter, string_gmatch(BugSack:FormatError(err), pattern)()),
+					"text", string.format(output, i, err.counter, string.gmatch(BugSack:FormatError(err), pattern)()),
 					"func", BugSack.ShowFrame,
 					"arg1", BugSack,
 					"arg2", "session",
