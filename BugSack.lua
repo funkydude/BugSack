@@ -260,7 +260,7 @@ function BugSack:GetErrors(which)
 	end
 
 	if which == "current" then
-		local current = table.getn(db)
+		local current = #db
 		if current ~= 0 and db[current].session == cs then
 			table.insert(errs, db[current])
 		end
@@ -347,7 +347,7 @@ end
 function BugSack:ShowFrame(which, nr)
 	self.which = which
 	self.errs = self:GetErrors(which)
-	self.max = table.getn(self.errs)
+	self.max = #self.errs
 
 	if nr then
 		self.cur = math.min(self.max, math.abs(nr))
@@ -451,7 +451,7 @@ end
 
 function BugSack:ListErrors(which)
 	local errs = self:GetErrors(which)
-	if table.getn(errs) == 0 then
+	if #errs == 0 then
 		self:Print(L["You have no errors, yay!"])
 		return
 	end

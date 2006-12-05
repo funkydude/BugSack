@@ -35,7 +35,7 @@ function BugSackFu:Reset()
 end
 
 function BugSackFu:OnTextUpdate()
-	local errcount = table.getn(BugSack:GetErrors("session"))
+	local errcount = #BugSack:GetErrors("session")
 	if not errcount then errcount = 0 end
 	if errcount > 0 or dupeCounter > 0 then
 		self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
@@ -50,7 +50,7 @@ end
 
 function BugSackFu:OnTooltipUpdate()
 	local errs = BugSack:GetErrors("session")
-	if table.getn(errs) == 0 then
+	if #errs == 0 then
 		local cat = Tablet:AddCategory("columns", 1)
 		cat:AddLine("text", L["You have no errors, yay!"])
 	else
