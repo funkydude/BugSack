@@ -67,16 +67,18 @@ function BugSackFu:OnTooltipUpdate()
 		local pattern = ": (.-)\n"
 		local counter = 0
 		for i, err in ipairs(errs) do
-			cat:AddLine(
-				"text", string.format(output, i, err.counter, string_gmatch(BugSack:FormatError(err), pattern)()),
-				"func", BugSack.ShowFrame,
-				"arg1", BugSack,
-				"arg2", "session",
-				"arg3", i
-			)
-			
-			counter = counter + 1
-			if counter == 5 then break end
+			if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
+				cat:AddLine(
+					"text", string.format(output, i, err.counter, string_gmatch(BugSack:FormatError(err), pattern)()),
+					"func", BugSack.ShowFrame,
+					"arg1", BugSack,
+					"arg2", "session",
+					"arg3", i
+				)
+				
+				counter = counter + 1
+				if counter == 5 then break end
+			end
 		end
 	end
 
