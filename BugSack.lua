@@ -463,14 +463,14 @@ function BugSack:ListErrors(which)
 end
 
 function BugSack:FormatError(err)
-	if type(err) ~= "table" or not err.time or not err.session then
+	if type(err) ~= "table" then
 		if type(err) == "string" then
 			return string.format("%q is not a valid BugGrabber error.", err)
 		else
 			return string.format("Tried to format an error of type %q, should be a table.", type(err))
 		end
 	end
-	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time, err.session, err.counter, self:ColorError(err.message))
+	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time or "Uknown", err.session or -1, err.counter or -1, self:ColorError(err.message or ""))
 end
 
 function BugSack:ColorError(err)
@@ -517,10 +517,14 @@ function BugSack:OnError(err)
 		self:ShowCurrent()
 	end
 
+	local firstError = nil
 	local num = 0
-	for k in pairs(err) do num = num + 1 end
+	for k, v in pairs(err) do
+		num = num + 1
+		if not firstError then firstError = k end
+	end
 	if self.db.profile.chatframe and self.db.profile.showmsg and num == 1 then
-		self:Print(self:FormatError(err))
+		self:Print(self:FormatError(firstError))
 	elseif self.db.profile.chatframe then
 		if num > 1 then
 			self:Print(string.format(L["%d errors have been recorded."], num))
