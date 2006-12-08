@@ -470,7 +470,13 @@ function BugSack:FormatError(err)
 			return string.format("Tried to format an error of type %q, should be a table.", type(err))
 		end
 	end
-	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time or "Uknown", err.session or -1, err.counter or -1, self:ColorError(err.message or ""))
+	local m
+	if type(err.message) == "table" then
+		m = table.concat(err.message, '')
+	else
+		m = err.message
+	end
+	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time or "Uknown", err.session or -1, err.counter or -1, self:ColorError(m or ""))
 end
 
 function BugSack:ColorError(err)
