@@ -43,7 +43,7 @@
 				<AbsDimension x="455" y="330"/>
 			</Size>
 			<ScrollChild>
-				<EditBox name="BugSackFrameScrollText" letters="4096" multiLine="true" autoFocus="true" enableMouse="true">
+				<EditBox name="BugSackFrameScrollText" letters="99999" multiLine="true" autoFocus="true" enableMouse="true">
 					<Size>
 						<AbsDimension x="450" y="314"/>
 					</Size>
