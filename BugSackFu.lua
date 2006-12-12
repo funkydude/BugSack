@@ -67,7 +67,7 @@ function BugSackFu:OnTooltipUpdate()
 		for i, err in ipairs(errs) do
 			if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
 				cat:AddLine(
-					"text", string.format(output, i, err.counter, string.gmatch(BugSack:FormatError(err), pattern)()),
+					"text", output:format(i, err.counter, BugSack:FormatError(err):gmatch(pattern)()),
 					"func", BugSack.ShowFrame,
 					"arg1", BugSack,
 					"arg2", "session",

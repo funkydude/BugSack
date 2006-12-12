@@ -387,8 +387,8 @@ function BugSack:UpdateFrameText()
 	end
 	BugSackErrorText:SetText(caption)
 
-	if string.len(self.str) > 4000 then
-		self.str = string.sub(self.str, 1, 3950) .. L[" (... more ...)"]
+	if self.str and self.str:len() > 4000 then
+		self.str = self.str:sub(1, 3950) .. L[" (... more ...)"]
 	end
 	BugSackFrameScrollText:SetText(self.str)
 
@@ -481,12 +481,12 @@ end
 
 function BugSack:ColorError(err)
 	local ret = err
-	ret = string.gsub(ret, "|([^chHr])", "||%1") -- pipe char
-	ret = string.gsub(ret, "|$", "||") -- pipe char
-	ret = string.gsub(ret, ":(%d+): ", ":|cff00ff00%1|r: ") -- Line numbers
-	ret = string.gsub(ret, "\n(.-):", "\n|cffeda55f%1|r:") -- Files
-	ret = string.gsub(ret, "([`'\"])(.-)([`'\"])", "|cff8888ff%1%2%3|r") -- Quotes
-	ret = string.gsub(ret, "^(.-):", "|cffeda55f%1|r:") -- First file after time and date
+	ret = ret:gsub("|([^chHr])", "||%1") -- pipe char
+	ret = ret:gsub("|$", "||") -- pipe char
+	ret = ret:gsub(":(%d+): ", ":|cff00ff00%1|r: ") -- Line numbers
+	ret = ret:gsub("\n(.-):", "\n|cffeda55f%1|r:") -- Files
+	ret = ret:gsub("([`'\"])(.-)([`'\"])", "|cff8888ff%1%2%3|r") -- Quotes
+	ret = ret:gsub("^(.-):", "|cffeda55f%1|r:") -- First file after time and date
 	return ret
 end
 
