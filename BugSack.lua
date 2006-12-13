@@ -168,8 +168,8 @@ function BugSack:ReturnOptionsTable()
 				get = BugGrabber.GetLimit,
 				set = BugGrabber.SetLimit,
 				min = 10,
-				max = 100,
-				step = 1,
+				max = MAX_BUGGRABBER_ERRORS or 1000,
+				step = 10,
 				order = 8,
 			},
 			bug = {
