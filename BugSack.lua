@@ -220,9 +220,9 @@ function BugSack:OnInitialize()
 		auto = nil,
 		showmsg = nil,
 		chatframe = nil,
-		filterAddonMistakes = true,
+		filterAddonMistakes = false,
 	})
-	self:RegisterChatCommand({"/bugsack", "/bs"}, self:ReturnOptionsTable())
+	self:RegisterChatCommand({"/bugsack", "/bs"}, self:ReturnOptionsTable(), "BUGSACK")
 
 	-- Remove old compatibility stuff
 	for _,i in pairs({ "profile", "char", "class", "realm" }) do
@@ -255,7 +255,7 @@ function BugSack:GetErrors(which)
 	local cs = BugGrabberDB.session
 	local errs = {}
 
-	if not which or (type(which) ~= "string" and type(which) ~= "number") then
+	if type(which) ~= "string" and type(which) ~= "number" then
 		return errs
 	end
 
