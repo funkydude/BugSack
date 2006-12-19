@@ -80,7 +80,7 @@ function BugSackFu:OnTooltipUpdate()
 		end
 	end
 
-	Tablet:SetHint(L["Click to open the BugSack frame with the last error."])
+	Tablet:SetHint(L["|cffeda55fClick|r to open the BugSack frame with the last error."])
 end
 
 function BugSackFu:OnMenuRequest()

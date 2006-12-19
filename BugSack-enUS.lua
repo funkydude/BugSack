@@ -72,6 +72,6 @@ L:RegisterTranslations("enUS", function() return {
 	[" (viewing errors for session %d)"] = true,
 
 	-- FuBar plugin
-	["Click to open the BugSack frame with the last error."] = true,
+	["|cffeda55fClick|r to open the BugSack frame with the last error."] = true,
 } end)
 

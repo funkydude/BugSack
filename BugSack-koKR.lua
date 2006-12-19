@@ -74,7 +74,7 @@ L:RegisterTranslations("koKR", function()
 		[" (viewing errors for session %d)"] = " (%d번째 접속중 발생한 오류)",
 
 		-- FuBar plugin
-		["Click to open the BugSack frame with the last error."] = "클릭하여 벌래자루 창을 열어 마지막 오류를 볼 수 있습니다",
+		["|cffeda55fClick|r to open the BugSack frame with the last error."] = "클릭하여 벌래자루 창을 열어 마지막 오류를 볼 수 있습니다",
 	}
 end)
 

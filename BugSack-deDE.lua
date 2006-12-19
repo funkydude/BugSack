@@ -75,6 +75,6 @@ L:RegisterTranslations("deDE", function()
 		[" (viewing errors for session %d)"] = " (zeige Fehler aus Sitzung %d)",
 
 		-- FuBar plugin
-		["Click to open the BugSack frame with the last error."] = "Klicken zum \195\182ffnen des BugSack Fensters mit dem letzten Fehler.",
+		["|cffeda55fClick|r to open the BugSack frame with the last error."] = "|cffeda55fKlicken|r zum \195\182ffnen des BugSack Fensters mit dem letzten Fehler.",
 	}
 end)

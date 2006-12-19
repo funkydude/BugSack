@@ -72,6 +72,6 @@ L:RegisterTranslations("esES", function() return {
 	[" (viewing errors for session %d)"] = " (viendo errores para la sesi\195\179n %d)",
 
 	-- FuBar plugin
-	["Click to open the BugSack frame with the last error."] = "Pulsa para abrir la ventana de BugSack con el \195\186ltimo error.",
+	["|cffeda55fClick|r to open the BugSack frame with the last error."] = "Pulsa para abrir la ventana de BugSack con el \195\186ltimo error.",
 } end)
 
