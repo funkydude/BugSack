@@ -225,6 +225,7 @@ function BugSack:OnInitialize()
 	self:RegisterChatCommand({"/bugsack", "/bs"}, self:ReturnOptionsTable(), "BUGSACK")
 
 	-- Remove old compatibility stuff
+	local i, j
 	for _,i in pairs({ "profile", "char", "class", "realm" }) do
 		for _,j in pairs({ "errors", "save", "sound", "session" }) do
 			if self.db[i][j] then
@@ -233,9 +234,9 @@ function BugSack:OnInitialize()
 		end
 	end
 
-
 	-- Swipe the load errors from BugGrabber if there were any
 	if BugGrabber and BugGrabber.bugsackErrors then
+		local _, err
 		for _, err in pairs(BugGrabber.bugsackErrors) do self:OnError(err) end
 		BugGrabber.bugsackErrors = nil
 	end
@@ -268,6 +269,7 @@ function BugSack:GetErrors(which)
 	end
 
 	local str = ""
+	local _, err
 	for _, err in pairs(db) do
 		if (which == "all")
 		  or (which == "session" and cs == tonumber(err.session))
@@ -367,7 +369,7 @@ function BugSack:UpdateFrameText()
 		caption = L["No errors found"]
 	else
 		self.str = self:FormatError(self.errs[self.cur])
-		if ( GetLocale() == "koKR" ) then
+		if GetLocale() == "koKR" then
 			caption = string.format(L["Error %d of %d"], self.max, self.cur)
 		else
 			caption = string.format(L["Error %d of %d"], self.cur, self.max)
@@ -457,7 +459,8 @@ function BugSack:ListErrors(which)
 	end
 
 	self:Print(L["List of errors:"])
-	for i,err in ipairs(errs) do
+	local i, err
+	for i, err in ipairs(errs) do
 		self:Print("%d. %s", i, self:FormatError(err))
 	end
 end
@@ -527,6 +530,7 @@ function BugSack:OnError(err)
 
 	local firstError = nil
 	local num = 0
+	local k, v
 	for k, v in pairs(err) do
 		num = num + 1
 		if not firstError then firstError = k end

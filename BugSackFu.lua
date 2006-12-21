@@ -64,6 +64,7 @@ function BugSackFu:OnTooltipUpdate()
 		local output = "|cffffff00%d.|r |cff999999(x%d)|r %s"
 		local pattern = ": (.-)\n"
 		local counter = 0
+		local i, err
 		for i, err in ipairs(errs) do
 			if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
 				cat:AddLine(
