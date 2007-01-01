@@ -43,7 +43,11 @@ function BugSackFu:OnTextUpdate()
 end
 
 function BugSackFu:OnClick()
-	BugSack:ShowFrame("session")
+	if IsShiftKeyDown() then 
+		ReloadUI()
+	else
+		BugSack:ShowFrame("session")
+	end
 end
 
 function BugSackFu:OnTooltipUpdate()
@@ -81,7 +85,8 @@ function BugSackFu:OnTooltipUpdate()
 		end
 	end
 
-	Tablet:SetHint(L["|cffeda55fClick|r to open the BugSack frame with the last error."])
+	Tablet:SetHint(L["|cffeda55fClick|r to open the BugSack frame with the last error."].."\n"..
+	               L["|cffeda55fShift-Click|r to Reload the UI"])
 end
 
 function BugSackFu:OnMenuRequest()

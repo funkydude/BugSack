@@ -73,5 +73,6 @@ L:RegisterTranslations("enUS", function() return {
 
 	-- FuBar plugin
 	["|cffeda55fClick|r to open the BugSack frame with the last error."] = true,
+	["|cffeda55fShift-Click|r to Reload the UI"] = true,
 } end)
 
