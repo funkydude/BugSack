@@ -41,8 +41,8 @@ L:RegisterTranslations("koKR", function()
 		["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = "SaveVariables\\!BugGrabber.lua 파일에 모든 오류를 저장할지 아닐지 토글합니다",
 		["Limit"] = "제한",
 		["Set the limit on the nr of errors saved."] = "저장된 오류의 갯수를 제한합니다",
-		--["Filter addon mistakes"] = true,
-		--["Filters common mistakes that trigger the blocked/forbidden event."] = true,
+		["Filter addon mistakes"] = "잘못된 애드온 필터",
+		["Filters common mistakes that trigger the blocked/forbidden event."] = "막히고 금지된 이벤트를 일으키는 공통의 실수를 필터합니다" ,
 
 		["Generate bug"] = "오류 생성",
 		["Generate a fake bug for testing."] = "시험용으로 거짓 오류를 생성합니다",
@@ -74,7 +74,8 @@ L:RegisterTranslations("koKR", function()
 		[" (viewing errors for session %d)"] = " (%d번째 접속중 발생한 오류)",
 
 		-- FuBar plugin
-		["|cffeda55fClick|r to open the BugSack frame with the last error."] = "클릭하여 벌래자루 창을 열어 마지막 오류를 볼 수 있습니다",
+		["|cffeda55fClick|r to open the BugSack frame with the last error."] = "|cffeda55f클릭|r하여 벌래자루 창을 열어 마지막 오류를 볼 수 있습니다",
+		["|cffeda55fShift-Click|r to Reload the UI"] = "|cffeda55fShift-클릭|r하여 UI를 재실행 할 수 있습니다",
 	}
 end)
 
