@@ -75,8 +75,6 @@ L:RegisterTranslations("deDE", function()
 	[" (viewing errors for session %d)"] = " (zeige Fehler aus Sitzung %d)",
 
 	-- FuBar plugin
-	["|cffeda55fClick|r to open the BugSack frame with the last error."] = "|cffeda55fKlicken|r zum öffnen des BugSack Fensters mit dem letzten Fehler.",
-	["|cffeda55fShift-Click|r to Reload the UI"] = "|cffeda55fShift-Klicken|r um das Ui neu zu laden",
-	["|cffeda55fAlt-Click|r to Clear Errors"] = "|cffeda55fAlt-Klicken|r um Fehler zu löschen",
+	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55fKlicken|r zum öffnen des BugSack Fensters mit dem letzten Fehler. |cffeda55fShift-Klicken|r um das Ui neu zu laden |cffeda55fAlt-Klicken|r um Fehler zu löschen"
 	}
 end)
