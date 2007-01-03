@@ -248,6 +248,9 @@ function BugSack:OnEnable()
 
 	if not self:GetFilter() then
 		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
+		BugGrabber.RegisterAddonActionEvents()
+	else
+		BugGrabber.UnregisterAddonActionEvents()
 	end
 end
 
@@ -289,8 +292,10 @@ function BugSack:ToggleFilter()
 	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes or nil
 	if not filter and not self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
 		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
+		BugGrabber.RegisterAddonActionEvents()
 	elseif self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
 		self:UnregisterBucketEvent("BugGrabber_EventGrabbed")
+		BugGrabber.UnregisterAddonActionEvents()
 	end
 end
 
