@@ -76,7 +76,7 @@ L:RegisterTranslations("koKR", function()
 		-- FuBar plugin
 		["|cffeda55fClick|r to open the BugSack frame with the last error."] = "|cffeda55f클릭|r하여 벌래자루 창을 열어 마지막 오류를 볼 수 있습니다",
 		["|cffeda55fShift-Click|r to Reload the UI"] = "|cffeda55fShift-클릭|r하여 UI를 재실행 할 수 있습니다",
-	}
+	["|cffeda55fAlt-Click|r to Clear Errors"] = "|cffeda55fAlt 클릭|r하면 오류를 삭제합니다",
 end)
 
 if GetLocale() == "koKR" then
