@@ -1,4 +1,4 @@
--- 우리말 작업 - damjau
+﻿-- 우리말 작업 - damjau
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("koKR", function()
@@ -74,9 +74,7 @@ L:RegisterTranslations("koKR", function()
 		[" (viewing errors for session %d)"] = " (%d번째 접속중 발생한 오류)",
 
 		-- FuBar plugin
-		["|cffeda55fClick|r to open the BugSack frame with the last error."] = "|cffeda55f클릭|r하여 벌래자루 창을 열어 마지막 오류를 볼 수 있습니다",
-		["|cffeda55fShift-Click|r to Reload the UI"] = "|cffeda55fShift-클릭|r하여 UI를 재실행 할 수 있습니다",
-	["|cffeda55fAlt-Click|r to Clear Errors"] = "|cffeda55fAlt 클릭|r하면 오류를 삭제합니다",
+		["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55f클릭|r하여 벌래자루 창을 열어 마지막 오류를 볼 수 있습니다. |cffeda55fShift-클릭|r하여 UI를 재실행 할 수 있습니다. |cffeda55fAlt 클릭|r하면 오류를 삭제합니다.",
 } end)
 
 if GetLocale() == "koKR" then
