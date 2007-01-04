@@ -61,8 +61,8 @@ L:RegisterTranslations("deDE", function()
 	["An error has been generated."] = "Ein Fehler wurde generiert.",
 	["BugSack generated this fake error."] = "BugSack hat diesen Fehler generiert.",
 	["All errors were wiped."] = "Alle Fehler wurden gelöscht.",
-	["An error has been recorded."] = "Ein Fehler wurde aufgezeichnet",
-	--["%d errors have been recorded."] = true,
+	["An error has been recorded."] = "Ein Fehler wurde aufgezeichnet.",
+	["%d errors have been recorded."] = "%d Fehler wurden aufgezeichnet.",
 
 	-- Frame messages,
 	[" (... more ...)"] = " (... mehr ...)",
@@ -75,6 +75,6 @@ L:RegisterTranslations("deDE", function()
 	[" (viewing errors for session %d)"] = " (zeige Fehler aus Sitzung %d)",
 
 	-- FuBar plugin
-	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55fKlicken|r zum öffnen des BugSack Fensters mit dem letzten Fehler. |cffeda55fShift-Klicken|r um das Ui neu zu laden |cffeda55fAlt-Klicken|r um Fehler zu löschen"
+	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55fKlicken|r zum öffnen des BugSack Fensters mit dem letzten Fehler. |cffeda55fShift-Klicken|r um das Ui neu zu laden. |cffeda55fAlt-Klicken|r um die Fehler zu löschen."
 	}
 end)
