@@ -72,6 +72,6 @@ L:RegisterTranslations("esES", function() return {
 	[" (viewing errors for session %d)"] = " (viendo errores para la sesi\195\179n %d)",
 
 	-- FuBar plugin
-	["|cffeda55fClick|r to open the BugSack frame with the last error."] = "Pulsa para abrir la ventana de BugSack con el \195\186ltimo error.",
+	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55fClic|r para abrir BugSack con el \195\186ltimo error. |cffeda55fMay\195\186sculas-Clic|r para recargar la interfaz de usuario. |cffeda55fAlt-Clic|r para limpiar el saco.",
 } end)
 
