@@ -528,8 +528,8 @@ function BugSack:ScriptBug()
 end
 
 function BugSack:AddonBug()
-	self:BugGeneratedByBugSack()
 	self:Print(L["An error has been generated."])
+	self:BugGeneratedByBugSack()
 end
 
 function BugSack:Reset()

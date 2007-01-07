@@ -57,11 +57,7 @@ end
 function BugSackFu:OnTextUpdate()
 	local errcount = #BugSack:GetErrors("session")
 	if not errcount then errcount = 0 end
-	if errcount > 0 or dupeCounter > 0 then
-		self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
-	else
-		self:SetText("")
-	end
+	self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
 end
 
 function BugSackFu:OnClick()
