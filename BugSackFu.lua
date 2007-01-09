@@ -48,16 +48,20 @@ function BugSackFu:OnEnable()
 		dupeCounter = dupeCounter + 1
 		self:UpdateText()
 	end)
+
+	self:Update()
 end
 
 function BugSackFu:Reset()
 	dupeCounter = 0
+	self:SetIcon(true)
 end
 
 function BugSackFu:OnTextUpdate()
 	local errcount = #BugSack:GetErrors("session")
 	if not errcount then errcount = 0 end
 	self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
+	self:SetIcon(errcount == 0 and true or "Interface\\AddOns\\BugSack\\icon_red")
 end
 
 function BugSackFu:OnClick()
