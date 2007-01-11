@@ -4,8 +4,8 @@
 ## Version: 2.1.1
 ## Notes: Toss those bugs inna sack.
 ## Notes-esES: Mete esos bugs en un saco.
-## Author: Fritti, Rabbit
-## X-Credits: Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau
+## Author: Rabbit
+## X-Credits: Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
 ## SavedVariables: BugSackDB
 ## RequiredDeps: !BugGrabber
 ## OptionalDeps: FuBar, Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib
