@@ -267,12 +267,22 @@ end
 function BugSack:OnEnable()
 	-- Set up our error event handler
 	self:RegisterBucketEvent("BugGrabber_BugGrabbed", 2, "OnError")
+	self:RegisterEvent("BugGrabber_AddonActionEventsRegistered")
 
 	if not self:GetFilter() then
 		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
 		BugGrabber.RegisterAddonActionEvents()
 	else
 		BugGrabber.UnregisterAddonActionEvents()
+	end
+end
+
+local justUnregistered = nil
+function BugSack:BugGrabber_AddonActionEventsRegistered()
+	if self:GetFilter() and not justUnregistered then
+		BugGrabber.UnregisterAddonActionEvents()
+		justUnregistered = true
+		self:ScheduleEvent(function() justUnregistered = nil end, 10)
 	end
 end
 
