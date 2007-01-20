@@ -29,11 +29,16 @@ if not BugSack then
 	return
 end
 
+-- Suppress the default BugGrabber throttle output.
+BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
+
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 local Tablet = AceLibrary("Tablet-2.0")
 local Dewdrop = AceLibrary("Dewdrop-2.0")
 
 local dupeCounter = 0
+local paused = nil
+local pauseCountDown = nil
 
 BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0", "AceEvent-2.0")
 BugSackFu:RegisterDB("BugSackDB")
@@ -44,12 +49,36 @@ BugSackFu.hideWithoutStandby = true
 
 function BugSackFu:OnEnable()
 	dupeCounter = 0
+	paused = nil
+	pauseCountDown = nil
+
 	self:RegisterEvent("BugGrabber_BugGrabbedAgain", function()
 		dupeCounter = dupeCounter + 1
 		self:UpdateText()
 	end)
+	self:RegisterEvent("BugGrabber_CapturePaused")
+	self:RegisterEvent("BugGrabber_CaptureResumed")
 
 	self:Update()
+end
+
+function BugSackFu:Countdown()
+	pauseCountDown = pauseCountDown - 1
+	self:UpdateDisplay()
+end
+
+function BugSackFu:BugGrabber_CapturePaused()
+	paused = true
+	pauseCountDown = BUGGRABBER_TIME_TO_RESUME or 10
+	self:ScheduleRepeatingEvent("bugGrabberPauseTimer", self.Countdown, 1, self)
+	self:UpdateDisplay()
+end
+
+function BugSackFu:BugGrabber_CaptureResumed()
+	paused = nil
+	self:CancelScheduledEvent("bugGrabberPauseTimer")
+	pauseCountDown = nil
+	self:UpdateDisplay()
 end
 
 function BugSackFu:Reset()
@@ -58,13 +87,19 @@ function BugSackFu:Reset()
 end
 
 function BugSackFu:OnTextUpdate()
-	local errcount = #BugSack:GetErrors("session")
-	if not errcount then errcount = 0 end
-	self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
-	self:SetIcon(errcount == 0 and true or "Interface\\AddOns\\BugSack\\icon_red")
+	if pauseCountDown then
+		self:SetText(string.format(L["%d sec."], pauseCountDown))
+	else
+		local errcount = #BugSack:GetErrors("session")
+		if not errcount then errcount = 0 end
+		self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
+		self:SetIcon(errcount == 0 and true or "Interface\\AddOns\\BugSack\\icon_red")
+	end
 end
 
 function BugSackFu:OnClick()
+	if pauseCountDown then return end
+
 	if IsShiftKeyDown() then
 		ReloadUI()
 	elseif IsAltKeyDown() then
@@ -75,41 +110,44 @@ function BugSackFu:OnClick()
 end
 
 function BugSackFu:OnTooltipUpdate()
-	local errs = BugSack:GetErrors("session")
-	if #errs == 0 then
-		local cat = Tablet:AddCategory("columns", 1)
-		cat:AddLine("text", L["You have no errors, yay!"])
+	if pauseCountDown then
+		Tablet:SetHint(string.format(L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds."], pauseCountDown))
 	else
-		local cat = Tablet:AddCategory(
-			"columns", 1,
-			"justify", "LEFT",
-			"hideBlankLine", true,
-			"showWithoutChildren", false,
-			"child_textR", 1,
-			"child_textG", 1,
-			"child_textB", 1
-		)
-		local output = "|cffffff00%d.|r |cff999999(x%d)|r %s"
-		local pattern = ": (.-)\n"
-		local counter = 0
-		local i, err
-		for i, err in ipairs(errs) do
-			if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
-				cat:AddLine(
-					"text", output:format(i, err.counter, BugSack:FormatError(err):gmatch(pattern)()),
-					"func", BugSack.ShowFrame,
-					"arg1", BugSack,
-					"arg2", "session",
-					"arg3", i
-				)
-				
-				counter = counter + 1
-				if counter == 5 then break end
+		local errs = BugSack:GetErrors("session")
+		if #errs == 0 then
+			local cat = Tablet:AddCategory("columns", 1)
+			cat:AddLine("text", L["You have no errors, yay!"])
+		else
+			local cat = Tablet:AddCategory(
+				"columns", 1,
+				"justify", "LEFT",
+				"hideBlankLine", true,
+				"showWithoutChildren", false,
+				"child_textR", 1,
+				"child_textG", 1,
+				"child_textB", 1
+			)
+			local output = "|cffffff00%d.|r |cff999999(x%d)|r %s"
+			local pattern = ": (.-)\n"
+			local counter = 0
+			local i, err
+			for i, err in ipairs(errs) do
+				if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
+					cat:AddLine(
+						"text", output:format(i, err.counter, BugSack:FormatError(err):gmatch(pattern)()),
+						"func", BugSack.ShowFrame,
+						"arg1", BugSack,
+						"arg2", "session",
+						"arg3", i
+					)
+					
+					counter = counter + 1
+					if counter == 5 then break end
+				end
 			end
 		end
+		Tablet:SetHint(L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."])
 	end
-
-	Tablet:SetHint(L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."])
 end
 
 function BugSackFu:OnMenuRequest()

@@ -52,6 +52,9 @@ L:RegisterTranslations("enUS", function() return {
 	["Clear errors"] = true,
 	["Clear out the errors database."] = true,
 
+	["%d sec."] = true,
+	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds."] = true,
+
 	-- Chat messages
 	["You have no errors, yay!"] = true,
 	["List of errors:"] = true,
