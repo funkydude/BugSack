@@ -63,7 +63,12 @@ function BugSackFu:OnEnable()
 end
 
 function BugSackFu:Countdown()
-	pauseCountDown = pauseCountDown - 1
+	if type(pauseCountDown) ~= "number" then
+		pauseCountDown = BUGGRABBER_TIME_TO_RESUME or 10
+	end
+	if pauseCountDown > 0 then
+		pauseCountDown = pauseCountDown - 1
+	end
 	self:UpdateDisplay()
 end
 
@@ -109,49 +114,57 @@ function BugSackFu:OnClick()
 	end
 end
 
+function BugSackFu:OnDoubleClick()
+	if not pauseCountDown or type(BugGrabber.Resume) ~= "function" then return end
+	BugGrabber.Resume()
+end
+
 function BugSackFu:OnTooltipUpdate()
-	if pauseCountDown then
-		Tablet:SetHint(string.format(L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds."], pauseCountDown))
+	local errs = BugSack:GetErrors("session")
+	if #errs == 0 then
+		local cat = Tablet:AddCategory("columns", 1)
+		cat:AddLine("text", L["You have no errors, yay!"])
 	else
-		local errs = BugSack:GetErrors("session")
-		if #errs == 0 then
-			local cat = Tablet:AddCategory("columns", 1)
-			cat:AddLine("text", L["You have no errors, yay!"])
-		else
-			local cat = Tablet:AddCategory(
-				"columns", 1,
-				"justify", "LEFT",
-				"hideBlankLine", true,
-				"showWithoutChildren", false,
-				"child_textR", 1,
-				"child_textG", 1,
-				"child_textB", 1
-			)
-			local output = "|cffffff00%d.|r |cff999999(x%d)|r %s"
-			local pattern = ": (.-)\n"
-			local counter = 0
-			local i, err
-			for i, err in ipairs(errs) do
-				if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
-					cat:AddLine(
-						"text", output:format(i, err.counter, BugSack:FormatError(err):gmatch(pattern)()),
-						"func", BugSack.ShowFrame,
-						"arg1", BugSack,
-						"arg2", "session",
-						"arg3", i
-					)
-					
-					counter = counter + 1
-					if counter == 5 then break end
-				end
+		local cat = Tablet:AddCategory(
+			"columns", 1,
+			"justify", "LEFT",
+			"hideBlankLine", true,
+			"showWithoutChildren", false,
+			"child_textR", 1,
+			"child_textG", 1,
+			"child_textB", 1
+		)
+		local output = "|cffffff00%d.|r |cff999999(x%d)|r %s"
+		local pattern = ": (.-)\n"
+		local counter = 0
+		local i, err
+		for i, err in ipairs(errs) do
+			if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
+				cat:AddLine(
+					"text", output:format(i, err.counter, BugSack:FormatError(err):gmatch(pattern)()),
+					"func", BugSack.ShowFrame,
+					"arg1", BugSack,
+					"arg2", "session",
+					"arg3", i
+				)
+				
+				counter = counter + 1
+				if counter == 5 then break end
 			end
 		end
+	end
+	if pauseCountDown then
+		Tablet:SetHint(string.format(L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."], pauseCountDown))
+	else
 		Tablet:SetHint(L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."])
 	end
 end
 
-function BugSackFu:OnMenuRequest()
+function BugSackFu:OnMenuRequest(level)
 	Dewdrop:FeedAceOptionsTable(BugSack:ReturnOptionsTable())
+	if level == 1 then
+		Dewdrop:AddLine()
+	end
 end
 
 -- vim:set ts=4:

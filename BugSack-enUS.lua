@@ -41,6 +41,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Set the limit on the nr of errors saved."] = true,
 	["Filter addon mistakes"] = true,
 	["Filters common mistakes that trigger the blocked/forbidden event."] = true,
+	["Throttle at excessive amount"] = true,
+	["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."] = true,
 
 	["Generate bug"] = true,
 	["Generate a fake bug for testing."] = true,
@@ -53,7 +55,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Clear out the errors database."] = true,
 
 	["%d sec."] = true,
-	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds."] = true,
+	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."] = true,
 
 	-- Chat messages
 	["You have no errors, yay!"] = true,

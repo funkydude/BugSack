@@ -231,6 +231,14 @@ function BugSack:ReturnOptionsTable()
 				set = "ToggleFilter",
 				order = 11,
 			},
+			throttle = {
+				type = "toggle",
+				name = L["Throttle at excessive amount"],
+				desc = L["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."],
+				get = "GetThrottle",
+				set = "ToggleThrottle",
+				order = 12,
+			}
 		}
 	}
 end
@@ -314,6 +322,14 @@ function BugSack:GetErrors(which)
 		end
 	end
 	return errs
+end
+
+function BugSack:GetThrottle()
+	return BugGrabber.IsThrottling()
+end
+
+function BugSack:ToggleThrottle()
+	BugGrabber.UseThrottling(not BugGrabber.IsThrottling())
 end
 
 function BugSack:GetFilter()
