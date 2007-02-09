@@ -74,9 +74,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 						<OnLoad>
 							this:SetAutoFocus(false)
 						</OnLoad>
-						<!--OnTextChanged>
+						<OnTextChanged>
 							BugSack:OnTextChanged()
-						</OnTextChanged-->
+						</OnTextChanged>
 						<OnEscapePressed>
 							this:ClearFocus()
 						</OnEscapePressed>
