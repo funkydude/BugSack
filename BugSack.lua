@@ -29,221 +29,290 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ]]
 
+local _G = getfenv(0)
+
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
+
+BINDING_HEADER_BUGSACK = "BugSack"
+BINDING_NAME_BUGSACK_SHOW_CURRENT = L["Show Current Error"]
+BINDING_NAME_BUGSACK_SHOW_SESSION = L["Show Session Errors"]
+
 BugSack = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEvent-2.0")
 
-function BugSack:ReturnOptionsTable()
-	return {
-		type = "group",
-		handler = BugSack,
-		args = {
-			show = {
-				type = "group",
-				name = L["Show sack"],
-				desc = L["Show errors in the sack."],
-				order = 1,
-				args = {
-					curr = {
-						type = "execute",
-						name = L["Current error"],
-						desc = L["Show the current error."],
-						func = "ShowCurrent",
-						order = 1,
-					},
-					session = {
-						type = "execute",
-						name = L["Current session"],
-						desc = L["Show errors from the current session."],
-						func = "ShowSession",
-						order = 2,
-					},
-					previous = {
-						type = "execute",
-						name = L["Previous session"],
-						desc = L["Show errors from the previous session."],
-						func = "ShowPrevious",
-						order = 3,
-					},
-					number = {
-						type = "text",
-						usage = "#",
-						name = L["By session number"],
-						desc = L["Show errors by session number."],
-						get = false,
-						set = "ShowByNumber",
-						validate = function(arg)
-							arg = tonumber(arg)
-							if arg and arg > 0 and math.floor(arg) == arg then
-								return true
-							end
+local BugSack = BugSack
+local BugGrabber = _G.BugGrabber
+local BugGrabberDB = _G.BugGrabberDB
 
-							return false
-						end,
-						order = 4,
-					},
-					all = {
-						type = "execute",
-						name = L["All errors"],
-						desc = L["Show all errors."],
-						func = "ShowAll",
-						order = 5,
-					},
+local comm = AceLibrary:HasInstance("AceComm-2.0") and AceLibrary("AceComm-2.0") or nil
+if comm then comm:embed(BugSack) end
+
+-- Frame state variables
+local sackType = nil
+local sackErrors = nil
+local sackText = nil
+local sackMax = nil
+local sackCurrent = nil
+
+local receivedFrom = nil
+local receivedErrors = nil
+
+BugSack.options = {
+	type = "group",
+	handler = BugSack,
+	args = {
+		show = {
+			type = "group",
+			name = L["Show sack"],
+			desc = L["Show errors in the sack."],
+			order = 100,
+			args = {
+				current = {
+					type = "execute",
+					name = L["Current error"],
+					desc = L["Show the current error."],
+					func = function() BugSack:ShowFrame("current") end,
+					order = 1,
+				},
+				session = {
+					type = "execute",
+					name = L["Current session"],
+					desc = L["Show errors from the current session."],
+					func = function() BugSack:ShowFrame("session") end,
+					order = 2,
+				},
+				previous = {
+					type = "execute",
+					name = L["Previous session"],
+					desc = L["Show errors from the previous session."],
+					func = function() BugSack:ShowFrame("previous") end,
+					order = 3,
+				},
+				number = {
+					type = "text",
+					usage = "#",
+					name = L["By session number"],
+					desc = L["Show errors by session number."],
+					get = false,
+					set = function(n) BugSack:ShowFrame(tonumber(n)) end,
+					validate = function(arg)
+						arg = tonumber(arg)
+						if arg and arg > 0 and math.floor(arg) == arg then
+							return true
+						end
+						return false
+					end,
+					order = 4,
+				},
+				all = {
+					type = "execute",
+					name = L["All errors"],
+					desc = L["Show all errors."],
+					func = function() BugSack:ShowFrame("all") end,
+					order = 5,
+				},
+				received = {
+					type = "execute",
+					name = L["Received errors"],
+					desc = L["Show errors received from another player."],
+					func = function() BugSack:ShowFrame("received") end,
+					order = 6,
+					disabled = function() return not receivedErrors end,
+					hidden = function() return not comm end,
 				},
 			},
-			list = {
-				type = "group",
-				name = L["List errors"],
-				desc = L["List errors to the chat frame."],
-				order = 2,
-				args = {
-					curr = {
-						type = "execute",
-						name = L["Current error"],
-						desc = L["List the current error."],
-						func = "ListCurrent",
-						order = 1,
-					},
-					session = {
-						type = "execute",
-						name = L["Current session"],
-						desc = L["List errors from the current session."],
-						func = "ListSession",
-						order = 2,
-					},
-					previous = {
-						type = "execute",
-						name = L["Previous session"],
-						desc = L["List errors from the previous session."],
-						func = "ListPrevious",
-						order = 3,
-					},
-					number = {
-						type = "text",
-						usage = "#",
-						name = L["By session number"],
-						desc = L["List errors by session number."],
-						get = false,
-						set = "ListByNumber",
-						validate = function(arg)
-							arg = tonumber(arg)
-							if arg and arg > 0 and math.floor(arg) == arg then
-								return true
-							end
-
-							return false
-						end,
-						order = 4,
-					},
-					all = {
-						type = "execute",
-						name = L["All errors"],
-						desc = L["List all errors."],
-						func = "ListAll",
-						order = 5,
-					},
+		},
+		list = {
+			type = "group",
+			name = L["List errors"],
+			desc = L["List errors to the chat frame."],
+			order = 101,
+			args = {
+				current = {
+					type = "execute",
+					name = L["Current error"],
+					desc = L["List the current error."],
+					func = function() BugSack:ListErrors("current") end,
+					order = 1,
+				},
+				session = {
+					type = "execute",
+					name = L["Current session"],
+					desc = L["List errors from the current session."],
+					func = function() BugSack:ListErrors("session") end,
+					order = 2,
+				},
+				previous = {
+					type = "execute",
+					name = L["Previous session"],
+					desc = L["List errors from the previous session."],
+					func = function() BugSack:ListErrors("previous") end,
+					order = 3,
+				},
+				number = {
+					type = "text",
+					usage = "#",
+					name = L["By session number"],
+					desc = L["List errors by session number."],
+					get = false,
+					set = function(n) BugSack:ListErrors(tonumber(n)) end,
+					validate = function(arg)
+						arg = tonumber(arg)
+						if arg and arg > 0 and math.floor(arg) == arg then
+							return true
+						end
+						return false
+					end,
+					order = 4,
+				},
+				all = {
+					type = "execute",
+					name = L["All errors"],
+					desc = L["List all errors."],
+					func = function() BugSack:ListErrors("all") end,
+					order = 5,
+				},
+				received = {
+					type = "execute",
+					name = L["Received errors"],
+					desc = L["List errors received from another player."],
+					func = function() BugSack:ListErrors("received") end,
+					order = 6,
+					disabled = function() return not receivedErrors end,
+					hidden = function() return not comm end,
 				},
 			},
-			auto = {
-				type = "toggle",
-				name = L["Auto popup"],
-				desc = L["Toggle auto BugSack frame popup."],
-				get = "GetAuto",
-				set = "ToggleAuto",
-				order = 3,
-			},
-			chat = {
-				type = "toggle",
-				name = L["Chatframe output"],
-				desc = L["Print a warning to the chat frame when an error occurs."],
-				get = "GetChatFrame",
-				set = "ToggleChatFrame",
-				order = 4,
-			},
-			msg = {
-				type = "toggle",
-				name = L["Errors to chatframe"],
-				desc = L["Print the full error message to the chat frame instead of just a warning."],
-				get = "GetShowMsg",
-				set = "ToggleShowMsg",
-				order = 5,
-			},
-			mute = {
-				type = "toggle",
-				name = L["Mute"],
-				desc = L["Toggle an audible warning everytime an error occurs."],
-				get = "GetMute",
-				set = "ToggleMute",
-				order = 6,
-			},
-			save = {
-				type = "toggle",
-				name = L["Save errors"],
-				desc = L["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."],
-				get = BugGrabber.GetSave,
-				set = BugGrabber.ToggleSave,
-				order = 7,
-			},
-			limit = {
-				type = "range",
-				name = L["Limit"],
-				desc = L["Set the limit on the nr of errors saved."],
-				get = BugGrabber.GetLimit,
-				set = BugGrabber.SetLimit,
-				min = 10,
-				max = MAX_BUGGRABBER_ERRORS or 1000,
-				step = 10,
-				order = 8,
-			},
-			bug = {
-				type = "group",
-				name = L["Generate bug"],
-				desc = L["Generate a fake bug for testing."],
-				order = 9,
-				args = {
-					script = {
-						type = "execute",
-						name = L["Script bug"],
-						desc = L["Generate a script bug."],
-						func = "ScriptBug",
-						order = 1,
-					},
-					addon = {
-						type = "execute",
-						name = L["Addon bug"],
-						desc = L["Generate an addon bug."],
-						func = "AddonBug",
-						order = 2,
-					}
+		},
+		limit = {
+			type = "range",
+			name = L["Limit"],
+			desc = L["Set the limit on the nr of errors saved."],
+			get = BugGrabber.GetLimit,
+			set = BugGrabber.SetLimit,
+			min = 10,
+			max = MAX_BUGGRABBER_ERRORS or 1000,
+			step = 10,
+			order = 102,
+		},
+		save = {
+			type = "toggle",
+			name = L["Save errors"],
+			desc = L["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."],
+			get = BugGrabber.GetSave,
+			set = BugGrabber.ToggleSave,
+			order = 103,
+		},
+		reset = {
+			type = "execute",
+			name = L["Clear errors"],
+			desc = L["Clear out the errors database."],
+			func = "Reset",
+			order = 104,
+		},
+		spacer1 = {
+			type = "header",
+			name = " ",
+			order = 105,
+		},
+		auto = {
+			type = "toggle",
+			name = L["Auto popup"],
+			desc = L["Toggle auto BugSack frame popup."],
+			get = function() return BugSack.db.profile.auto end,
+			set = function(v) BugSack.db.profile.auto = v end,
+			order = 200,
+		},
+		chat = {
+			type = "toggle",
+			name = L["Chatframe output"],
+			desc = L["Print a warning to the chat frame when an error occurs."],
+			get = function() return BugSack.db.profile.chatframe end,
+			set = function(v) BugSack.db.profile.chatframe = v end,
+			order = 201,
+		},
+		msg = {
+			type = "toggle",
+			name = L["Errors to chatframe"],
+			desc = L["Print the full error message to the chat frame instead of just a warning."],
+			get = function() return BugSack.db.profile.showmsg end,
+			set = function(v) BugSack.db.profile.showmsg = v end,
+			order = 202,
+		},
+		mute = {
+			type = "toggle",
+			name = L["Mute"],
+			desc = L["Toggle an audible warning everytime an error occurs."],
+			get = function() return BugSack.db.profile.mute end,
+			set = function(v) BugSack.db.profile.mute = v end,
+			order = 203,
+		},
+		spacer2 = {
+			type = "header",
+			name = " ",
+			order = 204,
+		},
+		sendbugs = {
+			type = "text",
+			name = L["Send bugs"],
+			desc = L["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."],
+			get = false,
+			set = function(v)
+				BugSack:SendBugsToUser(v)
+			end,
+			usage = L["<player name>"],
+			validate = function(v) return type(v) == "string" and v:trim():len() > 0 end,
+			disabled = function() return not comm end,
+			order = 300,
+		},
+		bug = {
+			type = "group",
+			name = L["Generate bug"],
+			desc = L["Generate a fake bug for testing."],
+			order = 301,
+			args = {
+				script = {
+					type = "execute",
+					name = L["Script bug"],
+					desc = L["Generate a script bug."],
+					func = "ScriptBug",
+					order = 1,
+				},
+				addon = {
+					type = "execute",
+					name = L["Addon bug"],
+					desc = L["Generate an addon bug."],
+					func = "AddonBug",
+					order = 2,
 				}
-			},
-			reset = {
-				type = "execute",
-				name = L["Clear errors"],
-				desc = L["Clear out the errors database."],
-				func = "Reset",
-				order = 10,
-			},
-			events = {
-				type = "toggle",
-				name = L["Filter addon mistakes"],
-				desc = L["Filters common mistakes that trigger the blocked/forbidden event."],
-				get = "GetFilter",
-				set = "ToggleFilter",
-				order = 11,
-			},
-			throttle = {
-				type = "toggle",
-				name = L["Throttle at excessive amount"],
-				desc = L["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."],
-				get = "GetThrottle",
-				set = "ToggleThrottle",
-				order = 12,
 			}
+		},
+		events = {
+			type = "toggle",
+			name = L["Filter addon mistakes"],
+			desc = L["Filters common mistakes that trigger the blocked/forbidden event."],
+			get = "GetFilter",
+			set = "ToggleFilter",
+			order = 302,
+		},
+		throttle = {
+			type = "toggle",
+			name = L["Throttle at excessive amount"],
+			desc = L["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."],
+			get = function() return BugGrabber.IsThrottling() end,
+			set = function() BugGrabber.UseThrottling(not BugGrabber.IsThrottling()) end,
+			order = 303,
 		}
 	}
-end
+}
 
 function BugSack:OnInitialize()
+	local revision = tonumber(string.sub("$Revision$", 12, -3)) or 1
+	if not self.version then self.version = "2.x.x" end
+	self.version = self.version .. "." .. revision
+	self.revision = revision
+
+	_G.BUGSACK_REVISION = self.revision
+	_G.BUGSACK_VERSION = self.version
+
 	self:RegisterDB("BugSackDB")
 	self:RegisterDefaults("profile", {
 		mute = nil,
@@ -252,23 +321,19 @@ function BugSack:OnInitialize()
 		chatframe = nil,
 		filterAddonMistakes = false,
 	})
-	self:RegisterChatCommand({"/bugsack", "/bs"}, self:ReturnOptionsTable(), "BUGSACK")
-
-	-- Remove old compatibility stuff
-	local i, j
-	for _,i in pairs({ "profile", "char", "class", "realm" }) do
-		for _,j in pairs({ "errors", "save", "sound", "session" }) do
-			if self.db[i][j] then
-				self.db[i][j] = nil
-			end
-		end
-	end
+	self:RegisterChatCommand({"/bugsack", "/bs"}, self.options, "BUGSACK")
 
 	-- Swipe the load errors from BugGrabber if there were any
 	if BugGrabber and BugGrabber.bugsackErrors then
 		local _, err
 		for _, err in pairs(BugGrabber.bugsackErrors) do self:OnError(err) end
 		BugGrabber.bugsackErrors = nil
+	end
+
+	if comm then
+		self:SetCommPrefix("BugSack")
+		self:SetDefaultCommPriority("BULK")
+		self:RegisterComm("BugSack", "WHISPER", "OnBugComm")
 	end
 end
 
@@ -295,6 +360,10 @@ function BugSack:BugGrabber_AddonActionEventsRegistered()
 end
 
 function BugSack:GetErrors(which)
+	if which == "received" then
+		return receivedErrors
+	end
+
 	local db = BugGrabber.GetDB()
 	local cs = BugGrabberDB.session
 	local errs = {}
@@ -315,21 +384,13 @@ function BugSack:GetErrors(which)
 	local _, err
 	for _, err in pairs(db) do
 		if (which == "all")
-		  or (which == "session" and cs == tonumber(err.session))
-		  or (which == "previous" and cs - 1 == tonumber(err.session))
-		  or (which == err.session) then
+		or (which == "session" and cs == tonumber(err.session))
+		or (which == "previous" and cs - 1 == tonumber(err.session))
+		or (which == err.session) then
 			table.insert(errs, err)
 		end
 	end
 	return errs
-end
-
-function BugSack:GetThrottle()
-	return BugGrabber.IsThrottling()
-end
-
-function BugSack:ToggleThrottle()
-	BugGrabber.UseThrottling(not BugGrabber.IsThrottling())
 end
 
 function BugSack:GetFilter()
@@ -347,161 +408,91 @@ function BugSack:ToggleFilter()
 	end
 end
 
-function BugSack:GetAuto()
-	return self.db.profile.auto
-end
-
-function BugSack:ToggleAuto()
-	self.db.profile.auto = not self.db.profile.auto or nil
-end
-
-function BugSack:GetShowMsg()
-	return self.db.profile.showmsg
-end
-
-function BugSack:ToggleShowMsg()
-	self.db.profile.showmsg = not self.db.profile.showmsg or nil
-end
-
-function BugSack:GetChatFrame()
-	return self.db.profile.chatframe
-end
-
-function BugSack:ToggleChatFrame()
-	self.db.profile.chatframe = not self.db.profile.chatframe or nil
-end
-
-function BugSack:GetMute()
-	return self.db.profile.mute
-end
-
-function BugSack:ToggleMute()
-	self.db.profile.mute = not self.db.profile.mute
-end
-
-function BugSack:ShowCurrent()
-	self:ShowFrame("current")
-end
-
-function BugSack:ShowSession()
-	self:ShowFrame("session")
-end
-
-function BugSack:ShowPrevious()
-    self:ShowFrame("previous")
-end
-
-function BugSack:ShowByNumber(n)
-    self:ShowFrame(n)
-end
-
-function BugSack:ShowAll()
-	self:ShowFrame("all")
-end
-
 function BugSack:ShowFrame(which, nr)
-	self.which = which
-	self.errs = self:GetErrors(which)
-	self.max = #self.errs
+	sackType = which
+	sackErrors = self:GetErrors(which)
+	sackMax = #sackErrors
 
 	if nr then
-		self.cur = math.min(self.max, math.abs(nr))
+		sackCurrent = math.min(sackMax, math.abs(nr))
 	else
-		self.cur = math.min(self.max, 1)
+		sackCurrent = math.min(sackMax, 1)
 	end
 	self:UpdateFrameText()
 
-	BugSackFrame:Show()
+	_G.BugSackFrame:Show()
 end
 
 function BugSack:UpdateFrameText()
-	local caption
+	local caption = nil
 
-	if self.cur == 0 then
-		self.str = L["You have no errors, yay!"]
+	if sackCurrent == 0 then
+		sackText = L["You have no errors, yay!"]
 		caption = L["No errors found"]
 	else
-		self.str = self:FormatError(self.errs[self.cur])
+		sackText = self:FormatError(sackErrors[sackCurrent])
 		if GetLocale() == "koKR" then
-			caption = string.format(L["Error %d of %d"], self.max, self.cur)
+			caption = string.format(L["Error %d of %d"], sackMax, sackCurrent)
 		else
-			caption = string.format(L["Error %d of %d"], self.cur, self.max)
+			caption = string.format(L["Error %d of %d"], sackCurrent, sackMax)
 		end
 	end
 
-	if self.which == "current" then
+	if sackType == "current" then
 		caption = caption .. L[" (viewing last error)"]
-	elseif self.which == "session" then
+	elseif sackType == "session" then
 		caption = caption .. L[" (viewing session errors)"]
-	elseif self.which == "previous" then
+	elseif sackType == "previous" then
 		caption = caption .. L[" (viewing previous session errors)"]
-	elseif self.which == "all" then
+	elseif sackType == "all" then
 		caption = caption .. L[" (viewing all errors)"]
+	elseif sackType == "received" then
+		caption = caption .. string.format(L[" (viewing errors from %s)"], receivedFrom)
 	else
-		caption = caption .. string.format(L[" (viewing errors for session %d)"], self.which)
+		caption = caption .. string.format(L[" (viewing errors for session %d)"], sackType)
 	end
-	BugSackErrorText:SetText(caption)
+	_G.BugSackErrorText:SetText(caption)
 
-	if self.str and self.str:len() > 4000 then
-		self.str = self.str:sub(1, 3950) .. L[" (... more ...)"]
+	if sackText and sackText:len() > 4000 then
+		sackText = sackText:sub(1, 3950) .. L[" (... more ...)"]
 	end
-	BugSackFrameScrollText:SetText(self.str)
+	_G.BugSackFrameScrollText:SetText(sackText)
 
-	if self.cur >= self.max then
-		BugSackNextButton:Disable()
-		BugSackLastButton:Disable()
+	if sackCurrent >= sackMax then
+		_G.BugSackNextButton:Disable()
+		_G.BugSackLastButton:Disable()
 	else
-		BugSackNextButton:Enable()
-		BugSackLastButton:Enable()
+		_G.BugSackNextButton:Enable()
+		_G.BugSackLastButton:Enable()
 	end
 
-	if self.cur <= 1 then
-		BugSackPrevButton:Disable()
-		BugSackFirstButton:Disable()
+	if sackCurrent <= 1 then
+		_G.BugSackPrevButton:Disable()
+		_G.BugSackFirstButton:Disable()
 	else
-		BugSackPrevButton:Enable()
-		BugSackFirstButton:Enable()
+		_G.BugSackPrevButton:Enable()
+		_G.BugSackFirstButton:Enable()
 	end
 end
 
 function BugSack:OnFirstClick()
-	self.cur = math.min(self.max, 1)
+	sackCurrent = math.min(sackMax, 1)
 	self:UpdateFrameText()
 end
 
 function BugSack:OnPrevClick()
-	self.cur = self.cur - 1
+	sackCurrent = sackCurrent - 1
 	self:UpdateFrameText()
 end
 
 function BugSack:OnLastClick()
-	self.cur = self.max
+	sackCurrent = sackMax
 	self:UpdateFrameText()
 end
 
 function BugSack:OnNextClick()
-	self.cur = self.cur + 1
+	sackCurrent = sackCurrent + 1
 	self:UpdateFrameText()
-end
-
-function BugSack:ListCurrent()
-    self:ListErrors("current")
-end
-
-function BugSack:ListSession()
-    self:ListErrors("session")
-end
-
-function BugSack:ListPrevious()
-    self:ListErrors("previous")
-end
-
-function BugSack:ListByNumber(n)
-    self:ListErrors(n)
-end
-
-function BugSack:ListAll()
-    self:ListErrors("all")
 end
 
 function BugSack:ListErrors(which)
@@ -578,7 +569,7 @@ function BugSack:OnError(err)
 	end
 
 	if self.db.profile.auto then
-		self:ShowCurrent()
+		self:ShowFrame("current")
 	end
 
 	local firstError = nil
@@ -599,17 +590,45 @@ function BugSack:OnError(err)
 	end
 
 	if self:IsEventRegistered("BugGrabber_BugGrabbed") and BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
-		BugSackFu:UpdateDisplay()
+		_G.BugSackFu:UpdateDisplay()
 	end
+end
+
+-- Sends the current session errors to another player using AceComm-2.0
+function BugSack:SendBugsToUser(player)
+	if not comm then
+		error("Can't send bugs to other users without AceComm-2.0.")
+	end
+	if type(player) ~= "string" or player:trim():len() < 3 then
+		error("Player needs to be a valid string.")
+	end
+
+	local errors = self:GetErrors("session")
+	if #errors == 0 then
+		error("Can't send 0 errors.")
+	end
+
+	self:SendCommMessage("WHISPER", player, errors)
+end
+
+function BugSack:OnBugComm(prefix, sender, distribution, bugs)
+	if prefix ~= "BugSack" or distribution ~= "WHISPER" then
+		error("BugSack got a communication message it shouldn't have received.")
+	end
+
+	receivedErrors = bugs
+	receivedFrom = sender
+
+	self:Print(string.format(L["You've received %d errors from %s, you can show them with /bugsack show received."], #bugs, sender))
 end
 
 -- Editbox handler
 
 function BugSack:OnTextChanged()
-	if this:GetText() ~= self.str then
-		this:SetText(self.str)
+	if this:GetText() ~= sackText then
+		this:SetText(sackText)
 	end
-	local s = BugSackFrameScrollScrollBar
+	local s = _G.BugSackFrameScrollScrollBar
 	this:GetParent():UpdateScrollChildRect()
 	local _, m = s:GetMinMaxValues()
 	if m > 0 and this.max ~= m then
@@ -617,11 +636,5 @@ function BugSack:OnTextChanged()
 		s:SetValue(m)
 	end
 end
-
--- Keybindings
-
-BINDING_HEADER_BUGSACK = "BugSack"
-BINDING_NAME_BUGSACK_SHOW_CURRENT = L["Show Current Error"]
-BINDING_NAME_BUGSACK_SHOW_SESSION = L["Show Session Errors"]
 
 -- vim:set ts=4:

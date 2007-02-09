@@ -71,11 +71,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					</Size>
 					<FontString inherits="ChatFontNormal"/>
 					<Scripts>
-						<OnTextChanged>
+						<OnLoad>
+							this:SetAutoFocus(false)
+						</OnLoad>
+						<!--OnTextChanged>
 							BugSack:OnTextChanged()
-						</OnTextChanged>
+						</OnTextChanged-->
 						<OnEscapePressed>
-							BugSackFrame:Hide()
+							this:ClearFocus()
 						</OnEscapePressed>
 					</Scripts>
 				</EditBox>

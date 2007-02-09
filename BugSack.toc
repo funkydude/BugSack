@@ -1,7 +1,7 @@
 ## Interface: 20003
 ## Title: BugSack |cff7fff7f -Ace2-|r
 ## Title-koKR: |CFF99FF99B|CFFFFFFFFug|CFF99FF99S|CFFFFFFFFack  |cff7fff7f -Ace2-|r
-## Version: 2.1.1
+## Version: 2.2.0
 ## Notes: Toss those bugs inna sack.
 ## Notes-esES: Mete esos bugs en un saco.
 ## Author: Rabbit

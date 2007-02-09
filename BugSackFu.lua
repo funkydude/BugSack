@@ -29,6 +29,9 @@ if not BugSack then
 	return
 end
 
+local BugSack = BugSack
+local BugGrabber = BugGrabber
+
 -- Suppress the default BugGrabber throttle output.
 BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
 
@@ -41,11 +44,36 @@ local paused = nil
 local pauseCountDown = nil
 
 BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0", "AceEvent-2.0")
-BugSackFu:RegisterDB("BugSackDB")
+local BugSackFu = BugSackFu
+
 BugSackFu.hasNoColor = true
 BugSackFu.clickableTooltip = true
 BugSackFu.hasIcon = true
 BugSackFu.hideWithoutStandby = true
+
+function BugSackFu:OnInitialize()
+	self:RegisterDB("BugSackDB")
+
+	local args = AceLibrary("FuBarPlugin-2.0"):GetAceOptionsDataTable(self)
+	local options = BugSack.options
+
+	if not options.args[L["Menu"]] then
+		options.args.menuSpacer = {
+			type = "header",
+			name = " ",
+			order = 401,
+		}
+		options.args[L["Menu"]] = {
+			type = "group",
+			name = L["Menu"],
+			desc = L["Menu options."],
+			args = args,
+			order = 402,
+		}
+	end
+
+	self.OnMenuRequest = BugSack.options
+end
 
 function BugSackFu:OnEnable()
 	dupeCounter = 0
@@ -157,13 +185,6 @@ function BugSackFu:OnTooltipUpdate()
 		Tablet:SetHint(string.format(L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."], pauseCountDown))
 	else
 		Tablet:SetHint(L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."])
-	end
-end
-
-function BugSackFu:OnMenuRequest(level)
-	Dewdrop:FeedAceOptionsTable(BugSack:ReturnOptionsTable())
-	if level == 1 then
-		Dewdrop:AddLine()
 	end
 end
 

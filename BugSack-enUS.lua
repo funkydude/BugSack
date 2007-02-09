@@ -18,6 +18,13 @@ L:RegisterTranslations("enUS", function() return {
 	["Show errors by session number."] = true,
 	["All errors"] = true,
 	["Show all errors."] = true,
+	["Received errors"] = true,
+	["Show errors received from another player."] = true,
+	["Send bugs"] = true,
+	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = true,
+	["<player name>"] = true,
+	["Menu"] = true,
+	["Menu options."] = true,
 
 	["List errors"] = true,
 	["List errors to the chat frame."] = true,
@@ -26,6 +33,7 @@ L:RegisterTranslations("enUS", function() return {
 	["List errors from the previous session."] = true,
 	["List errors by session number."] = true,
 	["List all errors."] = true,
+	["List errors received from another player."] = true,
 
 	["Auto popup"] = true,
 	["Toggle auto BugSack frame popup."] = true,
@@ -65,6 +73,7 @@ L:RegisterTranslations("enUS", function() return {
 	["All errors were wiped."] = true,
 	["An error has been recorded."] = true,
 	["%d errors have been recorded."] = true,
+	["You've received %d errors from %s, you can show them with /bugsack show received."] = true,
 
 	-- Frame messages,
 	[" (... more ...)"] = true,
@@ -75,6 +84,7 @@ L:RegisterTranslations("enUS", function() return {
 	[" (viewing previous session errors)"] = true,
 	[" (viewing all errors)"] = true,
 	[" (viewing errors for session %d)"] = true,
+	[" (viewing errors from %s)"] = true,
 
 	-- FuBar plugin
 	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = true,
