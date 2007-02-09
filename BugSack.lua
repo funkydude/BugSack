@@ -532,7 +532,7 @@ function BugSack:ColorError(err)
 	ret = ret:gsub("|$", "||") -- pipe char
 	ret = ret:gsub(":(%d+): ", ":|cff00ff00%1|r: ") -- Line numbers
 	ret = ret:gsub("\n(.-):", "\n|cffeda55f%1|r:") -- Files
-	ret = ret:gsub("%-%d+%p+%d+%p+%d+", "|cffffff00%1|cffeda55f") -- Version numbers
+	ret = ret:gsub("%-%d+%p+.-%\\", "|cffffff00%1|cffeda55f") -- Version numbers
 	ret = ret:gsub("%(.-%)", "|cff999999%1|r") -- Parantheses
 	ret = ret:gsub("([`'\"])(.-)([`'\"])", "|cff8888ff%1%2%3|r") -- Quotes
 	ret = ret:gsub("^(.-):", "|cffeda55f%1|r:") -- First file after time and date
@@ -614,6 +614,9 @@ end
 function BugSack:OnBugComm(prefix, sender, distribution, bugs)
 	if prefix ~= "BugSack" or distribution ~= "WHISPER" then
 		error("BugSack got a communication message it shouldn't have received.")
+	end
+	if type(bugs) ~= "table" then
+		error("We received a bug communication from "..sender..", but it is invalid.")
 	end
 
 	receivedErrors = bugs
