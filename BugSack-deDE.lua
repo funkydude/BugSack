@@ -21,6 +21,13 @@ L:RegisterTranslations("deDE", function()
 	["Show errors by session number."] = "Zeigt die Fehler aus der entsprechenden Sitzungsnummer.",
 	["All errors"] = "Alle Fehler",
 	["Show all errors."] = "Zeigt alle gespeicherten Fehler.",
+	["Received errors"] = "Empfangene Fehler",
+	["Show errors received from another player."] = "Zeige empfangene Fehler von anderen Spielern.",
+	["Send bugs"] = "Sende Fehler",
+	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "Sende deine gegenwärtigen Fehler zu einem anderen Spieler. Dies funktioniert nur wenn ihr beide die Datenbank AceComm-2.0 und BugSack geladen/aktiviert habt.",
+	["<player name>"] = "<spieler name>",
+	["Menu"] = "Menü",
+	["Menu options."] = "Menü Optionen",
 
 	["List errors"] = "Liste Fehler",
 	["List errors to the chat frame."] = "Listet die Fehler im Chatfenster.",
@@ -29,6 +36,7 @@ L:RegisterTranslations("deDE", function()
 	["List errors from the previous session."] = "Listet die Fehler auf der vorherigen Sitzung.",
 	["List errors by session number."] = "Listet die Fehler aus der entsprechenden Sitzungnummer.",
 	["List all errors."] = "Listet alle gespeicherten Fehler auf.",
+	["List errors received from another player."] = "Listet die empfangenen Fehler von anderen Spielern auf.",
 
 	["Auto popup"] = "Auto aufspringen",
 	["Toggle auto BugSack frame popup."] = "Schaltet das automatische einblenden des Fehler Fensters ein/aus.",
@@ -44,6 +52,8 @@ L:RegisterTranslations("deDE", function()
 	["Set the limit on the nr of errors saved."] = "Setze eine Begrenzung wieviele Fehler maximal gespeichert werden.",
 	["Filter addon mistakes"] = "Filtere falsche Addon Fehler",
 	["Filters common mistakes that trigger the blocked/forbidden event."] = "Filtert die bekannsten falschen Fehler welche die 'blocked/forbidden' Meldungen betrifft.",
+	["Throttle at excessive amount"] = "Bei Übermaß temporär drosseln",
+	["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."] = "Die Fehleraufzeichnung für vorgegebene 60 Sekunden stoppen, wennn BugGrabber mehr als 20 Fehler pro Sekunde aufzeichnet.",
 
 	["Generate bug"] = "Generiere Fehler",
 	["Generate a fake bug for testing."] = "Generiert einen falschen Fehler zum Testen des Addons.",
@@ -55,6 +65,10 @@ L:RegisterTranslations("deDE", function()
 	["Clear errors"] = "Lösche Fehler",
 	["Clear out the errors database."] = "Löscht alle Fehler aus der Datenbank.",
 
+	["%d sec."] = "%d sec.",
+	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."] = "|cffeda55fBugGrabber|r ist pausiert  wegen einer Überzahl an Fehlern die Generiert werden. Der normale Betrieb wird in |cffff0000%d|r sekunden wieder aufgenommen. |cffeda55fDoppel-Klicken|r um Betrieb jetzt wieder aufzunehmen.",
+
+
 	-- Chat messages
 	["You have no errors, yay!"] = "Du hast keine Fehler, Jeehaa!",
 	["List of errors:"] = "Liste der Fehler:",
@@ -63,6 +77,7 @@ L:RegisterTranslations("deDE", function()
 	["All errors were wiped."] = "Alle Fehler wurden gelöscht.",
 	["An error has been recorded."] = "Ein Fehler wurde aufgezeichnet.",
 	["%d errors have been recorded."] = "%d Fehler wurden aufgezeichnet.",
+	["You've received %d errors from %s, you can show them with /bugsack show received."] = "Du hast %d Fehler von %s empfangen, du kannst sie dir anzeigen lassen mit dem chat Befehl /bugsack show received.",
 
 	-- Frame messages,
 	[" (... more ...)"] = " (... mehr ...)",
@@ -73,6 +88,7 @@ L:RegisterTranslations("deDE", function()
 	[" (viewing previous session errors)"] = " (zeige vorherige Sitzungsfehler)",
 	[" (viewing all errors)"] = " (zeige alle aufgezeichneten Fehler)",
 	[" (viewing errors for session %d)"] = " (zeige Fehler aus Sitzung %d)",
+	[" (viewing errors from %s)"] = " (zeige Fehler von %s)",
 
 	-- FuBar plugin
 	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55fKlicken|r zum öffnen des BugSack Fensters mit dem letzten Fehler. |cffeda55fShift-Klicken|r um das Ui neu zu laden. |cffeda55fAlt-Klicken|r um die Fehler zu löschen."
