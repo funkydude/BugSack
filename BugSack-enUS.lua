@@ -74,6 +74,7 @@ L:RegisterTranslations("enUS", function() return {
 	["An error has been recorded."] = true,
 	["%d errors have been recorded."] = true,
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = true,
+	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = true,
 
 	-- Frame messages,
 	[" (... more ...)"] = true,

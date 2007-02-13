@@ -207,6 +207,7 @@ BugSack.options = {
 			desc = L["Clear out the errors database."],
 			func = "Reset",
 			order = 104,
+			disabled = function() return #BugSack:GetErrors("all") == 0 end,
 		},
 		spacer1 = {
 			type = "header",
@@ -260,7 +261,7 @@ BugSack.options = {
 			end,
 			usage = L["<player name>"],
 			validate = function(v) return type(v) == "string" and v:trim():len() > 0 end,
-			disabled = function() return not comm end,
+			disabled = function() return not comm or #BugSack:GetErrors("session") == 0 end,
 			order = 300,
 		},
 		bug = {
@@ -319,7 +320,7 @@ function BugSack:OnInitialize()
 		auto = nil,
 		showmsg = nil,
 		chatframe = nil,
-		filterAddonMistakes = false,
+		filterAddonMistakes = true,
 	})
 	self:RegisterChatCommand({"/bugsack", "/bs"}, self.options, "BUGSACK")
 
@@ -609,6 +610,8 @@ function BugSack:SendBugsToUser(player)
 	end
 
 	self:SendCommMessage("WHISPER", player, errors)
+
+	self:Print(string.format(L["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."], #errors, player))
 end
 
 function BugSack:OnBugComm(prefix, sender, distribution, bugs)
