@@ -78,6 +78,7 @@ L:RegisterTranslations("deDE", function()
 	["An error has been recorded."] = "Ein Fehler wurde aufgezeichnet.",
 	["%d errors have been recorded."] = "%d Fehler wurden aufgezeichnet.",
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = "Du hast %d Fehler von %s empfangen, du kannst sie dir anzeigen lassen mit dem chat Befehl /bugsack show received.",
+	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d Fehler wurden gesendet zu %s.  Sollte er BugSack und AceComm-2.0 nicht haben, so wird er nicht  in der Lage sein die Fehler zu lesen.",
 
 	-- Frame messages,
 	[" (... more ...)"] = " (... mehr ...)",
