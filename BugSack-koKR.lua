@@ -1,5 +1,5 @@
 ﻿-- 우리말 작업 by damjau
--- $Id:
+-- $Id$
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
