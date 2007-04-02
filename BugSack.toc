@@ -29,6 +29,7 @@ BugSack-zhCN.lua
 BugSack-deDE.lua
 BugSack-koKR.lua
 BugSack-esES.lua
+BugSack-zhTW.lua
 BugSack.lua
 
 Libs\Dewdrop-2.0\Dewdrop-2.0.lua
