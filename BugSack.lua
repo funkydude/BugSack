@@ -65,13 +65,16 @@ BugSack.options = {
 			type = "group",
 			name = L["Show sack"],
 			desc = L["Show errors in the sack."],
+			pass = true,
+			func = "ShowFrame",
+			get = false,
+			set = "ShowFrame",
 			order = 100,
 			args = {
 				current = {
 					type = "execute",
 					name = L["Current error"],
 					desc = L["Show the current error."],
-					func = "ShowFrame",
 					passValue = "current",
 					order = 1,
 				},
@@ -79,7 +82,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["Current session"],
 					desc = L["Show errors from the current session."],
-					func = "ShowFrame",
 					passValue = "session",
 					order = 2,
 				},
@@ -87,7 +89,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["Previous session"],
 					desc = L["Show errors from the previous session."],
-					func = "ShowFrame",
 					passValue = "previous",
 					order = 3,
 				},
@@ -96,8 +97,6 @@ BugSack.options = {
 					usage = "#",
 					name = L["By session number"],
 					desc = L["Show errors by session number."],
-					get = false,
-					set = "ShowFrame",
 					validate = function(arg)
 						arg = tonumber(arg)
 						if arg and arg > 0 and math.floor(arg) == arg then
@@ -111,7 +110,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["All errors"],
 					desc = L["Show all errors."],
-					func = "ShowFrame",
 					passValue = "all",
 					order = 5,
 				},
@@ -119,7 +117,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["Received errors"],
 					desc = L["Show errors received from another player."],
-					func = "ShowFrame",
 					passValue = "received",
 					order = 6,
 					disabled = function() return not receivedErrors end,
@@ -132,12 +129,15 @@ BugSack.options = {
 			name = L["List errors"],
 			desc = L["List errors to the chat frame."],
 			order = 101,
+			pass = true,
+			get = false,
+			set = "ListErrors",
+			func = "ListErrors",
 			args = {
 				current = {
 					type = "execute",
 					name = L["Current error"],
 					desc = L["List the current error."],
-					func = "ListErrors",
 					passValue = "current",
 					order = 1,
 				},
@@ -145,7 +145,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["Current session"],
 					desc = L["List errors from the current session."],
-					func = "ListErrors",
 					passValue = "session",
 					order = 2,
 				},
@@ -153,7 +152,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["Previous session"],
 					desc = L["List errors from the previous session."],
-					func = "ListErrors",
 					passValue = "previous",
 					order = 3,
 				},
@@ -162,8 +160,6 @@ BugSack.options = {
 					usage = "#",
 					name = L["By session number"],
 					desc = L["List errors by session number."],
-					get = false,
-					set = "ListErrors",
 					validate = function(arg)
 						arg = tonumber(arg)
 						if arg and arg > 0 and math.floor(arg) == arg then
@@ -177,7 +173,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["All errors"],
 					desc = L["List all errors."],
-					func = "ListErrors",
 					passValue = "all",
 					order = 5,
 				},
@@ -185,7 +180,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["Received errors"],
 					desc = L["List errors received from another player."],
-					func = "ListErrors",
 					passValue = "received",
 					order = 6,
 					disabled = function() return not receivedErrors end,
@@ -444,7 +438,29 @@ function BugSack:ToggleFilter()
 	end
 end
 
+function BugSack:ListErrors(which, nr)
+	-- Have to work through some oddities in AceConsole et.al.
+	if type(nr) == "string" then nr = tonumber(nr) end
+	if (which == "ListErrors" or which == "number") then which = nr end
+
+	local errs = self:GetErrors(which)
+	if #errs == 0 then
+		self:Print(L["You have no errors, yay!"])
+		return
+	end
+
+	self:Print(L["List of errors:"])
+	local i, err
+	for i, err in ipairs(errs) do
+		self:Print("%d. %s", i, self:FormatError(err))
+	end
+end
+
 function BugSack:ShowFrame(which, nr)
+	-- Have to work through some oddities in AceConsole et.al.
+	if type(nr) == "string" then nr = tonumber(nr) end
+	if (which == "ShowFrame" or which == "number") then which = nr end
+
 	sackType = which
 	sackErrors = self:GetErrors(which)
 	sackMax = #sackErrors
@@ -529,20 +545,6 @@ end
 function BugSack:OnNextClick()
 	sackCurrent = sackCurrent + 1
 	self:UpdateFrameText()
-end
-
-function BugSack:ListErrors(which)
-	local errs = self:GetErrors(which)
-	if #errs == 0 then
-		self:Print(L["You have no errors, yay!"])
-		return
-	end
-
-	self:Print(L["List of errors:"])
-	local i, err
-	for i, err in ipairs(errs) do
-		self:Print("%d. %s", i, self:FormatError(err))
-	end
 end
 
 function BugSack:FormatError(err)
