@@ -70,21 +70,24 @@ BugSack.options = {
 					type = "execute",
 					name = L["Current error"],
 					desc = L["Show the current error."],
-					func = function() BugSack:ShowFrame("current") end,
+					func = "ShowFrame",
+					passValue = "current",
 					order = 1,
 				},
 				session = {
 					type = "execute",
 					name = L["Current session"],
 					desc = L["Show errors from the current session."],
-					func = function() BugSack:ShowFrame("session") end,
+					func = "ShowFrame",
+					passValue = "session",
 					order = 2,
 				},
 				previous = {
 					type = "execute",
 					name = L["Previous session"],
 					desc = L["Show errors from the previous session."],
-					func = function() BugSack:ShowFrame("previous") end,
+					func = "ShowFrame",
+					passValue = "previous",
 					order = 3,
 				},
 				number = {
@@ -93,7 +96,7 @@ BugSack.options = {
 					name = L["By session number"],
 					desc = L["Show errors by session number."],
 					get = false,
-					set = function(n) BugSack:ShowFrame(tonumber(n)) end,
+					set = "ShowFrame",
 					validate = function(arg)
 						arg = tonumber(arg)
 						if arg and arg > 0 and math.floor(arg) == arg then
@@ -107,14 +110,16 @@ BugSack.options = {
 					type = "execute",
 					name = L["All errors"],
 					desc = L["Show all errors."],
-					func = function() BugSack:ShowFrame("all") end,
+					func = "ShowFrame",
+					passValue = "all",
 					order = 5,
 				},
 				received = {
 					type = "execute",
 					name = L["Received errors"],
 					desc = L["Show errors received from another player."],
-					func = function() BugSack:ShowFrame("received") end,
+					func = "ShowFrame",
+					passValue = "received",
 					order = 6,
 					disabled = function() return not receivedErrors end,
 					hidden = function() return not comm end,
@@ -131,21 +136,24 @@ BugSack.options = {
 					type = "execute",
 					name = L["Current error"],
 					desc = L["List the current error."],
-					func = function() BugSack:ListErrors("current") end,
+					func = "ListErrors",
+					passValue = "current",
 					order = 1,
 				},
 				session = {
 					type = "execute",
 					name = L["Current session"],
 					desc = L["List errors from the current session."],
-					func = function() BugSack:ListErrors("session") end,
+					func = "ListErrors",
+					passValue = "session",
 					order = 2,
 				},
 				previous = {
 					type = "execute",
 					name = L["Previous session"],
 					desc = L["List errors from the previous session."],
-					func = function() BugSack:ListErrors("previous") end,
+					func = "ListErrors",
+					passValue = "previous",
 					order = 3,
 				},
 				number = {
@@ -154,7 +162,7 @@ BugSack.options = {
 					name = L["By session number"],
 					desc = L["List errors by session number."],
 					get = false,
-					set = function(n) BugSack:ListErrors(tonumber(n)) end,
+					set = "ListErrors",
 					validate = function(arg)
 						arg = tonumber(arg)
 						if arg and arg > 0 and math.floor(arg) == arg then
@@ -168,14 +176,16 @@ BugSack.options = {
 					type = "execute",
 					name = L["All errors"],
 					desc = L["List all errors."],
-					func = function() BugSack:ListErrors("all") end,
+					func = "ListErrors",
+					passValue = "all",
 					order = 5,
 				},
 				received = {
 					type = "execute",
 					name = L["Received errors"],
 					desc = L["List errors received from another player."],
-					func = function() BugSack:ListErrors("received") end,
+					func = "ListErrors",
+					passValue = "received",
 					order = 6,
 					disabled = function() return not receivedErrors end,
 					hidden = function() return not comm end,
@@ -256,9 +266,7 @@ BugSack.options = {
 			name = L["Send bugs"],
 			desc = L["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."],
 			get = false,
-			set = function(v)
-				BugSack:SendBugsToUser(v)
-			end,
+			set = "SendBugsToUser",
 			usage = L["<player name>"],
 			validate = function(v) return type(v) == "string" and v:trim():len() > 0 end,
 			disabled = function() return not comm or #BugSack:GetErrors("session") == 0 end,
@@ -298,8 +306,8 @@ BugSack.options = {
 			type = "toggle",
 			name = L["Throttle at excessive amount"],
 			desc = L["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."],
-			get = function() return BugGrabber.IsThrottling() end,
-			set = function() BugGrabber.UseThrottling(not BugGrabber.IsThrottling()) end,
+			get = BugGrabber.IsThrottling,
+			set = BugGrabber.UseThrottling,
 			order = 303,
 		}
 	}
@@ -322,11 +330,10 @@ function BugSack:OnInitialize()
 		chatframe = nil,
 		filterAddonMistakes = true,
 	})
-	self:RegisterChatCommand({"/bugsack", "/bs"}, self.options, "BUGSACK")
+	self:RegisterChatCommand("/bugsack", "/bs", self.options, "BUGSACK")
 
 	-- Swipe the load errors from BugGrabber if there were any
 	if BugGrabber and BugGrabber.bugsackErrors then
-		local _, err
 		for _, err in pairs(BugGrabber.bugsackErrors) do self:OnError(err) end
 		BugGrabber.bugsackErrors = nil
 	end
@@ -352,43 +359,47 @@ function BugSack:OnEnable()
 end
 
 local justUnregistered = nil
+local function clearJustUnregistered() justUnregistered = nil end
 function BugSack:BugGrabber_AddonActionEventsRegistered()
 	if self:GetFilter() and not justUnregistered then
 		BugGrabber.UnregisterAddonActionEvents()
 		justUnregistered = true
-		self:ScheduleEvent(function() justUnregistered = nil end, 10)
+		self:ScheduleEvent(clearJustUnregistered, 10)
 	end
 end
 
 function BugSack:GetErrors(which)
-	if which == "received" then
-		return receivedErrors
-	end
-
-	local db = BugGrabber.GetDB()
-	local cs = BugGrabberDB.session
 	local errs = {}
 
 	if type(which) ~= "string" and type(which) ~= "number" then
 		return errs
 	end
 
-	if which == "current" then
-		local current = #db
-		if current ~= 0 and db[current].session == cs then
-			table.insert(errs, db[current])
-		end
-		return errs
-	end
+	local db = BugGrabber.GetDB()
 
-	local str = ""
-	local _, err
-	for _, err in pairs(db) do
-		if (which == "all")
-		or (which == "session" and cs == tonumber(err.session))
-		or (which == "previous" and cs - 1 == tonumber(err.session))
-		or (which == err.session) then
-			table.insert(errs, err)
+	if type(which) == "number" then
+		for _, err in pairs(db) do
+			if which == err.session then
+				table.insert(errs, err)
+			end
+		end
+	else
+		local cs = BugGrabberDB.session
+		if which == "received" then
+			return receivedErrors
+		elseif which == "current" then
+			local current = #db
+			if current ~= 0 and db[current].session == cs then
+				table.insert(errs, db[current])
+			end
+		else
+			for _, err in pairs(db) do
+				if (which == "all")
+				or (which == "session" and cs == tonumber(err.session))
+				or (which == "previous" and cs - 1 == tonumber(err.session)) then
+					table.insert(errs, err)
+				end
+			end
 		end
 	end
 	return errs
