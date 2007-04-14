@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 local _G = getfenv(0)
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
+local media = AceLibrary:HasInstance("SharedMedia-1.0") and AceLibrary("SharedMedia-1.0") or nil
 
 BINDING_HEADER_BUGSACK = "BugSack"
 BINDING_NAME_BUGSACK_SHOW_CURRENT = L["Show Current Error"]
@@ -254,12 +255,29 @@ BugSack.options = {
 			desc = L["Toggle an audible warning everytime an error occurs."],
 			get = function() return BugSack.db.profile.mute end,
 			set = function(v) BugSack.db.profile.mute = v end,
+			hidden = function() return media end,
 			order = 203,
+		},
+		soundMedia = {
+			type = "text",
+			name = L["Sound"],
+			desc = L["What sound to play when an error occurs (Ctrl-Click to preview.)"],
+			get = function() return BugSack.db.profile.soundMedia end,
+			set = function(v)
+				if IsControlKeyDown() then
+					PlaySoundFile(media:Fetch("sound", v))
+				else
+					BugSack.db.profile.soundMedia = v
+				end
+			end,
+			hidden = function() return not media end,
+			usage = "",
+			order = 204,
 		},
 		spacer2 = {
 			type = "header",
 			name = " ",
-			order = 204,
+			order = 250,
 		},
 		sendbugs = {
 			type = "text",
@@ -329,6 +347,7 @@ function BugSack:OnInitialize()
 		showmsg = nil,
 		chatframe = nil,
 		filterAddonMistakes = true,
+		soundMedia = "BugSack: Fatality",
 	})
 	self:RegisterChatCommand("/bugsack", "/bs", self.options, "BUGSACK")
 
@@ -342,6 +361,11 @@ function BugSack:OnInitialize()
 		self:SetCommPrefix("BugSack")
 		self:SetDefaultCommPriority("BULK")
 		self:RegisterComm("BugSack", "WHISPER", "OnBugComm")
+	end
+
+	if media then
+		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\error.wav")
+		self.options.args.soundMedia.validate = media:List("sound")
 	end
 end
 
@@ -444,9 +468,9 @@ function BugSack:UpdateFrameText()
 	else
 		sackText = self:FormatError(sackErrors[sackCurrent])
 		if GetLocale() == "koKR" then
-			caption = string.format(L["Error %d of %d"], sackMax, sackCurrent)
+			caption = L["Error %d of %d"]:format(sackMax, sackCurrent)
 		else
-			caption = string.format(L["Error %d of %d"], sackCurrent, sackMax)
+			caption = L["Error %d of %d"]:format(sackCurrent, sackMax)
 		end
 	end
 
@@ -459,9 +483,9 @@ function BugSack:UpdateFrameText()
 	elseif sackType == "all" then
 		caption = caption .. L[" (viewing all errors)"]
 	elseif sackType == "received" then
-		caption = caption .. string.format(L[" (viewing errors from %s)"], receivedFrom)
+		caption = caption .. L[" (viewing errors from %s)"]:format(receivedFrom)
 	else
-		caption = caption .. string.format(L[" (viewing errors for session %d)"], sackType)
+		caption = caption .. L[" (viewing errors for session %d)"]:format(sackType)
 	end
 	_G.BugSackErrorText:SetText(caption)
 
@@ -576,7 +600,9 @@ end
 -- The Error catching function.
 
 function BugSack:OnError(err)
-	if not self.db.profile.mute then
+	if media then
+		PlaySoundFile(media:Fetch("sound", self.db.profile.soundMedia))
+	elseif not self.db.profile.mute then
 		PlaySoundFile("Interface\\AddOns\\BugSack\\error.wav")
 	end
 
@@ -595,7 +621,7 @@ function BugSack:OnError(err)
 		self:Print(self:FormatError(firstError))
 	elseif self.db.profile.chatframe then
 		if num > 1 then
-			self:Print(string.format(L["%d errors have been recorded."], num))
+			self:Print(L["%d errors have been recorded."]:format(num))
 		else
 			self:Print(L["An error has been recorded."])
 		end
@@ -622,7 +648,7 @@ function BugSack:SendBugsToUser(player)
 
 	self:SendCommMessage("WHISPER", player, errors)
 
-	self:Print(string.format(L["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."], #errors, player))
+	self:Print(L["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."]:format(#errors, player))
 end
 
 function BugSack:OnBugComm(prefix, sender, distribution, bugs)
@@ -636,7 +662,7 @@ function BugSack:OnBugComm(prefix, sender, distribution, bugs)
 	receivedErrors = bugs
 	receivedFrom = sender
 
-	self:Print(string.format(L["You've received %d errors from %s, you can show them with /bugsack show received."], #bugs, sender))
+	self:Print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#bugs, sender))
 end
 
 -- Editbox handler

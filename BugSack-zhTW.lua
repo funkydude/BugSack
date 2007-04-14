@@ -41,6 +41,8 @@ L:RegisterTranslations("zhTW", function() return {
 	["Print a warning to the chat frame when an error occurs."] = "遇到錯誤時自動在聊天視窗顯示一條警報。",
 	["Errors to chatframe"] = "聊天視窗詳細顯示",
 	["Print the full error message to the chat frame instead of just a warning."] = "遇到錯誤時自動在聊天視窗輸出錯誤資訊。",
+--	["Sound"] = true,
+--	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = true,
 	["Mute"] = "靜音",
 	["Toggle an audible warning everytime an error occurs."] = "遇到錯誤時不發出音效。",
 	["Save errors"] = "保存錯誤",

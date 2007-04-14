@@ -33,6 +33,8 @@ L:RegisterTranslations("esES", function() return {
 	["Print a warning to the chat frame when an error occurs."] = "Muestra un aviso en la ventana de chat cuando ocurre un error.",
 	["Errors to chatframe"] = "Errores en la ventana de chat",
 	["Print the full error message to the chat frame instead of just a warning."] = "Mostrar el mensaje de error completo en la ventana de chat en vez de solo un aviso",
+--	["Sound"] = true,
+--	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = true,
 	["Mute"] = "Enmudecer",
 	["Toggle an audible warning everytime an error occurs."] = "Commuta un aviso auditivo cada vez que ocurre un error.",
 	["Save errors"] = "Guardar errores",

@@ -44,6 +44,8 @@ L:RegisterTranslations("koKR", function() return {
 	["Print a warning to the chat frame when an error occurs."] = "오류 발생시에 대화창에 경고를 출력합니다",
 	["Errors to chatframe"] = "대화창 오류 출력",
 	["Print the full error message to the chat frame instead of just a warning."] = "오류 발생시에 대화창에 경고 대신에 오류 메세지 전체를 출력합니다",
+--	["Sound"] = true,
+--	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = true,
 	["Mute"] = "무음",
 	["Toggle an audible warning everytime an error occurs."] = "오류가 발생할 시에 경고음 사용기능을 토글합니다",
 	["Save errors"] = "오류 저장",

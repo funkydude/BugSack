@@ -43,6 +43,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Print the full error message to the chat frame instead of just a warning."] = true,
 	["Mute"] = true,
 	["Toggle an audible warning everytime an error occurs."] = true,
+	["Sound"] = true,
+	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = true,
 	["Save errors"] = true,
 	["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = true,
 	["Limit"] = true,

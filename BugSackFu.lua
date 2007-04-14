@@ -1,7 +1,3 @@
---
--- BugSackFu -- a FuBar button interface to the BugSack
---
-
 --[[
 
 BugSack, a World of Warcraft addon that interfaces with the !BugGrabber addon
@@ -84,6 +80,7 @@ function BugSackFu:OnEnable()
 		dupeCounter = dupeCounter + 1
 		self:UpdateText()
 	end)
+
 	self:RegisterEvent("BugGrabber_CapturePaused")
 	self:RegisterEvent("BugGrabber_CaptureResumed")
 
@@ -121,7 +118,7 @@ end
 
 function BugSackFu:OnTextUpdate()
 	if pauseCountDown then
-		self:SetText(string.format(L["%d sec."], pauseCountDown))
+		self:SetText(L["%d sec."]:format(pauseCountDown))
 	else
 		local errcount = #BugSack:GetErrors("session")
 		if not errcount then errcount = 0 end
@@ -182,7 +179,7 @@ function BugSackFu:OnTooltipUpdate()
 		end
 	end
 	if pauseCountDown then
-		Tablet:SetHint(string.format(L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."], pauseCountDown))
+		Tablet:SetHint(L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."]:format(pauseCountDown))
 	else
 		Tablet:SetHint(L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."])
 	end
