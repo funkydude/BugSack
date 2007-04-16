@@ -376,6 +376,19 @@ function BugSack:OnEnable()
 	end
 end
 
+function BugSack:Taint()
+	for k,v in pairs(_G) do
+		local secure, tainter = issecurevariable(k)
+		if not secure
+		and tainter ~= ""
+		and not tainter:find("Blizzard")
+		and not tainter:find("Tablet-2.0")
+		and not tainter:find("FuBarPlugin-2.0") then
+			AceLibrary("AceConsole-2.0"):PrintComma(k, tainter)
+		end
+	end
+end
+
 local justUnregistered = nil
 local function clearJustUnregistered() justUnregistered = nil end
 function BugSack:BugGrabber_AddonActionEventsRegistered()
@@ -603,7 +616,8 @@ end
 
 function BugSack:OnError(err)
 	if media then
-		PlaySoundFile(media:Fetch("sound", self.db.profile.soundMedia))
+		local sound = media:Fetch("sound", self.db.profile.soundMedia) or "Interface\\AddOns\\BugSack\\error.wav"
+		PlaySoundFile(sound)
 	elseif not self.db.profile.mute then
 		PlaySoundFile("Interface\\AddOns\\BugSack\\error.wav")
 	end
