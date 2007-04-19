@@ -672,7 +672,7 @@ function BugSack:OnBugComm(prefix, sender, distribution, bugs)
 		error("BugSack got a communication message it shouldn't have received.")
 	end
 	if type(bugs) ~= "table" then
-		error("We received a bug communication from "..sender..", but it is invalid.")
+		error(string.format("We received a bug communication from %s, but it is a %q, not a table.", sender, type(bugs)))
 	end
 
 	receivedErrors = bugs
