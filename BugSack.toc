@@ -4,6 +4,7 @@
 ## Version: 2.2.0
 ## Notes: Toss those bugs inna sack.
 ## Notes-esES: Mete esos errores en un saco.
+## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲
 ## Author: Rabbit
 ## X-Credits: Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
 ## SavedVariables: BugSackDB
