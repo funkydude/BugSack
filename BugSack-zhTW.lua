@@ -2,14 +2,14 @@ local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("zhTW", function() return {
 	-- Bindings
-	["Show Current Error"] = "顯示當前錯誤",
+	["Show Current Error"] = "顯示目前的錯誤",
 	["Show Session Errors"] = "顯示本次遊戲期間錯誤",
 
 	-- Command descriptions
 	["Show sack"] = "顯示 BugSack",
 	["Show errors in the sack."] = "在 BugSack 視窗中顯示錯誤資訊。",
-	["Current error"] = "現時的錯誤",
-	["Show the current error."] = "顯示現時的錯誤。",
+	["Current error"] = "目前的錯誤",
+	["Show the current error."] = "顯示目前的錯誤。",
 	["Current session"] = "本次遊戲期間",
 	["Show errors from the current session."] = "顯示本次遊戲期間的錯誤。",
 	["Previous session"] = "上次遊戲期間",
@@ -22,13 +22,13 @@ L:RegisterTranslations("zhTW", function() return {
 	["Show errors received from another player."] = "顯示接收自其他玩家的錯誤。",
 	["Send bugs"] = "發送錯誤",
 	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "發送本次遊戲期間的錯誤給其他玩家。只對使用 AceComm-2.0 和 BugSack 的玩家有效。",
-	["<player name>"] = "<玩家姓名>",
+	["<player name>"] = "<玩家名字>",
 	["Menu"] = "選單",
 	["Menu options."] = "選項。",
 
 	["List errors"] = "列出錯誤",
 	["List errors to the chat frame."] = "在聊天視窗中列出錯誤。",
-	["List the current error."] = "列出現時的錯誤。",
+	["List the current error."] = "列出目前的錯誤。",
 	["List errors from the current session."] = "列出本次遊戲期間的錯誤。",
 	["List errors from the previous session."] = "列出上次遊戲期間的錯誤。",
 	["List errors by session number."] = "列出指定遊戲期間編號的錯誤。",
@@ -37,10 +37,10 @@ L:RegisterTranslations("zhTW", function() return {
 
 	["Auto popup"] = "自動彈出",
 	["Toggle auto BugSack frame popup."] = "遇到錯誤自動彈出 BugSack 視窗。",
-	["Chatframe output"] = "聊天窗口警報",
-	["Print a warning to the chat frame when an error occurs."] = "遇到錯誤時自動在聊天視窗顯示一條警報。",
-	["Errors to chatframe"] = "聊天視窗詳細顯示",
-	["Print the full error message to the chat frame instead of just a warning."] = "遇到錯誤時自動在聊天視窗輸出錯誤資訊。",
+	["Chatframe output"] = "聊天框架警報",
+	["Print a warning to the chat frame when an error occurs."] = "遇到錯誤時自動在聊天框架顯示一條警報。",
+	["Errors to chatframe"] = "聊天框架詳細顯示",
+	["Print the full error message to the chat frame instead of just a warning."] = "遇到錯誤時自動在聊天框架輸出錯誤資訊。",
 	["Mute"] = "靜音",
 	["Toggle an audible warning everytime an error occurs."] = "遇到錯誤時不發出音效。",
 	["Sound"] = "音效",
@@ -55,7 +55,7 @@ L:RegisterTranslations("zhTW", function() return {
 	["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."] = "當每秒多過20個錯誤時節流。",
 
 	["Generate bug"] = "模擬錯誤",
-	["Generate a fake bug for testing."] = "產生一個假的錯誤來對BugSack進行測試。",
+	["Generate a fake bug for testing."] = "產生一個假的錯誤來對 BugSack 進行測試。",
 	["Script bug"] = "腳本錯誤",
 	["Generate a script bug."] = "產生一個腳本錯誤。",
 	["Addon bug"] = "插件錯誤",
@@ -64,19 +64,19 @@ L:RegisterTranslations("zhTW", function() return {
 	["Clear errors"] = "清除錯誤",
 	["Clear out the errors database."] = "清除所有保存的錯誤。",
 
-	["%d sec."] = "%d 秒。",
-	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."] = "因為過多錯誤 |cffeda55fBugGrabber|r 現正暫停。它會在 |cffff0000%d|r 秒後重新開始。|cffeda55f雙擊|r立刻繼續。",
+	["%d sec."] = "%d秒。",
+	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."] = "因為過多錯誤 |cffeda55fBugGrabber|r 現正暫停。它會在|cffff0000%d|r秒後重新開始。|cffeda55f雙擊|r立刻繼續。",
 
 	-- Chat messages
-	["You have no errors, yay!"] = "沒有任何錯誤！",
-	["List of errors:"] = "錯誤列表：",
-	["An error has been generated."] = "發生錯誤！",
-	["BugSack generated this fake error."] = "BugSack產生了這條假錯誤。",
+	["You have no errors, yay!"] = "沒有任何錯誤!",
+	["List of errors:"] = "錯誤列表:",
+	["An error has been generated."] = "發生錯誤!",
+	["BugSack generated this fake error."] = "BugSack 產生了這條假錯誤。",
 	["All errors were wiped."] = "所有錯誤資訊已被清除。",
 	["An error has been recorded."] = "錯誤已被紀錄。",
-	["%d errors have been recorded."] = "%d 個錯誤已經被紀錄。",
-	["You've received %d errors from %s, you can show them with /bugsack show received."] = "你已接收 %d 個錯誤。錯誤由 %s 發出。你可用 /bugsack show received 查看。",
-	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d 個錯誤已發送給 %s。只對使用 AceComm-2.0 和 BugSack 的玩家有效。",
+	["%d errors have been recorded."] = "%d個錯誤已經被紀錄。",
+	["You've received %d errors from %s, you can show them with /bugsack show received."] = "你已接收%d個錯誤。錯誤由%s發出。你可用 /bugsack show received 查看。",
+	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d個錯誤已發送給%s。只對使用 AceComm-2.0 和 BugSack 的玩家有效。",
 
 	-- Frame messages,
 	[" (... more ...)"] = "(... 更多 ...)",
@@ -86,11 +86,11 @@ L:RegisterTranslations("zhTW", function() return {
 	[" (viewing session errors)"] = " (查看本次本次遊戲期間的錯誤)",
 	[" (viewing previous session errors)"] = " (查看上次遊戲期間的錯誤)",
 	[" (viewing all errors)"] = " (查看所有錯誤)",
-	[" (viewing errors for session %d)"] = " (查看遊戲期間編號 %d 的錯誤)",
-	[" (viewing errors from %s)"] = " (查看接收自 %s 的錯誤)",
+	[" (viewing errors for session %d)"] = " (查看遊戲期間編號%d的錯誤)",
+	[" (viewing errors from %s)"] = " (查看接收自%s的錯誤)",
 
 	-- FuBar plugin
-	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55f點擊|r打開 BugSack 視窗查看最近的錯誤。|cffeda55fShift-點擊|r重載使用者界面。|cffeda55fAlt-點擊|r清除錯誤。",
+	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "\n|cffeda55f點擊: |r打開 BugSack 視窗查看最近的錯誤。\n|cffeda55fShift-點擊: |r重載使用者界面。\n|cffeda55fAlt-點擊: |r清除錯誤。",
 } end)
 
 if GetLocale() == "zhTW" then
