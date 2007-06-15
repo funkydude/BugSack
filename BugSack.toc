@@ -1,8 +1,11 @@
 ## Interface: 20100
 ## Title: BugSack |cff7fff7f -Ace2-|r
+## Title-zhCN: |cff7fff7f-Ace2-|r BugSack
+## Title-zhTW: |cff7fff7f-Ace2-|r BugSack
 ## Title-koKR: |CFF99FF99B|CFFFFFFFFug|CFF99FF99S|CFFFFFFFFack  |cff7fff7f -Ace2-|r
 ## Version: 2.2.0
 ## Notes: Toss those bugs inna sack.
+## Notes-zhCN: 错误信息收集器。
 ## Notes-esES: Mete esos errores en un saco.
 ## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
 ## Author: Rabbit

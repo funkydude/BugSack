@@ -1,87 +1,107 @@
--- zhCN translation by Thomas Mo
+--Chinese  Local : CWDG Translation Team 昏睡墨鱼 (Thomas Mo)
+--Update by CWDG 月色狼影
+--$Rev: 568 $
+--$Date: 2007-05-19 16:02:11 +0800 (星期六, 19 五月 2007) $
+
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
-L:RegisterTranslations("zhCN", function() return {
-	-- Bindings
-	["Show Current Error"] = "\230\152\190\231\164\186\229\189\147\229\137\141\233\148\153\232\175\175",
-	["Show Session Errors"] = "\230\152\190\231\164\186\232\191\155\231\168\139\233\148\153\232\175\175",
+L:RegisterTranslations("zhCN", function()
+   return {
+    -- Bindings
+    ["Show Current Error"] = "显示当前错误",
+    ["Show Session Errors"] = "显示进程错误",
 
 	-- Command descriptions
-	["Show sack"] = "\232\174\176\229\189\149",
-	["Show errors in the sack."] = "\230\152\190\231\164\186\232\174\176\229\189\149\233\148\153\232\175\175",
-	["Current error"] = "\229\189\147\229\137\141\233\148\153\232\175\175",
-	["Show the current error."] = "\230\152\190\231\164\186\229\189\147\229\137\141\233\148\153\232\175\175",
-	["Current session"] = "\229\189\147\229\137\141\232\191\155\231\168\139",
-	["Show errors from the current session."] = "\230\152\190\231\164\186\229\189\147\229\137\141\232\191\155\231\168\139\233\148\153\232\175\175",
-	["Previous session"] = "\228\184\138\228\184\128\232\191\155\231\168\139",
-	["Show errors from the previous session."] = "\230\152\190\231\164\186\228\184\138\228\184\128\232\191\155\231\168\139\233\148\153\232\175\175",
-	["By session number"] = "\232\191\155\231\168\139\230\149\176",
-	["Show errors by session number."] = "\230\160\185\230\141\174\232\191\155\231\168\139\233\148\153\232\175\175\230\149\176\230\152\190\231\164\186.",
-	["All errors"] = "\229\133\168\233\131\168\233\148\153\232\175\175",
-	["Show all errors."] = "\230\152\190\231\164\186\229\133\168\233\131\168\233\148\153\232\175\175.",
+    ["Show sack"] = "显示记录",
+    ["Show errors in the sack."] = "显示错误记录",
+    ["Current error"] = "当前错误",
+    ["Show the current error."] = "显示当前错误",
+    ["Current session"] = "当前进程",
+    ["Show errors from the current session."] = "显示当前进程错误",
+    ["Previous session"] = "上一进程",
+    ["Show errors from the previous session."] = "显示上一进程错误",
+    ["By session number"] = "进程数",
+    ["Show errors by session number."] = "根据进程错误数显示.",
+    ["All errors"] = "全部错误",
+    ["Show all errors."] = "显示全部错误.",
+	["Received errors"] = "接收错误",
+	["Show errors received from another player."] = "显示收集到其他玩家的错误信息",
+	["Send bugs"] = "发送错误",
+	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "发送你当前进程错误给其他玩家.只有在你和接收者都装有AceComm-2.0和BugSack且加载的情况才能工作.",
+	["<player name>"] = "<玩家姓名>",
+	["Menu"] = "目录",
+	["Menu options."] = "目录设置",
 
-	["List errors"] = "\229\136\151\228\184\190\233\148\153\232\175\175",
-	["List errors to the chat frame."] = "\229\156\168\232\129\138\229\164\169\230\161\134\229\136\151\229\135\186\233\148\153\232\175\175.",
-	["List the current error."] = "\229\136\151\229\135\186\229\189\147\229\137\141\233\148\153\232\175\175.",
-	["List errors from the current session."] = "\229\136\151\229\135\186\229\189\147\229\137\141\232\191\155\231\168\139\233\148\153\232\175\175.",
-	["List errors from the previous session."] = "\229\136\151\229\135\186\228\184\138\228\184\128\232\191\155\231\168\139\233\148\153\232\175\175",
-	["List errors by session number."] = "\229\136\151\229\135\186\232\191\155\231\168\139\233\148\153\232\175\175\230\149\176.",
-	["List all errors."] = "\229\136\151\229\135\186\229\133\168\233\131\168\233\148\153\232\175\175.",
+    ["List errors"] = "列举错误",
+    ["List errors to the chat frame."] = "在聊天框列出错误.",
+    ["List the current error."] = "列出当前错误.",
+    ["List errors from the current session."] = "列出当前进程错误.",
+    ["List errors from the previous session."] = "列出上一进程错误",
+    ["List errors by session number."] = "列出进程错误数.",
+    ["List all errors."] = "列出全部错误.",
+	["List errors received from another player."] = "列出从其他玩家接收到的错误",
 
-	["Auto popup"] = "\232\135\170\229\138\168\229\188\185\229\135\186",
-	["Toggle auto BugSack frame popup."] = "\233\129\135\229\136\176\233\148\153\232\175\175\230\152\175\229\144\166\232\135\170\229\138\168\229\188\185\229\135\186 BugSack \231\170\151\229\143\163",
-	["Chatframe output"] = true,
-	["Print a warning to the chat frame when an error occurs."] = true,
-	["Errors to chatframe"] = true,
-	["Print the full error message to the chat frame instead of just a warning."] = true,
---	["Sound"] = true,
---	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = true,
-	["Mute"] = "\233\157\153\233\159\179",
-	["Toggle an audible warning everytime an error occurs."] = "\229\136\135\230\141\162\233\148\153\232\175\175\229\143\145\231\148\159\230\151\182\229\143\145\229\135\186\232\173\166\229\145\138\229\163\176.",
-	["Save errors"] = "\228\191\157\229\173\152\233\148\153\232\175\175",
-	["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = "\230\152\175\229\144\166\229\156\168 SavedVariables\\!BugGrabber.lua \230\150\135\228\187\182\228\184\173\228\191\157\229\173\152\233\148\153\232\175\175\228\191\161\230\129\175",
-	["Limit"] = "\233\153\144\229\136\182",
-	["Set the limit on the nr of errors saved."] = "\232\174\190\231\189\174\233\148\153\232\175\175\228\191\157\229\173\152\233\153\144\229\136\182",
-	--["Filter addon mistakes"] = true,
-	--["Filters common mistakes that trigger the blocked/forbidden event."] = true,
+    ["Auto popup"] = "自动弹出",
+	["Toggle auto BugSack frame popup."] = "遇到错误是否自动弹出 BugSack 窗口",
+    ["Chatframe output"] = "聊天栏输出",
+    ["Print a warning to the chat frame when an error occurs."] = "当发生错误的时,在聊天栏中显示.",
+    ["Errors to chatframe"] = "错误到聊天栏",
+    ["Print the full error message to the chat frame instead of just a warning."] = "显示详细的错误信息到聊天栏中而非是一警告.",
+    ["Mute"] = "静音",
+    ["Toggle an audible warning everytime an error occurs."] = "切换错误发生时发出警告声.",
+    ["Sound"] = "音效",
+	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = "使用音效提示错误信息（Ctrl-点击预览声音效果。）",
+	["Save errors"] = "保存错误",
+    ["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = "是否在 SavedVariables\\!BugGrabber.lua 文件中保存错误信息",
+    ["Limit"] = "限制",
+    ["Set the limit on the nr of errors saved."] = "设置错误保存限制",
+	["Filter addon mistakes"] = "过滤插件错误",
+	["Filters common mistakes that trigger the blocked/forbidden event."] = "过滤通常的错误,如阻止/禁止的事件.",
+	["Throttle at excessive amount"] = "过度错误数量过滤",
+	["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."] = "当BugGrabbe捕获错误信息20次/秒,是否以默认值60秒频率过滤",
 
-	["Generate bug"] = "\230\168\161\230\139\159\233\148\153\232\175\175",
-	["Generate a fake bug for testing."] = "\230\168\161\230\139\159\228\186\167\231\148\159\228\184\128\228\184\170\230\168\161\230\139\159\233\148\153\232\175\175\232\191\155\232\161\140\230\181\139\232\175\149.",
-	["Script bug"] = "\232\132\154\230\156\172\233\148\153\232\175\175",
-	["Generate a script bug."] = "\230\168\161\230\139\159\228\186\167\231\148\159\228\184\128\228\184\170\232\132\154\230\156\172\233\148\153\232\175\175.",
-	["Addon bug"] = "\230\143\146\228\187\182\231\188\186\233\153\183",
-	["Generate an addon bug."] = "\230\168\161\230\139\159\228\186\167\231\148\159\228\184\128\228\184\170\230\143\146\228\187\182\231\188\186\233\153\183.",
+    ["Generate bug"] = "模拟错误",
+    ["Generate a fake bug for testing."] = "模拟产生一个模拟错误进行测试.",
+    ["Script bug"] = "脚本错误",
+    ["Generate a script bug."] = "模拟产生一个脚本错误.",
+	["Addon bug"] = "插件缺陷",
+    ["Generate an addon bug."] = "模拟产生一个插件缺陷.",
+	["Clear errors"] = "清除错误",
+	["Clear out the errors database."] = "清除错误数据库.",
 
-	["Clear errors"] = "\230\184\133\233\153\164\233\148\153\232\175\175",
-	["Clear out the errors database."] = "\230\184\133\233\153\164\233\148\153\232\175\175\230\149\176\230\141\174\229\186\147.",
-
+	["%d sec."] = "%d秒",
+	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."] = "由于错误数量过量产生,所以|cffeda55fBugGrabber|r已暂停工作.它将在|cffff0000%d|r后重新开始正常运行.|cffeda55f双击|r直接重新开始. ",
 	-- Chat messages
-	["You have no errors, yay!"] = "\230\178\161\230\156\137\229\143\145\231\148\159\233\148\153\232\175\175, \\^o^/",
-	["List of errors:"] = "\233\148\153\232\175\175\229\136\151\232\161\168",
-	["An error has been generated."] = "",
-	["BugSack generated this fake error."] = "BugSack \228\186\167\231\148\159\230\173\164\230\168\161\230\139\159\233\148\153\232\175\175.",
-	["All errors were wiped."] = "\230\137\128\230\156\137\233\148\153\232\175\175\232\162\171\230\184\133\233\153\164.",
-	["An error has been recorded."] = "\230\137\128\230\156\137\233\148\153\232\175\175\232\162\171\232\174\176\229\189\149.",
-	--["%d errors have been recorded."] = true,
+    ["You have no errors, yay!"] = "没有发生错误, \\^o^/",
+    ["List of errors:"] = "错误列表",
+    ["An error has been generated."] = "",
+    ["BugSack generated this fake error."] = "BugSack 产生此模拟错误.",
+    ["All errors were wiped."] = "所有错误被清除.",
+    ["An error has been recorded."] = "所有错误被记录.",
+	["%d errors have been recorded."] = true,
+	["You've received %d errors from %s, you can show them with /bugsack show received."] = "你已从%d接收到%d个错误, 你可以通过输入/bugsack来显示.",
+	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d个错误已经发送给%s. 若他没有安装BugSack和AceComm-2.0这两个插件的话, 他将不能浏览错误信息.",
 
-	-- Frame messages,
-	[" (... more ...)"] = "(... \230\155\180\229\164\154...)",
-	["No errors found"] = "\230\156\170\229\143\145\231\142\176\233\148\153\232\175\175",
-	["Error %d of %d"] = "\233\148\153\232\175\175 %d/%d",
-	[" (viewing last error)"] = " (\230\159\165\231\156\139\230\156\128\229\144\142\228\184\128\228\184\170\233\148\153\232\175\175)",
-	[" (viewing session errors)"] = " (\230\159\165\231\156\139\230\173\164\230\172\161\232\191\155\231\168\139\233\148\153\232\175\175)",
-	[" (viewing previous session errors)"] = " (\230\159\165\231\156\139\228\184\138\228\184\128\232\191\155\231\168\139\233\148\153\232\175\175)",
-	[" (viewing all errors)"] = " (\230\159\165\231\156\139\229\133\168\233\131\168\233\148\153\232\175\175)",
-	[" (viewing errors for session %d)"] = " (\230\159\165\231\156\139 \"%d\" \232\191\155\231\168\139\233\148\153\232\175\175)",
+    -- Frame messages,
+    [" (... more ...)"] = "(... 更多...)",
+    ["No errors found"] = "未发现错误",
+    ["Error %d of %d"] = "错误 %d/%d",
+    [" (viewing last error)"] = " (查看最后一个错误)",
+    [" (viewing session errors)"] = " (查看此次进程错误)",
+    [" (viewing previous session errors)"] = " (查看上一进程错误)",
+    [" (viewing all errors)"] = " (查看全部错误)",
+    [" (viewing errors for session %d)"] = " (查看 \"%d\" 进程错误)",
+	[" (viewing errors from %s)"] = "(查看%s的错误)",
 
-	-- FuBar plugin
-	["|cffeda55fClick|r to open the BugSack frame with the last error."] = "\231\130\185\229\135\187\230\159\165\231\156\139\232\174\176\229\189\149\231\154\132\230\156\128\229\144\142\228\184\128\228\184\170\233\148\153\232\175\175.",
-} end)
+    -- FuBar plugin
+	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55f点击|r打开BugSack及最后一错误信息. |cffeda55fShift-点击|r重新加载用户界面(和/console reloadui一样效果). |cffeda55fAlt-点击|r清除储存错误信息.",
+   }
+end)
 
 if GetLocale() == "zhCN" then
-	BugSackNextButton:SetText("\228\184\139\228\184\128\228\184\170")
-	BugSackLastButton:SetText("\230\156\128\229\144\142")
-	BugSackPrevButton:SetText("\228\184\138\228\184\128\228\184\170")
-	BugSackFirstButton:SetText("\230\156\128\229\136\157")
+	BugSackNextButton:SetText("下一个")
+	BugSackLastButton:SetText("最后")
+	BugSackPrevButton:SetText("上一个")
+	BugSackFirstButton:SetText("最初")
 end
