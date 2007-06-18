@@ -441,11 +441,11 @@ function BugSack:GetFilter()
 end
 
 function BugSack:ToggleFilter()
-	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes or nil
-	if not filter and not self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
+	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes
+	if not self.db.profile.filterAddonMistakes and not self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
 		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
 		BugGrabber.RegisterAddonActionEvents()
-	elseif self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
+	elseif self.db.profile.filterAddonMistakes and self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
 		self:UnregisterBucketEvent("BugGrabber_EventGrabbed")
 		BugGrabber.UnregisterAddonActionEvents()
 	end
