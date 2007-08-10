@@ -90,7 +90,7 @@ L:RegisterTranslations("zhTW", function() return {
 	[" (viewing errors from %s)"] = " (查看接收自%s的錯誤)",
 
 	-- FuBar plugin
-	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "\n|cffeda55f點擊: |r打開 BugSack 視窗查看最近的錯誤。\n|cffeda55fShift-點擊: |r重載使用者界面。\n|cffeda55fAlt-點擊: |r清除錯誤。",
+	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "\n|cffeda55f左擊: |r打開 BugSack 視窗查看最近的錯誤。\n|cffeda55fShift-左擊: |r重載使用者介面。\n|cffeda55fAlt-左擊: |r清除錯誤。",
 } end)
 
 if GetLocale() == "zhTW" then
