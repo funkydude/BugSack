@@ -1,7 +1,8 @@
 --Chinese  Local : CWDG Translation Team 昏睡墨鱼 (Thomas Mo)
---Update by CWDG 月色狼影
---$Rev: 568 $
---$Date: 2007-05-19 16:02:11 +0800 (星期六, 19 五月 2007) $
+--Update by CWDG 月色狼影 and biggates
+--CWDG site: http://Cwowaddon.com
+--$Rev: 1478 $
+--$Date: 2007-08-10 21:05:39 +0200 (星期五, 10 八月 2007) $
 
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
@@ -25,10 +26,10 @@ L:RegisterTranslations("zhCN", function()
     ["Show errors by session number."] = "根据进程错误数显示.",
     ["All errors"] = "全部错误",
     ["Show all errors."] = "显示全部错误.",
-	["Received errors"] = "接收错误",
+	["Received errors"] = "接收的错误",
 	["Show errors received from another player."] = "显示收集到其他玩家的错误信息",
 	["Send bugs"] = "发送错误",
-	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "发送你当前进程错误给其他玩家.只有在你和接收者都装有AceComm-2.0和BugSack且加载的情况才能工作.",
+	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "发送你当前进程错误给其他玩家.只有在你和接收者都装有且加载了AceComm-2.0和BugSack的情况才能工作.",
 	["<player name>"] = "<玩家姓名>",
 	["Menu"] = "目录",
 	["Menu options."] = "目录设置",
@@ -75,11 +76,11 @@ L:RegisterTranslations("zhCN", function()
 	-- Chat messages
     ["You have no errors, yay!"] = "没有发生错误, \\^o^/",
     ["List of errors:"] = "错误列表",
-    ["An error has been generated."] = "",
-    ["BugSack generated this fake error."] = "BugSack 产生此模拟错误.",
+    ["An error has been generated."] = "所有错误均已生成.",
+	["BugSack generated this fake error."] = "这个错误是由 BugSack 产生的模拟错误.",
     ["All errors were wiped."] = "所有错误被清除.",
     ["An error has been recorded."] = "所有错误被记录.",
-	["%d errors have been recorded."] = true,
+	["%d errors have been recorded."] = "已记录 %d 个错误.",
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = "你已从%d接收到%d个错误, 你可以通过输入/bugsack来显示.",
 	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d个错误已经发送给%s. 若他没有安装BugSack和AceComm-2.0这两个插件的话, 他将不能浏览错误信息.",
 
