@@ -8,6 +8,7 @@
 <Script file="Libs\AceConsole-2.0\AceConsole-2.0.lua"/>
 <Script file="Libs\AceAddon-2.0\AceAddon-2.0.lua"/>
 <Script file="Libs\AceLocale-2.2\AceLocale-2.2.lua"/>
+<Script file="Libs\AceComm-2.0\AceComm-2.0.lua"/>
 
 <Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
 <Script file="Libs\Tablet-2.0\Tablet-2.0.lua"/>
