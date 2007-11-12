@@ -45,7 +45,9 @@ local BugGrabber = _G.BugGrabber
 local BugGrabberDB = _G.BugGrabberDB
 
 local comm = AceLibrary:HasInstance("AceComm-2.0") and AceLibrary("AceComm-2.0") or nil
-if comm then comm:embed(BugSack) end
+local rockComm = Rock and Rock:HasLibrary("LibRockComm-1.0") and Rock("LibRockComm-1.0") or nil
+if comm and not rockComm then comm:embed(BugSack) end
+if rockComm then rockComm:Embed(BugSack) end
 
 -- Frame state variables
 local sackType = nil
@@ -120,7 +122,7 @@ BugSack.options = {
 					passValue = "received",
 					order = 6,
 					disabled = function() return not receivedErrors end,
-					hidden = function() return not comm end,
+					hidden = function() return (not comm and not rockComm) end,
 				},
 			},
 		},
@@ -183,7 +185,7 @@ BugSack.options = {
 					passValue = "received",
 					order = 6,
 					disabled = function() return not receivedErrors end,
-					hidden = function() return not comm end,
+					hidden = function() return (not comm and not rockComm) end,
 				},
 			},
 		},
@@ -281,7 +283,7 @@ BugSack.options = {
 			set = "SendBugsToUser",
 			usage = L["<player name>"],
 			validate = function(v) return type(v) == "string" and v:trim():len() > 0 end,
-			disabled = function() return not comm or #BugSack:GetErrors("session") == 0 end,
+			disabled = function() return (not comm and not rockComm) or #BugSack:GetErrors("session") == 0 end,
 			order = 300,
 		},
 		bug = {
@@ -351,7 +353,14 @@ function BugSack:OnInitialize()
 		BugGrabber.bugsackErrors = nil
 	end
 
-	if comm then
+	if rockComm then
+		self:SetCommPrefix("BRC")
+		self:SetDefaultCommPriority("BULK")
+		self:AddCommListener("BRC", "WHISPER", function(prefix, distribution, person, ...)
+			ChatFrame1:AddMessage("Got a BRC comm.")
+			self:OnBugComm(prefix, sender, distribution, ...)
+		end)
+	elseif comm then
 		self:SetCommPrefix("BugSack")
 		self:SetDefaultCommPriority("BULK")
 		self:RegisterComm("BugSack", "WHISPER", "OnBugComm")
@@ -650,10 +659,10 @@ end
 
 -- Sends the current session errors to another player using AceComm-2.0
 function BugSack:SendBugsToUser(player)
-	if not comm then
+	if not comm and not rockComm then
 		error("Can't send bugs to other users without AceComm-2.0.")
 	end
-	if type(player) ~= "string" or player:trim():len() < 3 then
+	if type(player) ~= "string" or player:trim():len() < 2 then
 		error("Player needs to be a valid string.")
 	end
 
@@ -668,13 +677,6 @@ function BugSack:SendBugsToUser(player)
 end
 
 function BugSack:OnBugComm(prefix, sender, distribution, bugs)
-	if prefix ~= "BugSack" or distribution ~= "WHISPER" then
-		error("BugSack got a communication message it shouldn't have received.")
-	end
-	if type(bugs) ~= "table" then
-		error(string.format("We received a bug communication from %s, but it is a %q, not a table.", sender, type(bugs)))
-	end
-
 	receivedErrors = bugs
 	receivedFrom = sender
 
