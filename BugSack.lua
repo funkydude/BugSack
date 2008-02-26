@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 local _G = getfenv(0)
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
-local media = AceLibrary:HasInstance("SharedMedia-1.0") and AceLibrary("SharedMedia-1.0") or nil
+local media = AceLibrary:HasInstance("LibSharedMedia-2.0") and AceLibrary("LibSharedMedia-2.0") or nil
 
 BINDING_HEADER_BUGSACK = "BugSack"
 BINDING_NAME_BUGSACK_SHOW_CURRENT = L["Show Current Error"]
