@@ -9,10 +9,6 @@ local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("zhCN", function()
    return {
-    -- Bindings
-    ["Show Current Error"] = "显示当前错误",
-    ["Show Session Errors"] = "显示进程错误",
-
 	-- Command descriptions
     ["Show sack"] = "显示记录",
     ["Show errors in the sack."] = "显示错误记录",

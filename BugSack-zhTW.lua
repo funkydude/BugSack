@@ -1,10 +1,6 @@
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("zhTW", function() return {
-	-- Bindings
-	["Show Current Error"] = "顯示目前的錯誤",
-	["Show Session Errors"] = "顯示本次遊戲期間錯誤",
-
 	-- Command descriptions
 	["Show sack"] = "顯示 BugSack",
 	["Show errors in the sack."] = "在 BugSack 視窗中顯示錯誤資訊。",

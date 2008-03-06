@@ -1,11 +1,7 @@
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("esES", function() return {
-	-- Bindings
-	["Show Current Error"] = "Mostrar el Error Actual",
-	["Show Session Errors"] = "Mostrar los Errores de Sesi\195\179n",
-
-	-- Command descriptions                                  
+	-- Command descriptions
 	["Show sack"] = "Mostrar el saco",
 	["Show errors in the sack."] = "Muestra los errores en el saco.",
 	["Current error"] = "Error actual",

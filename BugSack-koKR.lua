@@ -4,10 +4,6 @@
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("koKR", function() return {
-	-- Bindings
-	["Show Current Error"] = "현재 오류 메세지 표시",
-	["Show Session Errors"] = "현재 접속중 오류 메세지 표시",
-
 	-- Command descriptions
 	["Show sack"] = "자루 표시",
 	["Show errors in the sack."] = "자루 안에 오류 메세지를 표시합니다",

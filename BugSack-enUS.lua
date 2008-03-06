@@ -1,10 +1,6 @@
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
 L:RegisterTranslations("enUS", function() return {
-	-- Bindings
-	["Show Current Error"] = true,
-	["Show Session Errors"] = true,
-
 	-- Command descriptions
 	["Show sack"] = true,
 	["Show errors in the sack."] = true,
