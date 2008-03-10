@@ -20,7 +20,7 @@ L:RegisterTranslations("deDE", function()
 	["Received errors"] = "Empfangene Fehler",
 	["Show errors received from another player."] = "Zeige empfangene Fehler von anderen Spielern.",
 	["Send bugs"] = "Sende Fehler",
-	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "Sende deine gegenwärtigen Fehler zu einem anderen Spieler. Dies funktioniert nur wenn ihr beide die Datenbank AceComm-2.0 und BugSack geladen/aktiviert habt.",
+	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "Sende Deine gegenwärtigen Fehler zu einem anderen Spieler. Dies funktioniert nur wenn beide die Datenbank AceComm-2.0 und BugSack geladen/aktiviert habt.",
 	["<player name>"] = "<spieler name>",
 	["Menu"] = "Menü",
 	["Menu options."] = "Menü Optionen",
@@ -34,27 +34,27 @@ L:RegisterTranslations("deDE", function()
 	["List all errors."] = "Listet alle gespeicherten Fehler auf.",
 	["List errors received from another player."] = "Listet die empfangenen Fehler von anderen Spielern auf.",
 
-	["Auto popup"] = "Auto aufspringen",
-	["Toggle auto BugSack frame popup."] = "Schaltet das automatische einblenden des Fehler Fensters ein/aus.",
+	["Auto popup"] = "Autom. aufspringen",
+	["Toggle auto BugSack frame popup."] = "Schaltet das automatische Einblenden des Fehlerfensters ein/aus.",
 	["Chatframe output"] = "Chatfenster Ausgabe",
-	["Print a warning to the chat frame when an error occurs."] = "Schreibe eine Wahrnung ins Chatfenster wenn ein Fehler auftritt.",
+	["Print a warning to the chat frame when an error occurs."] = "Schreibe eine Warnung ins Chatfenster wenn ein Fehler auftritt.",
 	["Errors to chatframe"] = "Fehler im Chatfenster",
-	["Print the full error message to the chat frame instead of just a warning."] = "Schreibe die gesamte Fehler Nachricht in das Chatfenster anstelle nur einer Warnung.",
-	["Sound"] = "Sound",
-	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = "Welchen Sound abspielen wenn ein Fehler auftritt (Strg+Klick zum Probehören).",
+	["Print the full error message to the chat frame instead of just a warning."] = "Schreibe die gesamte Fehlernachricht in das Chatfenster anstelle nur einer Warnung.",
 	["Mute"] = "Stumm",
 	["Toggle an audible warning everytime an error occurs."] = "Schaltet den Audiosound bei Fehlern ein/aus.",
+	["Sound"] = "Sound",
+	["What sound to play when an error occurs (Ctrl-Click to preview.)"] = "Sound, der abgespielt wird wenn ein Fehler auftritt (Strg+Klick zum Probehören).",
 	["Save errors"] = "Fehler speichern",
 	["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."] = "Schaltet das Speichern von Fehlern in der SavedVariables\\!BugGrabber.lua Datei ein/aus.",
 	["Limit"] = "Begrenzung",
 	["Set the limit on the nr of errors saved."] = "Setze eine Begrenzung wieviele Fehler maximal gespeichert werden.",
 	["Filter addon mistakes"] = "Filtere falsche Addon Fehler",
-	["Filters common mistakes that trigger the blocked/forbidden event."] = "Filtert die bekannsten falschen Fehler welche die 'blocked/forbidden' Meldungen betrifft.",
+	["Filters common mistakes that trigger the blocked/forbidden event."] = "Filtert die bekanntesten falschen Fehler, welche die 'blocked/forbidden' Meldungen betrifft.",
 	["Throttle at excessive amount"] = "Bei Übermaß temporär drosseln",
 	["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."] = "Die Fehleraufzeichnung für vorgegebene 60 Sekunden stoppen, wennn BugGrabber mehr als 20 Fehler pro Sekunde aufzeichnet.",
 
 	["Generate bug"] = "Generiere Fehler",
-	["Generate a fake bug for testing."] = "Generiert einen falschen Fehler zum Testen des Addons.",
+	["Generate a fake bug for testing."] = "Generiert einen fingierten Fehler zum Testen des Addons.",
 	["Script bug"] = "Script Fehler",
 	["Generate a script bug."] = "Generiert einen Script Fehler.",
 	["Addon bug"] = "Addon Fehler",
@@ -64,19 +64,18 @@ L:RegisterTranslations("deDE", function()
 	["Clear out the errors database."] = "Löscht alle Fehler aus der Datenbank.",
 
 	["%d sec."] = "%d sec.",
-	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."] = "|cffeda55fBugGrabber|r ist pausiert  wegen einer Überzahl an Fehlern die Generiert werden. Der normale Betrieb wird in |cffff0000%d|r sekunden wieder aufgenommen. |cffeda55fDoppel-Klicken|r um Betrieb jetzt wieder aufzunehmen.",
-
+	["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."] = "|cffeda55fBugGrabber|r pausiert wegen einer Überzahl an generierten Fehlern. Der normale Betrieb wird in |cffff0000%d|r sekunden wieder aufgenommen. |cffeda55fDoppel-Klicken|r um Betrieb jetzt wieder aufzunehmen.",
 
 	-- Chat messages
 	["You have no errors, yay!"] = "Du hast keine Fehler, Jeehaa!",
 	["List of errors:"] = "Liste der Fehler:",
 	["An error has been generated."] = "Ein Fehler wurde generiert.",
-	["BugSack generated this fake error."] = "BugSack hat diesen Fehler generiert.",
+	["BugSack generated this fake error."] = "BugSack hat diesen fingierten Fehler generiert.",
 	["All errors were wiped."] = "Alle Fehler wurden gelöscht.",
 	["An error has been recorded."] = "Ein Fehler wurde aufgezeichnet.",
 	["%d errors have been recorded."] = "%d Fehler wurden aufgezeichnet.",
-	["You've received %d errors from %s, you can show them with /bugsack show received."] = "Du hast %d Fehler von %s empfangen, du kannst sie dir anzeigen lassen mit dem chat Befehl /bugsack show received.",
-	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d Fehler wurden gesendet zu %s.  Sollte er BugSack und AceComm-2.0 nicht haben, so wird er nicht  in der Lage sein die Fehler zu lesen.",
+	["You've received %d errors from %s, you can show them with /bugsack show received."] = "Du hast %d Fehler von %s empfangen, Du kannst sie dir mit dem chat Befehl /bugsack show received anzeigen lassen.",
+	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d Fehler wurden gesendet zu %s. Sollte er BugSack und AceComm-2.0 nicht haben, so wird er nicht in der Lage sein die Fehler zu lesen.",
 
 	-- Frame messages,
 	[" (... more ...)"] = " (... mehr ...)",
@@ -90,6 +89,5 @@ L:RegisterTranslations("deDE", function()
 	[" (viewing errors from %s)"] = " (zeige Fehler von %s)",
 
 	-- FuBar plugin
-	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55fKlicken|r zum öffnen des BugSack Fensters mit dem letzten Fehler. |cffeda55fShift-Klicken|r um das Ui neu zu laden. |cffeda55fAlt-Klicken|r um die Fehler zu löschen."
-	}
-end)
+	["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55fKlicken|r zum Öffnen des BugSack Fensters mit dem letzten Fehler. |cffeda55fShift-Klicken|r um das UI neu zu laden. |cffeda55fAlt-Klicken|r um die Fehler zu löschen."
+} end)
