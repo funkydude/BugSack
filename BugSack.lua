@@ -365,16 +365,22 @@ function BugSack:OnEnable()
 	end
 end
 
-function BugSack:Taint()
+function BugSack:Taint(addon)
+	if type(addon) ~= "string" then return end
+	local printer = AceLibrary("AceConsole-2.0")
+	local result = {}
 	for k,v in pairs(_G) do
 		local secure, tainter = issecurevariable(k)
-		if not secure
-		and tainter ~= ""
-		and not tainter:find("Blizzard")
-		and not tainter:find("Tablet-2.0")
-		and not tainter:find("FuBarPlugin-2.0") then
-			AceLibrary("AceConsole-2.0"):PrintComma(k, tainter)
+		if not secure and tainter and tainter:find(addon) then
+			table.insert(result, tostring(k))
 		end
+	end
+	if #result > 0 then
+		table.sort(result)
+		printer:Print("Globals found for " .. addon .. ":")
+		printer:Print(table.concat(result, ", "))
+	else
+		printer:Print("No taint found for " .. addon .. ".")
 	end
 end
 

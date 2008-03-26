@@ -1,8 +1,0 @@
-<Bindings>
-	<Binding name="BUGSACK_SHOW_CURRENT" header="BUGSACK">
-		BugSack:ShowCurrent()
-	</Binding>
-	<Binding name="BUGSACK_SHOW_SESSION">
-		BugSack:ShowSession()
-	</Binding>
-</Bindings>
