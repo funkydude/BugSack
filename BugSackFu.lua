@@ -116,13 +116,14 @@ function BugSackFu:Reset()
 	self:SetIcon(true)
 end
 
+local textFormat = "%d/%d"
 function BugSackFu:OnTextUpdate()
 	if pauseCountDown then
 		self:SetText(L["%d sec."]:format(pauseCountDown))
 	else
 		local errcount = #BugSack:GetErrors("session")
 		if not errcount then errcount = 0 end
-		self:SetText(tostring(errcount).."/"..tostring(dupeCounter + errcount))
+		self:SetText(textFormat:format(errcount, dupeCounter + errcount))
 		self:SetIcon(errcount == 0 and true or "Interface\\AddOns\\BugSack\\icon_red")
 	end
 end
@@ -134,6 +135,8 @@ function BugSackFu:OnClick()
 		ReloadUI()
 	elseif IsAltKeyDown() then
 		BugSack:Reset()
+	elseif BugSackFrame:IsShown() then
+		BugSackFrame:Hide()
 	else
 		BugSack:ShowFrame("session")
 	end
