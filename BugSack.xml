@@ -1,11 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+<!-- $Id$ -->
 <!--
-  $Id$
-  -->
-
-<!--
-
 BugSack, a World of Warcraft addon that interfaces with the !BugGrabber addon
 to present errors in a nice way.
 Copyright (C) 2007 The BugSack Team.
@@ -23,7 +19,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 -->
 
 <Frame name="BugSackFrame" parent="UIParent" inherits="DialogBoxFrame">

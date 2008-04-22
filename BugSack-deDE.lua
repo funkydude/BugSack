@@ -2,8 +2,7 @@
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
 
-L:RegisterTranslations("deDE", function()
-	return {
+L:RegisterTranslations("deDE", function() return {
 	-- Command descriptions
 	["Show sack"] = "Zeige Sack",
 	["Show errors in the sack."] = "Zeigt Fehler die sich im Sack befinden.",
@@ -20,7 +19,7 @@ L:RegisterTranslations("deDE", function()
 	["Received errors"] = "Empfangene Fehler",
 	["Show errors received from another player."] = "Zeige empfangene Fehler von anderen Spielern.",
 	["Send bugs"] = "Sende Fehler",
-	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "Sende Deine gegenwärtigen Fehler zu einem anderen Spieler. Dies funktioniert nur wenn beide die Datenbank AceComm-2.0 und BugSack geladen/aktiviert habt.",
+	["Sends your current session bugs to another BugSack user."] = "Sende Deine gegenwärtigen Fehler zu einem anderen Spieler. Dies funktioniert nur wenn beide die Datenbank AceComm-2.0 und BugSack geladen/aktiviert habt.",
 	["<player name>"] = "<spieler name>",
 	["Menu"] = "Menü",
 	["Menu options."] = "Menü Optionen",
@@ -75,7 +74,7 @@ L:RegisterTranslations("deDE", function()
 	["An error has been recorded."] = "Ein Fehler wurde aufgezeichnet.",
 	["%d errors have been recorded."] = "%d Fehler wurden aufgezeichnet.",
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = "Du hast %d Fehler von %s empfangen, Du kannst sie dir mit dem chat Befehl /bugsack show received anzeigen lassen.",
-	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d Fehler wurden gesendet zu %s. Sollte er BugSack und AceComm-2.0 nicht haben, so wird er nicht in der Lage sein die Fehler zu lesen.",
+	["%d errors has been sent to %s. He must have BugSack to be able to read them."] = "%d Fehler wurden gesendet zu %s. Sollte er BugSack und AceComm-2.0 nicht haben, so wird er nicht in der Lage sein die Fehler zu lesen.",
 
 	-- Frame messages,
 	[" (... more ...)"] = " (... mehr ...)",

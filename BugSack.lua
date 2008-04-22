@@ -1,17 +1,18 @@
 --
 -- $Id$
 --
--- Developers: Rowne, Ramble, industrial, Fritti, kergoth, Rabbit
+-- The BugSack and BugGrabber team is:
+-- Current Developer: Rabbit
+-- Past Developers: Rowne, Ramble, industrial, Fritti, kergoth
 -- Testers: Ramble, Sariash
 --
 -- Credits to AceGUI & LuaPad for the scrollbar knowledge.
 --
-
 --[[
 
 BugSack, a World of Warcraft addon that interfaces with the !BugGrabber addon
 to present errors in a nice way.
-Copyright (C) 2007 The BugSack Team.
+Copyright (C) 2008 The BugSack Team.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -182,8 +183,9 @@ BugSack.options = {
 			type = "range",
 			name = L["Limit"],
 			desc = L["Set the limit on the nr of errors saved."],
-			get = BugGrabber.GetLimit,
-			set = BugGrabber.SetLimit,
+			get = "GetLimit",
+			set = "SetLimit",
+			handler = BugGrabber,
 			min = 10,
 			max = MAX_BUGGRABBER_ERRORS or 1000,
 			step = 10,
@@ -193,8 +195,9 @@ BugSack.options = {
 			type = "toggle",
 			name = L["Save errors"],
 			desc = L["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."],
-			get = BugGrabber.GetSave,
-			set = BugGrabber.ToggleSave,
+			get = "GetSave",
+			set = "ToggleSave",
+			handler = BugGrabber,
 			order = 103,
 		},
 		reset = {
@@ -203,7 +206,6 @@ BugSack.options = {
 			desc = L["Clear out the errors database."],
 			func = "Reset",
 			order = 104,
-			disabled = function() return #BugSack:GetErrors("all") == 0 end,
 		},
 		spacer1 = {
 			type = "header",
@@ -267,12 +269,11 @@ BugSack.options = {
 		sendbugs = {
 			type = "text",
 			name = L["Send bugs"],
-			desc = L["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."],
+			desc = L["Sends your current session bugs to another BugSack user."],
 			get = false,
 			set = "SendBugsToUser",
 			usage = L["<player name>"],
 			validate = function(v) return type(v) == "string" and v:trim():len() > 0 end,
-			disabled = function() return #BugSack:GetErrors("session") == 0 end,
 			order = 300,
 		},
 		bug = {
@@ -309,8 +310,9 @@ BugSack.options = {
 			type = "toggle",
 			name = L["Throttle at excessive amount"],
 			desc = L["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."],
-			get = BugGrabber.IsThrottling,
-			set = BugGrabber.UseThrottling,
+			get = "IsThrottling",
+			set = "UseThrottling",
+			handler = BugGrabber,
 			order = 303,
 		}
 	}
@@ -334,17 +336,10 @@ function BugSack:OnInitialize()
 		filterAddonMistakes = true,
 		soundMedia = "BugSack: Fatality",
 	})
-	self:RegisterChatCommand("/bugsack", "/bs", self.options, "BUGSACK")
-
-	-- Swipe the load errors from BugGrabber if there were any
-	if BugGrabber and BugGrabber.bugsackErrors then
-		for _, err in pairs(BugGrabber.bugsackErrors) do self:OnError(err) end
-		BugGrabber.bugsackErrors = nil
-	end
+	self:RegisterChatCommand("/bugsack", self.options, "BUGSACK")
 
 	self:SetCommPrefix("BugSack")
 	self:SetDefaultCommPriority("BULK")
-	self:RegisterComm("BugSack", "WHISPER", "OnBugComm")
 
 	if media then
 		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\error.wav")
@@ -352,16 +347,32 @@ function BugSack:OnInitialize()
 	end
 end
 
-function BugSack:OnEnable()
+function BugSack:OnEnable(first)
+	-- Make sure we grab any errors fired before bugsack loaded.
+	if first then
+		local session = self:GetErrors("session")
+		if session and #session > 0 then
+			local t = {}
+			for i, v in ipairs(session) do
+				t[v] = true
+			end
+			self:OnError(t)
+			for k in pairs(t) do t[k] = nil end
+			t = nil
+		end
+	end
+
+	self:RegisterComm("BugSack", "WHISPER", "OnBugComm")
+
 	-- Set up our error event handler
 	self:RegisterBucketEvent("BugGrabber_BugGrabbed", 2, "OnError")
 	self:RegisterEvent("BugGrabber_AddonActionEventsRegistered")
 
 	if not self:GetFilter() then
 		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
-		BugGrabber.RegisterAddonActionEvents()
+		BugGrabber:RegisterAddonActionEvents()
 	else
-		BugGrabber.UnregisterAddonActionEvents()
+		BugGrabber:UnregisterAddonActionEvents()
 	end
 end
 
@@ -388,47 +399,46 @@ local justUnregistered = nil
 local function clearJustUnregistered() justUnregistered = nil end
 function BugSack:BugGrabber_AddonActionEventsRegistered()
 	if self:GetFilter() and not justUnregistered then
-		BugGrabber.UnregisterAddonActionEvents()
+		BugGrabber:UnregisterAddonActionEvents()
 		justUnregistered = true
 		self:ScheduleEvent(clearJustUnregistered, 10)
 	end
 end
 
-function BugSack:GetErrors(which)
-	local errs = {}
+do
+	local errors = {}
+	function BugSack:GetErrors(which)
+		if type(which) ~= "string" and type(which) ~= "number" then return end
+		for i in ipairs(errors) do errors[i] = nil end
 
-	if type(which) ~= "string" and type(which) ~= "number" then
-		return errs
-	end
-
-	local db = BugGrabber.GetDB()
-
-	if type(which) == "number" then
-		for _, err in pairs(db) do
-			if which == err.session then
-				table.insert(errs, err)
-			end
-		end
-	else
-		local cs = BugGrabberDB.session
-		if which == "received" then
-			return receivedErrors
-		elseif which == "current" then
-			local current = #db
-			if current ~= 0 and db[current].session == cs then
-				table.insert(errs, db[current])
+		local db = BugGrabber:GetDB()
+		if type(which) == "number" then
+			for i, e in ipairs(db) do
+				if which == err.session then
+					table.insert(errors, e)
+				end
 			end
 		else
-			for _, err in pairs(db) do
-				if (which == "all")
-				or (which == "session" and cs == tonumber(err.session))
-				or (which == "previous" and cs - 1 == tonumber(err.session)) then
-					table.insert(errs, err)
+			local cs = BugGrabberDB.session
+			if which == "received" then
+				return receivedErrors
+			elseif which == "current" then
+				local current = #db
+				if current ~= 0 and db[current].session == cs then
+					table.insert(errors, db[current])
+				end
+			else
+				for i, e in ipairs(db) do
+					if (which == "all")
+					or (which == "session" and cs == tonumber(e.session))
+					or (which == "previous" and cs - 1 == tonumber(e.session)) then
+						table.insert(errors, e)
+					end
 				end
 			end
 		end
+		return errors
 	end
-	return errs
 end
 
 function BugSack:GetFilter()
@@ -439,10 +449,10 @@ function BugSack:ToggleFilter()
 	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes
 	if not self.db.profile.filterAddonMistakes and not self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
 		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
-		BugGrabber.RegisterAddonActionEvents()
+		BugGrabber:RegisterAddonActionEvents()
 	elseif self.db.profile.filterAddonMistakes and self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
 		self:UnregisterBucketEvent("BugGrabber_EventGrabbed")
-		BugGrabber.UnregisterAddonActionEvents()
+		BugGrabber:UnregisterAddonActionEvents()
 	end
 end
 
@@ -451,16 +461,15 @@ function BugSack:ListErrors(which, nr)
 	if type(nr) == "string" then nr = tonumber(nr) end
 	if (which == "ListErrors" or which == "number") then which = nr end
 
-	local errs = self:GetErrors(which)
-	if #errs == 0 then
+	local bugs = self:GetErrors(which)
+	if not bugs or #bugs == 0 then
 		self:Print(L["You have no errors, yay!"])
 		return
 	end
 
 	self:Print(L["List of errors:"])
-	local i, err
-	for i, err in ipairs(errs) do
-		self:Print("%d. %s", i, self:FormatError(err))
+	for i, e in ipairs(bugs) do
+		self:Print("%d. %s", i, self:FormatError(e))
 	end
 end
 
@@ -469,9 +478,9 @@ function BugSack:ShowFrame(which, nr)
 	if type(nr) == "string" then nr = tonumber(nr) end
 	if (which == "ShowFrame" or which == "number") then which = nr end
 
-	sackType = which
 	sackErrors = self:GetErrors(which)
-	sackMax = #sackErrors
+	sackType = which
+	sackMax = sackErrors and #sackErrors or 0
 
 	if nr then
 		sackCurrent = math.min(sackMax, math.abs(nr))
@@ -556,18 +565,9 @@ function BugSack:OnNextClick()
 end
 
 function BugSack:FormatError(err)
-	if type(err) ~= "table" then
-		if type(err) == "string" then
-			return string.format("%q is not a valid BugGrabber error.", err)
-		else
-			return string.format("Tried to format an error of type %q, should be a table.", type(err))
-		end
-	end
-	local m
-	if type(err.message) == "table" then
-		m = table.concat(err.message, '')
-	else
-		m = err.message
+	local m = err.message
+	if type(m) == "table" then
+		m = table.concat(m, "")
 	end
 	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time or "Uknown", err.session or -1, err.counter or -1, self:ColorError(m or ""))
 end
@@ -596,20 +596,23 @@ function BugSack:AddonBug()
 end
 
 function BugSack:Reset()
-	BugGrabber.loadErrors = nil
-	BugGrabber.errors = {}
-	BugGrabberDB.errors = {}
+	BugGrabber:Reset()
 	self:Print(L["All errors were wiped."])
 
-	if self:IsEventRegistered("BugGrabber_BugGrabbed") and BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
+	if BugSackFu then
 		BugSackFu:Reset()
-		BugSackFu:UpdateDisplay()
+		BugSackFu:Update()
 	end
 end
 
 -- The Error catching function.
 
-function BugSack:OnError(err)
+function BugSack:OnError(errors)
+	if type(errors) ~= "table" then return end
+	local n = 0
+	for k in pairs(errors) do n = n + 1 end
+	if n < 1 then return end
+
 	if media then
 		local sound = media:Fetch("sound", self.db.profile.soundMedia) or "Interface\\AddOns\\BugSack\\error.wav"
 		PlaySoundFile(sound)
@@ -621,25 +624,21 @@ function BugSack:OnError(err)
 		self:ShowFrame("current")
 	end
 
-	local firstError = nil
-	local num = 0
-	local k, v
-	for k, v in pairs(err) do
-		num = num + 1
-		if not firstError then firstError = k end
-	end
-	if self.db.profile.chatframe and self.db.profile.showmsg and num == 1 then
-		self:Print(self:FormatError(firstError))
+	if self.db.profile.chatframe and self.db.profile.showmsg and n == 1 then
+		for k in pairs(errors) do
+			self:Print(self:FormatError(k))
+			break
+		end
 	elseif self.db.profile.chatframe then
-		if num > 1 then
-			self:Print(L["%d errors have been recorded."]:format(num))
+		if n > 1 then
+			self:Print(L["%d errors have been recorded."]:format(n))
 		else
 			self:Print(L["An error has been recorded."])
 		end
 	end
 
-	if self:IsEventRegistered("BugGrabber_BugGrabbed") and BugSackFu and type(BugSackFu.IsActive) == "function" and BugSackFu:IsActive() then
-		_G.BugSackFu:UpdateDisplay()
+	if BugSackFu then
+		BugSackFu:Update()
 	end
 end
 
@@ -650,13 +649,10 @@ function BugSack:SendBugsToUser(player)
 	end
 
 	local errors = self:GetErrors("session")
-	if #errors == 0 then
-		error("Can't send 0 errors.")
-	end
-
+	if not errors or #errors == 0 then return end
 	self:SendCommMessage("WHISPER", player, errors)
 
-	self:Print(L["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."]:format(#errors, player))
+	self:Print(L["%d errors has been sent to %s. He must have BugSack to be able to read them."]:format(#errors, player))
 end
 
 function BugSack:OnBugComm(prefix, sender, distribution, bugs)
@@ -672,12 +668,11 @@ function BugSack:OnTextChanged()
 	if this:GetText() ~= sackText then
 		this:SetText(sackText)
 	end
-	local s = _G.BugSackFrameScrollScrollBar
 	this:GetParent():UpdateScrollChildRect()
-	local _, m = s:GetMinMaxValues()
+	local _, m = BugSackFrameScrollScrollBar:GetMinMaxValues()
 	if m > 0 and this.max ~= m then
 		this.max = m
-		s:SetValue(m)
+		BugSackFrameScrollScrollBar:SetValue(m)
 	end
 end
 

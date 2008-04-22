@@ -17,7 +17,7 @@ L:RegisterTranslations("esES", function() return {
 	["Received errors"] = "Errores recibidos",
 	["Show errors received from another player."] = "Muestra los errores recibidos desde otro jugador",
 	["Send bugs"] = "Enviar errores",
-	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "Envía los errores de tu sesión actual a otro usuario. Solo funciona si tanto tú como el receptor tiene una instancia de AceComm-2.0 y BugSack cargadas.",
+	["Sends your current session bugs to another BugSack user."] = "Envía los errores de tu sesión actual a otro usuario. Solo funciona si tanto tú como el receptor tiene una instancia de AceComm-2.0 y BugSack cargadas.",
 	["<player name>"] = "<nombre del jugador>",
 	["Menu"] = "Menú",
 	["Menu options."] = "Menú de opciones",
@@ -72,7 +72,7 @@ L:RegisterTranslations("esES", function() return {
 	["An error has been recorded."] = "Se ha guardado un error.",
 	["%d errors have been recorded."] = "%d errores han sido guardados.",
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = "Has recibido %d errores desde %s, puedes mostrarlos con '/bugsack show received'",
-	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d errores han sido enviados a %s. Si no tiene tanto BugSack como AceComm-2.0 no podrá leerlos.",
+	["%d errors has been sent to %s. He must have BugSack to be able to read them."] = "%d errores han sido enviados a %s. Si no tiene tanto BugSack como AceComm-2.0 no podrá leerlos.",
 
 	-- Frame messages,
 	[" (... more ...)"] = " (... m\194\191s ...)",

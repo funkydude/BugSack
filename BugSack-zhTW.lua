@@ -17,7 +17,7 @@ L:RegisterTranslations("zhTW", function() return {
 	["Received errors"] = "收到的錯誤",
 	["Show errors received from another player."] = "顯示接收自其他玩家的錯誤。",
 	["Send bugs"] = "發送錯誤",
-	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "發送本次遊戲期間的錯誤給其他玩家。只對使用 AceComm-2.0 和 BugSack 的玩家有效。",
+	["Sends your current session bugs to another BugSack user."] = "發送本次遊戲期間的錯誤給其他玩家。只對使用 AceComm-2.0 和 BugSack 的玩家有效。",
 	["<player name>"] = "<玩家名字>",
 	["Menu"] = "選單",
 	["Menu options."] = "選項。",
@@ -72,7 +72,7 @@ L:RegisterTranslations("zhTW", function() return {
 	["An error has been recorded."] = "錯誤已被紀錄。",
 	["%d errors have been recorded."] = "%d個錯誤已經被紀錄。",
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = "你已接收%d個錯誤。錯誤由%s發出。你可用 /bugsack show received 查看。",
-	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%d個錯誤已發送給%s。只對使用 AceComm-2.0 和 BugSack 的玩家有效。",
+	["%d errors has been sent to %s. He must have BugSack to be able to read them."] = "%d個錯誤已發送給%s。只對使用 AceComm-2.0 和 BugSack 的玩家有效。",
 
 	-- Frame messages,
 	[" (... more ...)"] = "(... 更多 ...)",

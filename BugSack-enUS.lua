@@ -17,7 +17,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Received errors"] = true,
 	["Show errors received from another player."] = true,
 	["Send bugs"] = true,
-	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = true,
+	["Sends your current session bugs to another BugSack user."] = true,
 	["<player name>"] = true,
 	["Menu"] = true,
 	["Menu options."] = true,
@@ -72,7 +72,7 @@ L:RegisterTranslations("enUS", function() return {
 	["An error has been recorded."] = true,
 	["%d errors have been recorded."] = true,
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = true,
-	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = true,
+	["%d errors has been sent to %s. He must have BugSack to be able to read them."] = true,
 
 	-- Frame messages,
 	[" (... more ...)"] = true,

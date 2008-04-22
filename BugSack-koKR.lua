@@ -20,7 +20,7 @@ L:RegisterTranslations("koKR", function() return {
 	["Received errors"] = "받은 오류",
 	["Show errors received from another player."] = "다른 플레이어에게서 받은 오류를 표시합니다.",
 	["Send bugs"] = "버그 보내기",
-	["Sends your current session bugs to another user. Only works if both you and the recipient has an instance of AceComm-2.0 and BugSack loaded."] = "다른 사용자에게 현재 접속중 오류를 보냅니다. 단, AceComm-2.0와 BugSack이 설치되어 있어야합니다.",
+	["Sends your current session bugs to another BugSack user."] = "다른 사용자에게 현재 접속중 오류를 보냅니다. 단, AceComm-2.0와 BugSack이 설치되어 있어야합니다.",
 	["<player name>"] = "<플레이어명>",
 	["Menu"] = "메뉴",
 	["Menu options."] = "메뉴 설정입니다.",
@@ -75,7 +75,7 @@ L:RegisterTranslations("koKR", function() return {
 	["An error has been recorded."] = "1개의 오류가 기록되었습니다",
 	["%d errors have been recorded."] = "%d개의 오류가 기록되었습니다.",
 	["You've received %d errors from %s, you can show them with /bugsack show received."] = "%d개의 오류를 %s에게서 받았습니다, /bugsack show received 를 이용해 볼 수 있습니다.",
-	["%d errors has been sent to %s. If he does not have both BugSack and AceComm-2.0, he will not be able to read them."] = "%s에게 %d개의 오류를 보냈습니다. 만일 그가 BugSack 과 AceComm-2.0을 사용하지 않는다면, 그는 오류를 확인 할 수 없습니다.",
+	["%d errors has been sent to %s. He must have BugSack to be able to read them."] = "%s에게 %d개의 오류를 보냈습니다. 만일 그가 BugSack 과 AceComm-2.0을 사용하지 않는다면, 그는 오류를 확인 할 수 없습니다.",
 
 	-- Frame messages,
 	[" (... more ...)"] = " (... 이상 ...)",
