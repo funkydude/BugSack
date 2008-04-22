@@ -11,7 +11,7 @@
 ## X-Credits: Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
 ## SavedVariables: BugSackDB
 ## RequiredDeps: !BugGrabber
-## OptionalDeps: FuBar, Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib
+## OptionalDeps: FuBar, Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib, LibSharedMedia-3.0, SharedMedia
 ## X-Embeds: Ace2, DewdropLib, FuBarPlugin-2.0, TabletLib
 ## X-Category: Development Tools
 ## X-RelSite-WoWI: 5995
