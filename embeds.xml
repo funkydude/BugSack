@@ -11,7 +11,6 @@
 <Script file="Libs\AceComm-2.0\AceComm-2.0.lua"/>
 
 <Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
-<Script file="Libs\Tablet-2.0\Tablet-2.0.lua"/>
 <Script file="Libs\FuBarPlugin-2.0\FuBarPlugin-2.0.lua"/>
 
 </Ui>

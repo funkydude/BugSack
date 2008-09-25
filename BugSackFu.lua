@@ -28,7 +28,6 @@ local BugSack = BugSack
 BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
 
 local L = AceLibrary("AceLocale-2.2"):new("BugSack")
-local Tablet = AceLibrary("Tablet-2.0")
 
 local paused = nil
 local pauseCountDown = nil
@@ -63,6 +62,8 @@ function BugSackFu:OnInitialize()
 	self.hasNoColor = true
 	self.clickableTooltip = true
 	self.hideWithoutStandby = true
+	self.blizzardTooltip = true
+	self.cannotDetachTooltip = true
 end
 
 function BugSackFu:OnEnable()
@@ -136,28 +137,13 @@ end
 do
 	local pauseHint = L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."]
 	local hint = L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
+	local line = "%d. %s (x%d)"
 	function BugSackFu:OnTooltipUpdate()
 		local errs = BugSack:GetErrors("session")
 		if not errs or #errs == 0 then
-			Tablet:AddCategory("columns", 1):AddLine("text", L["You have no errors, yay!"])
+			GameTooltip:AddLine(L["You have no errors, yay!"])
 		else
-			local cat = Tablet:AddCategory(
-				"columns", 3,
-				"hideBlankLine", true,
-				"showWithoutChildren", false,
-				"child_justify", "LEFT",
-				"child_justify2", "LEFT",
-				"child_justify3", "RIGHT",
-				"child_textR", 1,
-				"child_textG", 1,
-				"child_textB", 0,
-				"child_text3R", 0.5,
-				"child_text3G", 0.5,
-				"child_text3B", 0.5,
-				"child_func", BugSack.ShowFrame,
-				"child_arg1", BugSack,
-				"child_arg2", "session"
-			)
+			GameTooltip:AddLine("BugSack")
 			local pattern = "^(.-)\n"
 			local counter = 1
 			for i, err in ipairs(errs) do
@@ -165,21 +151,17 @@ do
 					local m = err.message
 					if type(m) == "table" then m = table.concat(m, "") end
 					m = select(3, m:find(pattern))
-					cat:AddLine(
-						"text", counter .. ".",
-						"text2", BugSack:ColorError(m),
-						"text3", "x" .. err.counter,
-						"arg3", i
-					)
+					GameTooltip:AddLine(line:format(counter, BugSack:ColorError(m), err.counter))
 					counter = counter + 1
 					if counter > 10 then break end
 				end
 			end
 		end
+		GameTooltip:AddLine(" ")
 		if pauseCountDown then
-			Tablet:SetHint(pauseHint:format(pauseCountDown))
+			GameTooltip:AddLine(pauseHint:format(pauseCountDown), 0.2, 1, 0.2, 1)
 		else
-			Tablet:SetHint(hint)
+			GameTooltip:AddLine(hint, 0.2, 1, 0.2, 1)
 		end
 	end
 end
