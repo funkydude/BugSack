@@ -9,5 +9,5 @@ externals:
     Libs/AceLibrary: svn://svn.wowace.com/wow/ace2/mainline/trunk/AceLibrary
     Libs/AceLocale-2.2: svn://svn.wowace.com/wow/ace2/mainline/trunk/AceLocale-2.2
     Libs/AceOO-2.0: svn://svn.wowace.com/wow/ace2/mainline/trunk/AceOO-2.0
-    Libs/Dewdrop-2.0: svn://svn.wowace.com/wow/wowace-dewdrop-lib/mainline/trunk/Dewdrop-2.0
-    Libs/FuBarPlugin-2.0: svn://svn.wowace.com/wow/fu-bar-plugin-2-0/mainline/trunk/FuBarPlugin-2.0
+    Libs/Dewdrop-2.0: svn://svn.wowace.com/wow/dewdroplib/mainline/trunk/Dewdrop-2.0
+    Libs/FuBarPlugin-2.0: svn://svn.wowace.com/wow/fubarplugin-2-0/mainline/trunk/FuBarPlugin-2.0
