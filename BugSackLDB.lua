@@ -20,62 +20,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ]]
 
--- Only load if BugSack is already loaded
 if not BugSack then return end
 local BugSack = BugSack
+
+if not LibStub then return end
+local ldb = LibStub:GetLibrary("LibDataBroker-1.1", true)
+if not ldb then return end
 
 -- Suppress the default BugGrabber throttle output.
 BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
 
-local L = AceLibrary("AceLocale-2.2"):new("BugSack")
+local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
+local dew = AceLibrary("Dewdrop-2.0")
 
 local paused = nil
 local pauseCountDown = nil
 
-BugSackFu = AceLibrary("AceAddon-2.0"):new("AceDB-2.0", "FuBarPlugin-2.0", "AceEvent-2.0")
-local BugSackFu = BugSackFu
+BugSackLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("BugSack", {
+	type = "data source",
+	text = "0",
+	icon = "Interface\\AddOns\\BugSack\\Media\\icon",
+})
+local BugSackLDB = BugSackLDB
 
-BugSackFu.hasIcon = true
+function BugSackLDB.OnClick(self, button)
+	if button == "RightButton" then
+		dew:Open(self,
+			"children", function()
+				dew:FeedAceOptionsTable(BugSack.options)
+			end
+		)
+	else
+		if pauseCountDown then return end
 
-function BugSackFu:OnInitialize()
-	self:RegisterDB("BugSackDB")
-
-	local args = AceLibrary("FuBarPlugin-2.0"):GetAceOptionsDataTable(self)
-	local options = BugSack.options
-
-	if not options.args[L["Menu"]] then
-		options.args.menuSpacer = {
-			type = "header",
-			name = " ",
-			order = 401,
-		}
-		options.args[L["Menu"]] = {
-			type = "group",
-			name = L["Menu"],
-			desc = L["Menu options."],
-			args = args,
-			order = 402,
-		}
+		if IsShiftKeyDown() then
+			ReloadUI()
+		elseif IsAltKeyDown() then
+			BugSack:Reset()
+		elseif BugSackFrame:IsShown() then
+			BugSackFrame:Hide()
+		else
+			BugSack:ShowFrame("session")
+		end
 	end
-
-	self.OnMenuRequest = options
-	self.hasNoColor = true
-	self.clickableTooltip = true
-	self.hideWithoutStandby = true
-	self.blizzardTooltip = true
-	self.cannotDetachTooltip = true
 end
 
-function BugSackFu:OnEnable()
-	paused = nil
-	pauseCountDown = nil
-
-	self:RegisterEvent("BugGrabber_CapturePaused")
-	self:RegisterEvent("BugGrabber_CaptureResumed")
-
-	self:Update()
+-- Invoked from BugSack
+function BugSackLDB:Update()
+	local e = BugSack:GetErrors("session")
+	local count = e and #e or 0
+	self.text = count
+	self.icon = count == 0 and "Interface\\AddOns\\BugSack\\Media\\icon" or "Interface\\AddOns\\BugSack\\Media\\icon_red"
 end
 
+--[[
 local function countdown()
 	if type(pauseCountDown) ~= "number" then
 		pauseCountDown = BUGGRABBER_TIME_TO_RESUME or 10
@@ -83,19 +81,15 @@ local function countdown()
 	if pauseCountDown > 0 then
 		pauseCountDown = pauseCountDown - 1
 	end
-	BugSackFu:UpdateDisplay()
 end
 
 function BugSackFu:BugGrabber_CapturePaused()
 	paused = true
 	pauseCountDown = BUGGRABBER_TIME_TO_RESUME or 10
-	self:ScheduleRepeatingEvent("bugGrabberPauseTimer", countdown, 1)
-	self:UpdateDisplay()
 end
 
 function BugSackFu:BugGrabber_CaptureResumed()
 	paused = nil
-	self:CancelScheduledEvent("bugGrabberPauseTimer")
 	pauseCountDown = nil
 	self:UpdateDisplay()
 end
@@ -115,55 +109,45 @@ function BugSackFu:OnTextUpdate()
 	end
 end
 
-function BugSackFu:OnClick()
-	if pauseCountDown then return end
-
-	if IsShiftKeyDown() then
-		ReloadUI()
-	elseif IsAltKeyDown() then
-		BugSack:Reset()
-	elseif BugSackFrame:IsShown() then
-		BugSackFrame:Hide()
-	else
-		BugSack:ShowFrame("session")
-	end
-end
 
 function BugSackFu:OnDoubleClick()
 	if not pauseCountDown then return end
 	BugGrabber:Resume()
 end
-
+]]
 do
 	local pauseHint = L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."]
 	local hint = L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
 	local line = "%d. %s (x%d)"
-	function BugSackFu:OnTooltipUpdate()
+	function BugSackLDB.OnTooltipShow(tt)
 		local errs = BugSack:GetErrors("session")
 		if not errs or #errs == 0 then
-			GameTooltip:AddLine(L["You have no errors, yay!"])
+			tt:AddLine(L["You have no errors, yay!"])
 		else
-			GameTooltip:AddLine("BugSack")
+			tt:AddLine("BugSack")
 			local pattern = "^(.-)\n"
 			local counter = 1
 			for i, err in ipairs(errs) do
-				if not self.db.profile.filterAddonMistakes or (self.db.profile.filterAddonMistakes and err.type == "error") then
+				if not BugSack.db.profile.filterAddonMistakes or (BugSack.db.profile.filterAddonMistakes and err.type == "error") then
 					local m = err.message
 					if type(m) == "table" then m = table.concat(m, "") end
 					m = select(3, m:find(pattern))
-					GameTooltip:AddLine(line:format(counter, BugSack:ColorError(m), err.counter))
+					tt:AddLine(line:format(counter, BugSack:ColorError(m), err.counter))
 					counter = counter + 1
 					if counter > 10 then break end
 				end
 			end
 		end
-		GameTooltip:AddLine(" ")
+		tt:AddLine(" ")
 		if pauseCountDown then
-			GameTooltip:AddLine(pauseHint:format(pauseCountDown), 0.2, 1, 0.2, 1)
+			tt:AddLine(pauseHint:format(pauseCountDown), 0.2, 1, 0.2, 1)
 		else
-			GameTooltip:AddLine(hint, 0.2, 1, 0.2, 1)
+			tt:AddLine(hint, 0.2, 1, 0.2, 1)
 		end
 	end
 end
+
+--BugSackLDB:RegisterEvent("BugGrabber_CapturePaused")
+--BugSackLDB:RegisterEvent("BugGrabber_CaptureResumed")
 
 -- vim:set ts=4:

@@ -32,14 +32,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 local _G = getfenv(0)
 
-local L = AceLibrary("AceLocale-2.2"):new("BugSack")
-local media = AceLibrary:HasInstance("LibSharedMedia-3.0") and AceLibrary("LibSharedMedia-3.0") or nil
+local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
+local media = LibStub("LibSharedMedia-3.0", true)
+local cbh = LibStub("CallbackHandler-1.0")
 
-BugSack = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEvent-2.0", "AceComm-2.0")
+BugSack = LibStub("AceAddon-3.0"):NewAddon("BugSack", "AceComm-3.0", "AceSerializer-3.0")
 
 local BugSack = BugSack
 local BugGrabber = _G.BugGrabber
 local BugGrabberDB = _G.BugGrabberDB
+
+local isEventsRegistered = nil
 
 -- Frame state variables
 local sackType = nil
@@ -228,14 +231,14 @@ BugSack.options = {
 			set = function(v) BugSack.db.profile.chatframe = v end,
 			order = 201,
 		},
-		msg = {
+--[[		msg = {
 			type = "toggle",
 			name = L["Errors to chatframe"],
 			desc = L["Print the full error message to the chat frame instead of just a warning."],
 			get = function() return BugSack.db.profile.showmsg end,
 			set = function(v) BugSack.db.profile.showmsg = v end,
 			order = 202,
-		},
+		},]]
 		mute = {
 			type = "toggle",
 			name = L["Mute"],
@@ -318,58 +321,62 @@ BugSack.options = {
 	}
 }
 
-function BugSack:OnInitialize()
-	local revision = tonumber(string.sub("$Revision$", 12, -3)) or 1
-	if not self.version then self.version = "2.x.x" end
-	self.version = self.version .. "." .. revision
-	self.revision = revision
-
-	_G.BUGSACK_REVISION = self.revision
-	_G.BUGSACK_VERSION = self.version
-
-	self:RegisterDB("BugSackDB")
-	self:RegisterDefaults("profile", {
+local defaults = {
+	profile = {
 		mute = nil,
 		auto = nil,
 		showmsg = nil,
 		chatframe = nil,
 		filterAddonMistakes = true,
 		soundMedia = "BugSack: Fatality",
-	})
-	self:RegisterChatCommand("/bugsack", self.options, "BUGSACK")
+	},
+}
 
-	self:SetCommPrefix("BugSack")
-	self:SetDefaultCommPriority("BULK")
+local function print(t)
+	DEFAULT_CHAT_FRAME:AddMessage("BugSack: " .. t)
+end
+
+function BugSack:OnInitialize()
+	local revision = tonumber(string.sub("$Revision$", 12, -3)) or 1
+	if not self.version then self.version = "2.x.x" end
+	self.version = self.version .. "." .. revision
+	self.revision = revision
+
+	self.callbacks = cbh:New(self)
+
+	_G.BUGSACK_REVISION = self.revision
+	_G.BUGSACK_VERSION = self.version
+	
+	self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, "Default")
 
 	if media then
-		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\error.wav")
+		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
 		self.options.args.soundMedia.validate = media:List("sound")
 	end
 end
 
-function BugSack:OnEnable(first)
+function BugSack:OnEnable()
 	-- Make sure we grab any errors fired before bugsack loaded.
-	if first then
-		local session = self:GetErrors("session")
-		if session and #session > 0 then
-			local t = {}
-			for i, v in ipairs(session) do
-				t[v] = true
-			end
-			self:OnError(t)
-			for k in pairs(t) do t[k] = nil end
-			t = nil
+	local session = self:GetErrors("session")
+	if session and #session > 0 then
+		local t = {}
+		for i, v in ipairs(session) do
+			t[v] = true
 		end
+		self:OnError(t)
+		for k in pairs(t) do t[k] = nil end
+		t = nil
 	end
 
-	self:RegisterComm("BugSack", "WHISPER", "OnBugComm")
+	self:RegisterComm("BugSack", "OnBugComm")
 
 	-- Set up our error event handler
-	self:RegisterBucketEvent("BugGrabber_BugGrabbed", 2, "OnError")
-	self:RegisterEvent("BugGrabber_AddonActionEventsRegistered")
+	BugGrabber.RegisterCallback(self, "BugGrabber_BugGrabbed", "OnError")
+	BugGrabber.RegisterCallback(self, "BugGrabber_AddonActionEventsRegistered")
 
 	if not self:GetFilter() then
-		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
+		BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
+		isEventsRegistered = true
 		BugGrabber:RegisterAddonActionEvents()
 	else
 		BugGrabber:UnregisterAddonActionEvents()
@@ -447,11 +454,13 @@ end
 
 function BugSack:ToggleFilter()
 	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes
-	if not self.db.profile.filterAddonMistakes and not self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
-		self:RegisterBucketEvent("BugGrabber_EventGrabbed", 2, "OnError")
+	if not self.db.profile.filterAddonMistakes and not isEventsRegistered then
+		BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
+		isEventsRegistered = true
 		BugGrabber:RegisterAddonActionEvents()
-	elseif self.db.profile.filterAddonMistakes and self:IsBucketEventRegistered("BugGrabber_EventGrabbed") then
-		self:UnregisterBucketEvent("BugGrabber_EventGrabbed")
+	elseif self.db.profile.filterAddonMistakes and isEventsRegistered then
+		BugGrabber.UnregisterCallback(self, "BugGrabber_EventGrabbed")
+		isEventsRegistered = nil
 		BugGrabber:UnregisterAddonActionEvents()
 	end
 end
@@ -463,13 +472,13 @@ function BugSack:ListErrors(which, nr)
 
 	local bugs = self:GetErrors(which)
 	if not bugs or #bugs == 0 then
-		self:Print(L["You have no errors, yay!"])
+		print(L["You have no errors, yay!"])
 		return
 	end
 
-	self:Print(L["List of errors:"])
+	print(L["List of errors:"])
 	for i, e in ipairs(bugs) do
-		self:Print("%d. %s", i, self:FormatError(e))
+		print(("%d. %s"):format(i, self:FormatError(e)))
 	end
 end
 
@@ -586,63 +595,51 @@ function BugSack:ColorError(err)
 end
 
 function BugSack:ScriptBug()
-	self:Print(L["An error has been generated."])
 	RunScript(L["BugSack generated this fake error."])
 end
 
 function BugSack:AddonBug()
-	self:Print(L["An error has been generated."])
 	self:BugGeneratedByBugSack()
 end
 
 function BugSack:Reset()
 	BugGrabber:Reset()
-	self:Print(L["All errors were wiped."])
+	print(L["All errors were wiped."])
 
 	if BugSackFu then
 		BugSackFu:Reset()
 		BugSackFu:Update()
+	elseif BugSackLDB then
+		BugSackLDB:Update()
 	end
 end
 
 -- The Error catching function.
-
-function BugSack:OnError(errors)
-	if type(errors) ~= "table" then return end
-	local n = 0
-	for k in pairs(errors) do n = n + 1 end
-	if n < 1 then return end
-
-	if media then
-		local sound = media:Fetch("sound", self.db.profile.soundMedia) or "Interface\\AddOns\\BugSack\\error.wav"
-		PlaySoundFile(sound)
-	elseif not self.db.profile.mute then
-		PlaySoundFile("Interface\\AddOns\\BugSack\\error.wav")
-	end
-
-	if self.db.profile.auto then
-		self:ShowFrame("current")
-	end
-
-	if self.db.profile.chatframe and self.db.profile.showmsg and n == 1 then
-		for k in pairs(errors) do
-			self:Print(self:FormatError(k))
-			break
+do
+	local lastError = nil
+	function BugSack:OnError()
+		if not lastError or GetTime() > (lastError + 2) then
+			if media then
+				local sound = media:Fetch("sound", self.db.profile.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.wav"
+				PlaySoundFile(sound)
+			elseif not self.db.profile.mute then
+				PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.wav")
+			end
+			if self.db.profile.auto then
+				self:ShowFrame("current")
+			end
+			if self.db.profile.chatframe then
+				print(L["An error has been recorded."])
+			end
+			lastError = GetTime()
 		end
-	elseif self.db.profile.chatframe then
-		if n > 1 then
-			self:Print(L["%d errors have been recorded."]:format(n))
-		else
-			self:Print(L["An error has been recorded."])
+		if BugSackLDB then
+			BugSackLDB:Update()
 		end
-	end
-
-	if BugSackFu then
-		BugSackFu:Update()
 	end
 end
 
--- Sends the current session errors to another player using AceComm-2.0
+-- Sends the current session errors to another player using AceComm-3.0
 function BugSack:SendBugsToUser(player)
 	if type(player) ~= "string" or player:trim():len() < 2 then
 		error("Player needs to be a valid string.")
@@ -650,16 +647,25 @@ function BugSack:SendBugsToUser(player)
 
 	local errors = self:GetErrors("session")
 	if not errors or #errors == 0 then return end
-	self:SendCommMessage("WHISPER", player, errors)
+	local sz = self:Serialize(errors)
+	self:SendCommMessage("BugSack", sz, "WHISPER", player, "BULK")
 
-	self:Print(L["%d errors has been sent to %s. He must have BugSack to be able to read them."]:format(#errors, player))
+	print(L["%d errors has been sent to %s. He must have BugSack to be able to read them."]:format(#errors, player))
 end
 
-function BugSack:OnBugComm(prefix, sender, distribution, bugs)
-	receivedErrors = bugs
+function BugSack:OnBugComm(prefix, message, distribution, sender)
+	if prefix ~= "BugSack" then return end
+
+	local good, deSz = self:Deserialize(message)
+	if not good then
+		print("Failure to deserialize incoming data from " .. sender .. ".")
+		return
+	end
+	
+	receivedErrors = deSz
 	receivedFrom = sender
 
-	self:Print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#bugs, sender))
+	print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#deSz, sender))
 end
 
 -- Editbox handler
