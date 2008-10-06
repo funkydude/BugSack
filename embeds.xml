@@ -2,13 +2,13 @@
 ..\FrameXML\UI.xsd">   
 
 <Script file="Libs\LibStub\LibStub.lua"/>
-<Script file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 <Script file="Libs\AceLibrary\AceLibrary.lua"/>
 <Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
-<Script file="Libs\AceLocale-3.0\AceLocale-3.0.xml"/>
-<Script file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
-<Script file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
-<Script file="Libs\AceDB-3.0\AceDB-3.0.xml"/>
+<Include file="Libs\AceLocale-3.0\AceLocale-3.0.xml"/>
+<Include file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
+<Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
+<Include file="Libs\AceDB-3.0\AceDB-3.0.xml"/>
 <Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 
 </Ui>
