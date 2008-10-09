@@ -1,8 +1,6 @@
 package-as: BugSack
 
 externals:
-	Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
-	Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/tags/1.0.3/CallbackHandler-1.0
     Libs/AceLibrary: svn://svn.wowace.com/wow/ace2/mainline/trunk/AceLibrary
     Libs/Dewdrop-2.0: svn://svn.wowace.com/wow/dewdroplib/mainline/trunk/Dewdrop-2.0
     Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
