@@ -9,7 +9,7 @@
 ## X-Credits: Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
 ## SavedVariables: BugSackDB
 ## RequiredDeps: !BugGrabber
-## OptionalDeps: Ace3, DewdropLibLibSharedMedia-3.0, SharedMedia
+## OptionalDeps: Ace3, DewdropLib, LibSharedMedia-3.0, SharedMedia
 ## X-Category: Development Tools
 ## X-RelSite-WoWI: 5995
 ## X-License: GPL v2 or later.
