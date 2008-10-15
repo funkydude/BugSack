@@ -1,4 +1,4 @@
-## Interface: 20400
+## Interface: 30000
 ## Title: BugSack
 ## Version: 3.0
 ## Notes: Toss those bugs inna sack.
