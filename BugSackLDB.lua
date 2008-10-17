@@ -32,6 +32,7 @@ BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
 
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 local dew = AceLibrary("Dewdrop-2.0")
+local icon = LibStub("LibDBIcon-1.0", true)
 
 local paused = nil
 local pauseCountDown = nil
@@ -146,6 +147,24 @@ do
 		end
 	end
 end
+
+local f = CreateFrame("Frame")
+f:SetScript("OnEvent", function()
+	if icon then
+		icon:Register("BugSack", BugSackLDB, BugSack.db.profile.minimap)
+		_G["SlashCmdList"]["BUGSACK_SHORTHAND"] = function()
+			if BugSack.db.profile.minimap.hide then
+				icon:Show("BugSack")
+				BugSack.db.profile.minimap.hide = nil
+			else
+				icon:Hide("BugSack")
+				BugSack.db.profile.minimap.hide = true
+			end
+		end
+		_G["SLASH_BUGSACK_SHORTHAND1"] = "/bugsack"
+	end
+end)
+f:RegisterEvent("PLAYER_LOGIN")
 
 --BugSackLDB:RegisterEvent("BugGrabber_CapturePaused")
 --BugSackLDB:RegisterEvent("BugGrabber_CaptureResumed")

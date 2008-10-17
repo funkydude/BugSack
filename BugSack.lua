@@ -35,6 +35,7 @@ local _G = getfenv(0)
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 local media = LibStub("LibSharedMedia-3.0", true)
 local cbh = LibStub("CallbackHandler-1.0")
+local icon = LibStub("LibDBIcon-1.0", true)
 
 BugSack = LibStub("AceAddon-3.0"):NewAddon("BugSack", "AceComm-3.0", "AceSerializer-3.0")
 
@@ -317,7 +318,30 @@ BugSack.options = {
 			set = "UseThrottling",
 			handler = BugGrabber,
 			order = 303,
-		}
+		},
+		minimapSpacer = {
+			type = "header",
+			name = " ",
+			order = 350,
+			hidden = function() return not icon end,
+		},
+		minimap = {
+			type = "toggle",
+			name = L["Minimap icon"],
+			desc = L["Toggle the minimap icon."],
+			get = function() return not BugSack.db.profile.minimap.hide end,
+			set = function(v)
+				local hide = not v
+				BugSack.db.profile.minimap.hide = hide
+				if hide then
+					icon:Hide("BugSack")
+				else
+					icon:Show("BugSack")
+				end
+			end,
+			hidden = function() return not icon end,
+			order = 400,
+		},
 	}
 }
 
@@ -329,6 +353,9 @@ local defaults = {
 		chatframe = nil,
 		filterAddonMistakes = true,
 		soundMedia = "BugSack: Fatality",
+		minimap = {
+			hide = false,
+		},
 	},
 }
 

@@ -86,4 +86,5 @@ L[" (viewing errors from %s)"] = true
 
 -- FuBar plugin
 L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = true
-
+L["Minimap icon"] = true
+L["Toggle the minimap icon."] = true
