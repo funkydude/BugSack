@@ -709,11 +709,7 @@ function BugSack:OnTextChanged()
 		this:SetText(sackText)
 	end
 	this:GetParent():UpdateScrollChildRect()
-	local _, m = BugSackFrameScrollScrollBar:GetMinMaxValues()
-	if m > 0 and this.max ~= m then
-		this.max = m
-		BugSackFrameScrollScrollBar:SetValue(m)
-	end
+	BugSackFrameScrollScrollBar:SetValue(0)
 end
 
 -- vim:set ts=4:
