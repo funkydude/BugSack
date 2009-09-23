@@ -558,9 +558,6 @@ function BugSack:UpdateFrameText()
 	end
 	_G.BugSackErrorText:SetText(caption)
 
-	if sackText and sackText:len() > 4000 then
-		sackText = sackText:sub(1, 3950) .. L[" (... more ...)"]
-	end
 	_G.BugSackFrameScrollText:SetText(sackText)
 
 	if sackCurrent >= sackMax then
@@ -605,19 +602,29 @@ function BugSack:FormatError(err)
 	if type(m) == "table" then
 		m = table.concat(m, "")
 	end
-	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time or "Uknown", err.session or -1, err.counter or -1, self:ColorError(m or ""))
+	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time or "Unknown", err.session or -1, err.counter or -1, self:ColorError(m or ""))
 end
 
 function BugSack:ColorError(err)
 	local ret = err
 	ret = ret:gsub("|([^chHr])", "||%1") -- pipe char
 	ret = ret:gsub("|$", "||") -- pipe char
-	ret = ret:gsub(":(%d+): ", ":|cff00ff00%1|r: ") -- Line numbers
-	ret = ret:gsub("\n(.-):", "\n|cffeda55f%1|r:") -- Files
+	ret = ret:gsub("\nLocals:\n", "\n|cFFFFFFFFLocals:|r\n")
+	ret = ret:gsub("[Ii][Nn][Tt][Ee][Rr][Ff][Aa][Cc][Ee]\\[Aa][Dd][Dd][Oo][Nn][Ss]\\", "")
+	ret = ret:gsub("%{\n +%}", "{}") -- locals: empty table spanning lines
+	ret = ret:gsub("([ ]-)([%a_][%a_%d]+) = ", "%1|cffffff80%2|r = ") -- local
+	ret = ret:gsub("= (%d+)\n", "= |cffff7fff%1|r\n") -- locals: number
+	ret = ret:gsub("<function>", "|cffffea00<function>|r") -- locals: function
+	ret = ret:gsub("<table>", "|cffffea00<table>|r") -- locals: table
+	ret = ret:gsub("= nil\n", "= |cffff7f7fnil|r\n") -- locals: nil
+	ret = ret:gsub("= true\n", "= |cffff9100true|r\n") -- locals: true
+	ret = ret:gsub("= false\n", "= |cffff9100false|r\n") -- locals: false
+	ret = ret:gsub("= \"([^\n]+)\"\n", "= |cff00ff00\"%1\"|r\n") -- locals: string
+	ret = ret:gsub("defined %@(.-):(%d+)", "@ |cffeda55f%1|r:|cff00ff00%2|r:") -- Files/Line Numbers of locals
+	ret = ret:gsub("\n(.-):(%d+):", "\n|cffeda55f%1|r:|cff00ff00%2|r:") -- Files/Line Numbers
 	ret = ret:gsub("%-%d+%p+.-%\\", "|cffffff00%1|cffeda55f") -- Version numbers
 	ret = ret:gsub("%(.-%)", "|cff999999%1|r") -- Parantheses
-	ret = ret:gsub("([`'\"])(.-)([`'\"])", "|cff8888ff%1%2%3|r") -- Quotes
-	ret = ret:gsub("^(.-):", "|cffeda55f%1|r:") -- First file after time and date
+	ret = ret:gsub("([`'])(.-)([`'])", "|cff8888ff%1%2%3|r") -- Other quotes
 	return ret
 end
 
