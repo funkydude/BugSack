@@ -37,7 +37,6 @@ local isEventsRegistered = nil
 
 -- Frame state variables
 local sackErrors = nil
-local sackMax = nil
 local sackCurrent = nil
 
 BugSack.options = {
@@ -248,7 +247,7 @@ obviously the highest numbered session is the latest one.
 
 ]]
 
-local textArea = nil
+local heading, textArea = nil, nil
 local nextButton, prevButton, firstButton, lastButton = nil, nil, nil, nil
 local bugSackFrame = nil
 local function showErrorFrame()
@@ -262,8 +261,14 @@ local function showErrorFrame()
 		f:SetWidth(500)
 		f:SetHeight(400)
 
+		local topText = f:CreateFontString("BugSackHeading", "ARTWORK", "GameFontNormalCenter")
+		topText:SetPoint("TOPLEFT", f, 0, -6)
+		topText:SetPoint("TOPRIGHT", f, 0, -6)
+		topText:SetText("")
+		heading = topText
+
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", f, "UIPanelScrollFrameTemplate")
-		scroll:SetPoint("TOPLEFT", 14, -16)
+		scroll:SetPoint("TOPLEFT", 14, -20)
 		scroll:SetPoint("BOTTOMRIGHT", -32, 52)
 
 		local edit = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
@@ -275,7 +280,7 @@ local function showErrorFrame()
 		edit:SetScript("OnEscapePressed", edit.ClearFocus)
 		-- XXX why the fuck doesn't SetPoint work on the editbox?
 		edit:SetWidth(450)
-		edit:SetHeight(314)
+		edit:SetHeight(310)
 		textArea = edit
 		
 		scroll:SetScrollChild(edit)
@@ -307,7 +312,7 @@ local function showErrorFrame()
 		last:SetHeight(24)
 		last:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 20, 20)
 		last:SetScript("OnClick", function()
-			sackCurrent = math.min(sackMax, 1)
+			sackCurrent = 1
 			BugSack:UpdateSack()
 		end)
 		last:SetText("<<")
@@ -318,7 +323,7 @@ local function showErrorFrame()
 		first:SetHeight(24)
 		first:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -20, 20)
 		first:SetScript("OnClick", function()
-			sackCurrent = sackMax
+			sackCurrent = #sackErrors
 			BugSack:UpdateSack()
 		end)
 		first:SetText(">>")
@@ -347,15 +352,7 @@ end
 function BugSack:OnEnable()
 	-- Make sure we grab any errors fired before bugsack loaded.
 	local session = self:GetErrors()
-	if session and #session > 0 then
-		local t = {}
-		for i, v in next, session do
-			t[v] = true
-		end
-		self:OnError(t)
-		wipe(t)
-		t = nil
-	end
+	if #session > 0 then self:OnError() end
 
 	self:RegisterComm("BugSack", "OnBugComm")
 
@@ -406,18 +403,10 @@ do
 	function BugSack:GetErrors(sessionId)
 		wipe(errors)
 		local db = BugGrabber:GetDB()
-		if type(sessionId) == "number" then
-			for i, e in next, db do
-				if sessionId == err.session then
-					errors[#errors + 1] = e
-				end
-			end
-		else
-			local cs = BugGrabberDB.session
-			for i, e in next, db do
-				if cs == e.session then
-					errors[#errors + 1] = e
-				end
+		local s = sessionId or BugGrabberDB.session
+		for i, e in next, db do
+			if s == e.session then
+				errors[#errors + 1] = e
 			end
 		end
 		return errors
@@ -443,13 +432,17 @@ end
 
 function BugSack:OpenSack(sessionId)
 	sackErrors = self:GetErrors(sessionId)
-	sackMax = sackErrors and #sackErrors or 0
-	sackCurrent = math.min(sackMax, 1)
+	sackCurrent = #sackErrors
 	self:UpdateSack()
 end
 
+local headingFormat = "Showing session %d, error %d/%d"
 function BugSack:UpdateSack()
 	showErrorFrame()
+
+	local s = BugGrabberDB.session -- XXX need to store the currently shown session somewhere
+	local max = #sackErrors
+	heading:SetText(headingFormat:format(s, sackCurrent, max))
 
 	local t = nil
 	if sackCurrent == 0 then
@@ -459,7 +452,7 @@ function BugSack:UpdateSack()
 	end
 	textArea:SetText(t)
 
-	if sackCurrent >= sackMax then
+	if sackCurrent >= max then
 		nextButton:Disable()
 		firstButton:Disable()
 	else
