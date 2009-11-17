@@ -227,6 +227,8 @@ TODO
 
 * New frame design
 
+use the design from the bigwigs tip of the raid box? just scale it up a bit and it would be excellent, I think
+
    /----------------------------------------------------\
    | < > Session #                                [ X ] |
    |
@@ -401,6 +403,7 @@ end
 do
 	local errors = {}
 	function BugSack:GetErrors(sessionId)
+		-- XXX I've never liked this function, maybe a BugGrabber redesign is in order, where we have one subtable in the DB per session ID.
 		wipe(errors)
 		local db = BugGrabber:GetDB()
 		local s = sessionId or BugGrabberDB.session
@@ -432,6 +435,8 @@ end
 
 function BugSack:OpenSack(sessionId)
 	sackErrors = self:GetErrors(sessionId)
+	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
+	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
 	sackCurrent = #sackErrors
 	self:UpdateSack()
 end
@@ -469,6 +474,8 @@ function BugSack:UpdateSack()
 	end
 end
 
+-- XXX I think a better format is needed that more clearly shows the _source_ component of the error.
+-- XXX especially if it's NOT "local".
 local errorFormat = [[|cff999999[%s-x%d@%s]|r: %s]]
 
 function BugSack:FormatError(err)
@@ -503,10 +510,12 @@ function BugSack:ColorError(err)
 end
 
 function BugSack:ScriptBug()
+	-- Obviously the given string is not a valid Lua script, and hence produces an error.
 	RunScript(L["BugSack generated this fake error."])
 end
 
 function BugSack:AddonBug()
+	-- This function doesn't exist, and hence it produces an error.
 	self:BugGeneratedByBugSack()
 end
 
@@ -574,10 +583,11 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 		BugGrabber:StoreError(err)
 	end
 
+	-- XXX slash command doesn't work like that any more
+	print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#deSz, sender))
+
 	wipe(deSz)
 	deSz = nil
-
-	print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#deSz, sender))
 end
 
 -- vim:set ts=4:
