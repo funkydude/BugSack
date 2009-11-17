@@ -36,7 +36,6 @@ local BugGrabberDB = BugGrabberDB
 local isEventsRegistered = nil
 
 -- Frame state variables
-local sackErrors = nil
 local sackCurrent = nil
 
 BugSack.options = {
@@ -249,92 +248,195 @@ obviously the highest numbered session is the latest one.
 
 ]]
 
-local heading, textArea = nil, nil
-local nextButton, prevButton, firstButton, lastButton = nil, nil, nil, nil
-local bugSackFrame = nil
-local function showErrorFrame()
-	if not bugSackFrame then
-		local f = CreateFrame("Frame", "BugSackFrame2", UIParent, "DialogBoxFrame")
-		f:SetBackdrop({
-			bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
-			insets = { left = 5, right = 5, top = 5, bottom = 5 }
-		})
-		f:SetWidth(500)
-		f:SetHeight(400)
+local show = nil
+do
+	local window, sourceLabel, countLabel, sessionLabel, textArea = nil, nil, nil, nil, nil
+	local nextButton, prevButton = nil, nil
+	local function closeWindow()
+		window:Hide()
+	end
 
-		local topText = f:CreateFontString("BugSackHeading", "ARTWORK", "GameFontNormalCenter")
-		topText:SetPoint("TOPLEFT", f, 0, -6)
-		topText:SetPoint("TOPRIGHT", f, 0, -6)
-		topText:SetText("")
-		heading = topText
+	local function createTipFrame()
+		window = CreateFrame("Frame", nil, UIParent)
+		window:SetWidth(500)
+		window:SetHeight(400)
+		window:SetPoint("CENTER")
+		window:SetMovable(true)
+		window:EnableMouse(true)
+		window:SetClampedToScreen(true)
+		window:RegisterForDrag("LeftButton")
+		window:SetScript("OnDragStart", window.StartMoving)
+		window:SetScript("OnDragStop", window.StopMovingOrSizing)
 
-		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", f, "UIPanelScrollFrameTemplate")
-		scroll:SetPoint("TOPLEFT", 14, -20)
-		scroll:SetPoint("BOTTOMRIGHT", -32, 52)
+		local titlebg = window:CreateTexture(nil, "BACKGROUND")
+		titlebg:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background")
+		titlebg:SetPoint("TOPLEFT", 9, -6)
+		titlebg:SetPoint("BOTTOMRIGHT", window, "TOPRIGHT", -28, -24)
 
-		local edit = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
-		edit:SetAutoFocus(false)
-		edit:SetMultiLine(true)
-		edit:SetFontObject(GameFontHighlightSmall)
-		edit:SetMaxLetters(99999)
-		edit:EnableMouse(true)
-		edit:SetScript("OnEscapePressed", edit.ClearFocus)
-		-- XXX why the fuck doesn't SetPoint work on the editbox?
-		edit:SetWidth(450)
-		edit:SetHeight(310)
-		textArea = edit
+		local dialogbg = window:CreateTexture(nil, "BACKGROUND")
+		dialogbg:SetTexture("Interface\\Tooltips\\UI-Tooltip-Background")
+		dialogbg:SetPoint("TOPLEFT", 8, -24)
+		dialogbg:SetPoint("BOTTOMRIGHT", -6, 8)
+		dialogbg:SetVertexColor(0, 0, 0, .75)
+
+		local topleft = window:CreateTexture(nil, "BORDER")
+		topleft:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		topleft:SetWidth(64)
+		topleft:SetHeight(64)
+		topleft:SetPoint("TOPLEFT")
+		topleft:SetTexCoord(0.501953125, 0.625, 0, 1)
+
+		local topright = window:CreateTexture(nil, "BORDER")
+		topright:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		topright:SetWidth(64)
+		topright:SetHeight(64)
+		topright:SetPoint("TOPRIGHT")
+		topright:SetTexCoord(0.625, 0.75, 0, 1)
+
+		local top = window:CreateTexture(nil, "BORDER")
+		top:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		top:SetHeight(64)
+		top:SetPoint("TOPLEFT", topleft, "TOPRIGHT")
+		top:SetPoint("TOPRIGHT", topright, "TOPLEFT")
+		top:SetTexCoord(0.25, 0.369140625, 0, 1)
+
+		local bottomleft = window:CreateTexture(nil, "BORDER")
+		bottomleft:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		bottomleft:SetWidth(64)
+		bottomleft:SetHeight(64)
+		bottomleft:SetPoint("BOTTOMLEFT")
+		bottomleft:SetTexCoord(0.751953125, 0.875, 0, 1)
+
+		local bottomright = window:CreateTexture(nil, "BORDER")
+		bottomright:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		bottomright:SetWidth(64)
+		bottomright:SetHeight(64)
+		bottomright:SetPoint("BOTTOMRIGHT")
+		bottomright:SetTexCoord(0.875, 1, 0, 1)
+
+		local bottom = window:CreateTexture(nil, "BORDER")
+		bottom:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		bottom:SetHeight(64)
+		bottom:SetPoint("BOTTOMLEFT", bottomleft, "BOTTOMRIGHT")
+		bottom:SetPoint("BOTTOMRIGHT", bottomright, "BOTTOMLEFT")
+		bottom:SetTexCoord(0.376953125, 0.498046875, 0, 1)
+
+		local left = window:CreateTexture(nil, "BORDER")
+		left:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		left:SetWidth(64)
+		left:SetPoint("TOPLEFT", topleft, "BOTTOMLEFT")
+		left:SetPoint("BOTTOMLEFT", bottomleft, "TOPLEFT")
+		left:SetTexCoord(0.001953125, 0.125, 0, 1)
+
+		local right = window:CreateTexture(nil, "BORDER")
+		right:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
+		right:SetWidth(64)
+		right:SetPoint("TOPRIGHT", topright, "BOTTOMRIGHT")
+		right:SetPoint("BOTTOMRIGHT", bottomright, "TOPRIGHT")
+		right:SetTexCoord(0.1171875, 0.2421875, 0, 1)
+
+		local close = CreateFrame("Button", nil, window, "UIPanelCloseButton")
+		close:SetPoint("TOPRIGHT", 2, 1)
+		close:SetScript("OnClick", closeWindow)
+
+		local title = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+		title:SetAllPoints(titlebg)
+		title:SetJustifyH("CENTER")
+		title:SetText("BugSack")
+
+		sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+		sessionLabel:SetPoint("TOPLEFT", 16, -32)
+		sessionLabel:SetWidth(158)
+		sessionLabel:SetJustifyH("LEFT")
+		sessionLabel:SetText("Session: #####")
 		
-		scroll:SetScrollChild(edit)
-
-		local prev = CreateFrame("Button", "BugSackPrevButton2", f, "UIPanelButtonTemplate")
-		prev:SetWidth(64)
-		prev:SetHeight(24)
-		prev:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 90, 20)
-		prev:SetScript("OnClick", function()
-			sackCurrent = sackCurrent - 1
-			BugSack:UpdateSack()
-		end)
-		prev:SetText("<")
-		prevButton = prev
+		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+		countLabel:SetPoint("TOPRIGHT", -12, -32)
+		countLabel:SetWidth(158)
+		countLabel:SetJustifyH("RIGHT")
+		countLabel:SetText("X/X")
 		
-		local next = CreateFrame("Button", "BugSackNextButton2", f, "UIPanelButtonTemplate")
-		next:SetWidth(64)
-		next:SetHeight(24)
-		next:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -90, 20)
-		next:SetScript("OnClick", function()
+		sourceLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+		sourceLabel:SetPoint("TOPLEFT", sessionLabel)
+		sourceLabel:SetPoint("TOPRIGHT", countLabel)
+		sourceLabel:SetJustifyH("CENTER")
+		sourceLabel:SetText("")
+
+		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
+		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -10, 12)
+		nextButton:SetHeight(32)
+		nextButton:SetWidth(120)
+		nextButton:SetText("Next >")
+		nextButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent + 1
 			BugSack:UpdateSack()
 		end)
-		next:SetText(">")
-		nextButton = next
 		
-		local last = CreateFrame("Button", "BugSackLastButton2", f, "UIPanelButtonTemplate")
-		last:SetWidth(64)
-		last:SetHeight(24)
-		last:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 20, 20)
-		last:SetScript("OnClick", function()
-			sackCurrent = 1
+		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
+		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 12, 12)
+		prevButton:SetHeight(32)
+		prevButton:SetWidth(120)
+		prevButton:SetText("< Previous")
+		prevButton:SetScript("OnClick", function()
+			sackCurrent = sackCurrent - 1
 			BugSack:UpdateSack()
 		end)
-		last:SetText("<<")
-		lastButton = last
-		
-		local first = CreateFrame("Button", "BugSackFirstButton2", f, "UIPanelButtonTemplate")
-		first:SetWidth(64)
-		first:SetHeight(24)
-		first:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -20, 20)
-		first:SetScript("OnClick", function()
-			sackCurrent = #sackErrors
-			BugSack:UpdateSack()
-		end)
-		first:SetText(">>")
-		firstButton = first
 
-		bugSackFrame = f
+		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", window, "UIPanelScrollFrameTemplate")
+		scroll:SetPoint("TOPLEFT", sessionLabel, "BOTTOMLEFT", 0, -12)
+		scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
+
+		textArea = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
+		textArea:SetAutoFocus(false)
+		textArea:SetMultiLine(true)
+		textArea:SetFontObject(GameFontHighlightSmall)
+		textArea:SetMaxLetters(99999)
+		textArea:EnableMouse(true)
+		textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
+		-- XXX why the fuck doesn't SetPoint work on the editbox?
+		textArea:SetWidth(450)
+		textArea:SetHeight(310)
+		
+		scroll:SetScrollChild(textArea)
 	end
-	
-	bugSackFrame:Show()
+
+	local sessionFormat = "Session: %d (%s)" -- Session: 123 (Today)
+	local countFormat = "%d/%d" -- 1/10
+	local sourceFormat = "Sent by %s"
+
+	function show(eo)
+		if not window then createTipFrame() end
+		if not eo or sackCurrent == 0 then
+			sourceLabel:SetText()
+			countLabel:SetText()
+			sessionLabel:SetText(sessionFormat:format(BugGrabberDB.session, "Today"))
+			textArea:SetText(L["You have no errors, yay!"])
+			nextButton:Disable()
+			prevButton:Disable()
+		else
+			local db = BugGrabber:GetDB()
+			if eo.source then sourceLabel:SetText(sourceFormat:format(eo.source))
+			else sourceLabel:SetText("Local error") end
+			if eo.session == BugGrabberDB.session then
+				sessionLabel:SetText(sessionFormat:format(eo.session, "Today"))
+			else
+				sessionLabel:SetText(sessionFormat:format(eo.session, eo.date))
+			end
+			countLabel:SetText(countFormat:format(sackCurrent, #db))
+			textArea:SetText(BugSack:FormatError(eo))
+			if sackCurrent >= #db then
+				nextButton:Disable()
+			else
+				nextButton:Enable()
+			end
+			if sackCurrent <= 1 then
+				prevButton:Disable()
+			else
+				prevButton:Enable()
+			end
+		end
+		window:Show()
+	end
 end
 
 local function print(t)
@@ -353,7 +455,7 @@ end
 
 function BugSack:OnEnable()
 	-- Make sure we grab any errors fired before bugsack loaded.
-	local session = self:GetErrors()
+	local session = self:GetErrors(BugGrabberDB.session)
 	if #session > 0 then self:OnError() end
 
 	self:RegisterComm("BugSack", "OnBugComm")
@@ -404,15 +506,18 @@ do
 	local errors = {}
 	function BugSack:GetErrors(sessionId)
 		-- XXX I've never liked this function, maybe a BugGrabber redesign is in order, where we have one subtable in the DB per session ID.
-		wipe(errors)
-		local db = BugGrabber:GetDB()
-		local s = sessionId or BugGrabberDB.session
-		for i, e in next, db do
-			if s == e.session then
-				errors[#errors + 1] = e
+		if sessionId then
+			wipe(errors)
+			local db = BugGrabber:GetDB()
+			for i, e in next, db do
+				if sessionId == e.session then
+					errors[#errors + 1] = e
+				end
 			end
+			return errors
+		else
+			return BugGrabber:GetDB()
 		end
-		return errors
 	end
 end
 
@@ -433,45 +538,20 @@ function BugSack:ToggleFilter()
 	end
 end
 
-function BugSack:OpenSack(sessionId)
-	sackErrors = self:GetErrors(sessionId)
+local headingFormat = "Session %d"
+
+function BugSack:OpenSack()
 	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
-	sackCurrent = #sackErrors
+
+	-- Show the most recent error
+	sackCurrent = #BugGrabber:GetDB()
 	self:UpdateSack()
 end
 
-local headingFormat = "Showing session %d, error %d/%d"
 function BugSack:UpdateSack()
-	showErrorFrame()
-
-	local s = BugGrabberDB.session -- XXX need to store the currently shown session somewhere
-	local max = #sackErrors
-	heading:SetText(headingFormat:format(s, sackCurrent, max))
-
-	local t = nil
-	if sackCurrent == 0 then
-		t = L["You have no errors, yay!"]
-	else
-		t = self:FormatError(sackErrors[sackCurrent])
-	end
-	textArea:SetText(t)
-
-	if sackCurrent >= max then
-		nextButton:Disable()
-		firstButton:Disable()
-	else
-		nextButton:Enable()
-		firstButton:Enable()
-	end
-
-	if sackCurrent <= 1 then
-		prevButton:Disable()
-		lastButton:Disable()
-	else
-		prevButton:Enable()
-		lastButton:Enable()
-	end
+	local eo = BugGrabber:GetDB()[sackCurrent]
+	show(eo)
 end
 
 -- XXX I think a better format is needed that more clearly shows the _source_ component of the error.
@@ -559,7 +639,7 @@ function BugSack:SendBugsToUser(player)
 		error("Player needs to be a valid string.")
 	end
 
-	local errors = self:GetErrors()
+	local errors = self:GetErrors(BugGrabberDB.session)
 	if not errors or #errors == 0 then return end
 	local sz = self:Serialize(errors)
 	self:SendCommMessage("BugSack", sz, "WHISPER", player, "BULK")

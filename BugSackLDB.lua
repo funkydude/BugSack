@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 
 if not BugSack then return end
-local BugSack = BugSack
-
 if not LibStub then return end
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1", true)
 if not ldb then return end
+
+local BugSack = BugSack
 
 -- Suppress the default BugGrabber throttle output.
 BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
@@ -33,9 +33,6 @@ BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 local dew = AceLibrary("Dewdrop-2.0")
 local icon = LibStub("LibDBIcon-1.0", true)
-
-local paused = nil
-local pauseCountDown = nil
 
 BugSackLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("BugSack", {
 	type = "data source",
@@ -52,8 +49,6 @@ function BugSackLDB.OnClick(self, button)
 			end
 		)
 	else
-		if pauseCountDown then return end
-
 		if IsShiftKeyDown() then
 			ReloadUI()
 		elseif IsAltKeyDown() then
@@ -68,25 +63,23 @@ end
 
 -- Invoked from BugSack
 function BugSackLDB:Update()
-	local e = BugSack:GetErrors()
-	local count = e and #e or 0
+	local count = #BugSack:GetErrors()
 	self.text = count
 	self.icon = count == 0 and "Interface\\AddOns\\BugSack\\Media\\icon" or "Interface\\AddOns\\BugSack\\Media\\icon_red"
 end
 
 do
-	local pauseHint = L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."]
 	local hint = L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
 	local line = "%d. %s (x%d)"
 	function BugSackLDB.OnTooltipShow(tt)
 		local errs = BugSack:GetErrors()
-		if not errs or #errs == 0 then
+		if #errs == 0 then
 			tt:AddLine(L["You have no errors, yay!"])
 		else
 			tt:AddLine("BugSack")
 			local pattern = "^(.-)\n"
 			local counter = 1
-			for i, err in ipairs(errs) do
+			for i, err in next, errs do
 				if not BugSack.db.profile.filterAddonMistakes or (BugSack.db.profile.filterAddonMistakes and err.type == "error") then
 					local m = err.message
 					if type(m) == "table" then m = table.concat(m, "") end
@@ -98,11 +91,7 @@ do
 			end
 		end
 		tt:AddLine(" ")
-		if pauseCountDown then
-			tt:AddLine(pauseHint:format(pauseCountDown), 0.2, 1, 0.2, 1)
-		else
-			tt:AddLine(hint, 0.2, 1, 0.2, 1)
-		end
+		tt:AddLine(hint, 0.2, 1, 0.2, 1)
 	end
 end
 
@@ -110,16 +99,15 @@ local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function()
 	if icon then
 		icon:Register("BugSack", BugSackLDB, BugSack.db.profile.minimap)
-		_G["SlashCmdList"]["BUGSACK_SHORTHAND"] = function()
+		SlashCmdList.BugSack = function()
+			BugSack.db.profile.minimap.hide = not BugSack.db.profile.minimap.hide
 			if BugSack.db.profile.minimap.hide then
-				icon:Show("BugSack")
-				BugSack.db.profile.minimap.hide = nil
-			else
 				icon:Hide("BugSack")
-				BugSack.db.profile.minimap.hide = true
+			else
+				icon:Show("BugSack")
 			end
 		end
-		_G["SLASH_BUGSACK_SHORTHAND1"] = "/bugsack"
+		SLASH_BugSack1 = "/bugsack"
 	end
 end)
 f:RegisterEvent("PLAYER_LOGIN")
