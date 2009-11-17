@@ -466,11 +466,11 @@ function BugSack:OnEnable()
 	local session = self:GetErrors("session")
 	if session and #session > 0 then
 		local t = {}
-		for i, v in ipairs(session) do
+		for i, v in next, session do
 			t[v] = true
 		end
 		self:OnError(t)
-		for k in pairs(t) do t[k] = nil end
+		wipe(t)
 		t = nil
 	end
 
@@ -496,7 +496,7 @@ function BugSack:Taint(addon)
 	for k,v in pairs(_G) do
 		local secure, tainter = issecurevariable(k)
 		if not secure and tainter and tainter:find(addon) then
-			table.insert(result, tostring(k))
+			result[#result + 1] = tostring(k)
 		end
 	end
 	if #result > 0 then
@@ -522,13 +522,13 @@ do
 	local errors = {}
 	function BugSack:GetErrors(which)
 		if type(which) ~= "string" and type(which) ~= "number" then return end
-		for i in ipairs(errors) do errors[i] = nil end
+		wipe(errors)
 
 		local db = BugGrabber:GetDB()
 		if type(which) == "number" then
-			for i, e in ipairs(db) do
+			for i, e in next, db do
 				if which == err.session then
-					table.insert(errors, e)
+					errors[#errors + 1] = e
 				end
 			end
 		else
@@ -538,14 +538,14 @@ do
 			elseif which == "current" then
 				local current = #db
 				if current ~= 0 and db[current].session == cs then
-					table.insert(errors, db[current])
+					errors[#errors + 1] = db[current]
 				end
 			else
-				for i, e in ipairs(db) do
+				for i, e in next, db do
 					if (which == "all")
 					or (which == "session" and cs == tonumber(e.session))
 					or (which == "previous" and cs - 1 == tonumber(e.session)) then
-						table.insert(errors, e)
+						errors[#errors + 1] = e
 					end
 				end
 			end
@@ -583,7 +583,7 @@ function BugSack:ListErrors(which, nr)
 	end
 
 	print(L["List of errors:"])
-	for i, e in ipairs(bugs) do
+	for i, e in next, bugs do
 		print(("%d. %s"):format(i, self:FormatError(e)))
 	end
 end

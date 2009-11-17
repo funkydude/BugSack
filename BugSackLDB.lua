@@ -58,8 +58,8 @@ function BugSackLDB.OnClick(self, button)
 			ReloadUI()
 		elseif IsAltKeyDown() then
 			BugSack:Reset()
-		elseif BugSackFrame:IsShown() then
-			BugSackFrame:Hide()
+		elseif BugSackFrame2:IsShown() then
+			BugSackFrame2:Hide()
 		else
 			BugSack:ShowFrame("session")
 		end
@@ -74,48 +74,6 @@ function BugSackLDB:Update()
 	self.icon = count == 0 and "Interface\\AddOns\\BugSack\\Media\\icon" or "Interface\\AddOns\\BugSack\\Media\\icon_red"
 end
 
---[[
-local function countdown()
-	if type(pauseCountDown) ~= "number" then
-		pauseCountDown = BUGGRABBER_TIME_TO_RESUME or 10
-	end
-	if pauseCountDown > 0 then
-		pauseCountDown = pauseCountDown - 1
-	end
-end
-
-function BugSackFu:BugGrabber_CapturePaused()
-	paused = true
-	pauseCountDown = BUGGRABBER_TIME_TO_RESUME or 10
-end
-
-function BugSackFu:BugGrabber_CaptureResumed()
-	paused = nil
-	pauseCountDown = nil
-	self:UpdateDisplay()
-end
-
-function BugSackFu:Reset()
-	self:SetIcon(true)
-end
-
-function BugSackFu:OnTextUpdate()
-	if pauseCountDown then
-		self:SetText(L["%d sec."]:format(pauseCountDown))
-	else
-		local e = BugSack:GetErrors("session")
-		local count = e and #e or 0
-		self:SetText(count)
-		self:SetIcon(count == 0 and true or "Interface\\AddOns\\BugSack\\icon_red")
-	end
-end
-
-
-function BugSackFu:OnDoubleClick()
-	if not pauseCountDown then return end
-	BugGrabber:Resume()
-end
-]]
 do
 	local pauseHint = L["|cffeda55fBugGrabber|r is paused due to an excessive amount of errors being generated. It will resume normal operations in |cffff0000%d|r seconds. |cffeda55fDouble-Click|r to resume now."]
 	local hint = L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
@@ -165,8 +123,5 @@ f:SetScript("OnEvent", function()
 	end
 end)
 f:RegisterEvent("PLAYER_LOGIN")
-
---BugSackLDB:RegisterEvent("BugGrabber_CapturePaused")
---BugSackLDB:RegisterEvent("BugGrabber_CaptureResumed")
 
 -- vim:set ts=4:
