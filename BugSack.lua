@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ]]
 
-local _G = getfenv(0)
-
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 local media = LibStub("LibSharedMedia-3.0", true)
 local cbh = LibStub("CallbackHandler-1.0")
@@ -32,15 +30,13 @@ local icon = LibStub("LibDBIcon-1.0", true)
 BugSack = LibStub("AceAddon-3.0"):NewAddon("BugSack", "AceComm-3.0", "AceSerializer-3.0")
 
 local BugSack = BugSack
-local BugGrabber = _G.BugGrabber
-local BugGrabberDB = _G.BugGrabberDB
+local BugGrabber = BugGrabber
+local BugGrabberDB = BugGrabberDB
 
 local isEventsRegistered = nil
 
 -- Frame state variables
-local sackType = nil
 local sackErrors = nil
-local sackText = nil
 local sackMax = nil
 local sackCurrent = nil
 
@@ -61,13 +57,6 @@ BugSack.options = {
 			set = "ShowFrame",
 			order = 100,
 			args = {
-				current = {
-					type = "execute",
-					name = L["Current error"],
-					desc = L["Show the current error."],
-					passValue = "current",
-					order = 1,
-				},
 				session = {
 					type = "execute",
 					name = L["Current session"],
@@ -87,13 +76,7 @@ BugSack.options = {
 					usage = "#",
 					name = L["By session number"],
 					desc = L["Show errors by session number."],
-					validate = function(arg)
-						arg = tonumber(arg)
-						if arg and arg > 0 and math.floor(arg) == arg then
-							return true
-						end
-						return false
-					end,
+					validate = function(v) return tonumber(v) end,
 					order = 4,
 				},
 				all = {
@@ -162,14 +145,6 @@ BugSack.options = {
 			set = function(v) BugSack.db.profile.chatframe = v end,
 			order = 201,
 		},
---[[		msg = {
-			type = "toggle",
-			name = L["Errors to chatframe"],
-			desc = L["Print the full error message to the chat frame instead of just a warning."],
-			get = function() return BugSack.db.profile.showmsg end,
-			set = function(v) BugSack.db.profile.showmsg = v end,
-			order = 202,
-		},]]
 		mute = {
 			type = "toggle",
 			name = L["Mute"],
@@ -290,7 +265,13 @@ local defaults = {
 }
 
 --[[
-New frame design?
+TODO
+
+* Replace Dewdrop with blizzard interface options
+
+* Serious code cleanup.
+
+* New frame design
 
    /----------------------------------------------------\
    | < > Session #         [ Received errors V ]  [ X ] |
@@ -302,7 +283,7 @@ New frame design?
    |
    |
    |
-   | [ << ] [ < ]        [ Close ]         [ > ] [ >> ] |
+   | [ << ] [ < ]                          [ > ] [ >> ] |
    \----------------------------------------------------/
 
 the << < > >> buttons at the bottom should be pretty self evident
@@ -315,6 +296,8 @@ sent you errors.
 
 ]]
 
+local textArea = nil
+local nextButton, prevButton, firstButton, lastButton = nil, nil, nil, nil
 local bugSackFrame = nil
 local function showErrorFrame()
 	if not bugSackFrame then
@@ -327,67 +310,67 @@ local function showErrorFrame()
 		f:SetWidth(500)
 		f:SetHeight(400)
 
-		local topText = f:CreateFontString("BugSackErrorText2", "GameFontHighlight")
-		topText:SetPoint("TOPLEFT", f, 5, -5)
-		topText:SetFontObject(GameFontHighlight)
-		topText:SetText("Test")
-
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", f, "UIPanelScrollFrameTemplate")
-		scroll:SetPoint("TOP", f, -10, -16)
-		scroll:SetWidth(455)
-		scroll:SetHeight(330)
+		scroll:SetPoint("TOPLEFT", 14, -16)
+		scroll:SetPoint("BOTTOMRIGHT", -32, 52)
 
 		local edit = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
-		edit:SetWidth(450)
-		edit:SetHeight(314)
 		edit:SetAutoFocus(false)
 		edit:SetMultiLine(true)
 		edit:SetFontObject(ChatFontNormal)
 		edit:SetMaxLetters(99999)
 		edit:EnableMouse(true)
 		edit:SetScript("OnEscapePressed", edit.ClearFocus)
+		-- XXX why the fuck doesn't SetPoint work on the editbox?
+		edit:SetWidth(450)
+		edit:SetHeight(314)
+		textArea = edit
 		
 		scroll:SetScrollChild(edit)
 
 		local prev = CreateFrame("Button", "BugSackPrevButton2", f, "UIPanelButtonTemplate")
 		prev:SetWidth(64)
 		prev:SetHeight(24)
-		prev:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 20, 20)
+		prev:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 90, 20)
 		prev:SetScript("OnClick", function()
 			sackCurrent = sackCurrent - 1
-			BugSack:UpdateFrameText()
+			BugSack:UpdateFrame()
 		end)
-		prev:SetText("Previous")
+		prev:SetText("<")
+		prevButton = prev
 		
 		local next = CreateFrame("Button", "BugSackNextButton2", f, "UIPanelButtonTemplate")
 		next:SetWidth(64)
 		next:SetHeight(24)
-		next:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 90, 20)
+		next:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -90, 20)
 		next:SetScript("OnClick", function()
 			sackCurrent = sackCurrent + 1
-			BugSack:UpdateFrameText()
+			BugSack:UpdateFrame()
 		end)
-		next:SetText("Next")
+		next:SetText(">")
+		nextButton = next
 		
 		local last = CreateFrame("Button", "BugSackLastButton2", f, "UIPanelButtonTemplate")
 		last:SetWidth(64)
 		last:SetHeight(24)
-		last:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -20, 20)
+		last:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 20, 20)
 		last:SetScript("OnClick", function()
-			sackCurrent = sackMax
-			BugSack:UpdateFrameText()
+			sackCurrent = math.min(sackMax, 1)
+			BugSack:UpdateFrame()
 		end)
-		last:SetText("Last")
+		last:SetText("<<")
+		lastButton = last
 		
 		local first = CreateFrame("Button", "BugSackFirstButton2", f, "UIPanelButtonTemplate")
 		first:SetWidth(64)
 		first:SetHeight(24)
-		first:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -90, 20)
+		first:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -20, 20)
 		first:SetScript("OnClick", function()
-			sackCurrent = math.min(sackMax, 1)
-			BugSack:UpdateFrameText()
+			sackCurrent = sackMax
+			BugSack:UpdateFrame()
 		end)
-		first:SetText("First")
+		first:SetText(">>")
+		firstButton = first
 
 		bugSackFrame = f
 	end
@@ -400,17 +383,8 @@ local function print(t)
 end
 
 function BugSack:OnInitialize()
-	local revision = tonumber(string.sub("$Revision$", 12, -3)) or 1
-	if not self.version then self.version = "2.x.x" end
-	self.version = self.version .. "." .. revision
-	self.revision = revision
-
 	self.callbacks = cbh:New(self)
-
-	_G.BUGSACK_REVISION = self.revision
-	_G.BUGSACK_VERSION = self.version
-
-	self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, "Default")
+	self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, true)
 
 	if media then
 		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
@@ -492,11 +466,6 @@ do
 			local cs = BugGrabberDB.session
 			if which == "received" then
 				return receivedErrors
-			elseif which == "current" then
-				local current = #db
-				if current ~= 0 and db[current].session == cs then
-					errors[#errors + 1] = db[current]
-				end
 			else
 				for i, e in next, db do
 					if (which == "all")
@@ -529,70 +498,42 @@ function BugSack:ToggleFilter()
 end
 
 function BugSack:ShowFrame(which, nr)
-	-- Have to work through some oddities in AceConsole et.al.
-	if type(nr) == "string" then nr = tonumber(nr) end
-	if (which == "ShowFrame" or which == "number") then which = nr end
-
+	if which == "number" then which = tonumber(nr) end
 	sackErrors = self:GetErrors(which)
-	sackType = which
 	sackMax = sackErrors and #sackErrors or 0
-
 	if nr then
 		sackCurrent = math.min(sackMax, math.abs(nr))
 	else
 		sackCurrent = math.min(sackMax, 1)
 	end
-	self:UpdateFrameText()
+	self:UpdateFrame()
 end
 
-function BugSack:UpdateFrameText()
+function BugSack:UpdateFrame()
 	showErrorFrame()
 
-	local caption = nil
-
+	local t = nil
 	if sackCurrent == 0 then
-		sackText = L["You have no errors, yay!"]
-		caption = L["No errors found"]
+		t = L["You have no errors, yay!"]
 	else
-		sackText = self:FormatError(sackErrors[sackCurrent])
-		if GetLocale() == "koKR" then
-			caption = L["Error %d of %d"]:format(sackMax, sackCurrent)
-		else
-			caption = L["Error %d of %d"]:format(sackCurrent, sackMax)
-		end
+		t = self:FormatError(sackErrors[sackCurrent])
 	end
-
-	if sackType == "current" then
-		caption = caption .. L[" (viewing last error)"]
-	elseif sackType == "session" then
-		caption = caption .. L[" (viewing session errors)"]
-	elseif sackType == "previous" then
-		caption = caption .. L[" (viewing previous session errors)"]
-	elseif sackType == "all" then
-		caption = caption .. L[" (viewing all errors)"]
-	elseif sackType == "received" then
-		caption = caption .. L[" (viewing errors from %s)"]:format(receivedFrom)
-	else
-		caption = caption .. L[" (viewing errors for session %d)"]:format(sackType)
-	end
-	_G.BugSackErrorText2:SetText(caption)
-
-	_G.BugSackFrameScrollText2:SetText(sackText)
+	textArea:SetText(t)
 
 	if sackCurrent >= sackMax then
-		_G.BugSackNextButton2:Disable()
-		_G.BugSackLastButton2:Disable()
+		nextButton:Disable()
+		firstButton:Disable()
 	else
-		_G.BugSackNextButton2:Enable()
-		_G.BugSackLastButton2:Enable()
+		nextButton:Enable()
+		firstButton:Enable()
 	end
 
 	if sackCurrent <= 1 then
-		_G.BugSackPrevButton2:Disable()
-		_G.BugSackFirstButton2:Disable()
+		prevButton:Disable()
+		lastButton:Disable()
 	else
-		_G.BugSackPrevButton2:Enable()
-		_G.BugSackFirstButton2:Enable()
+		prevButton:Enable()
+		lastButton:Enable()
 	end
 end
 
@@ -639,10 +580,7 @@ function BugSack:Reset()
 	BugGrabber:Reset()
 	print(L["All errors were wiped."])
 
-	if BugSackFu then
-		BugSackFu:Reset()
-		BugSackFu:Update()
-	elseif BugSackLDB then
+	if BugSackLDB then
 		BugSackLDB:Update()
 	end
 end
@@ -659,7 +597,7 @@ do
 				PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.wav")
 			end
 			if self.db.profile.auto then
-				self:ShowFrame("current")
+				self:ShowFrame("session")
 			end
 			if self.db.profile.chatframe then
 				print(L["An error has been recorded."])
