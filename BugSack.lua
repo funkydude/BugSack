@@ -359,6 +359,85 @@ local defaults = {
 	},
 }
 
+local bugSackFrame = nil
+local function showErrorFrame()
+	if not bugSackFrame then
+		local f = CreateFrame("Frame", "BugSackFrame2", UIParent, "DialogBoxFrame")
+		f:SetBackdrop({
+			bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
+			insets = { left = 5, right = 5, top = 5, bottom = 5 }
+		})
+		f:SetWidth(500)
+		f:SetHeight(400)
+
+		local topText = f:CreateFontString("BugSackErrorText2", "GameFontHighlight")
+		topText:SetPoint("TOPLEFT", f, 5, -5)
+		topText:SetFontObject(GameFontHighlight)
+		topText:SetText("Test")
+
+		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", f, "UIPanelScrollFrameTemplate")
+		scroll:SetPoint("TOP", f, -10, -16)
+		scroll:SetWidth(455)
+		scroll:SetHeight(330)
+
+		local edit = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
+		edit:SetWidth(450)
+		edit:SetHeight(314)
+		edit:SetAutoFocus(false)
+		edit:SetMultiLine(true)
+		edit:SetFontObject(ChatFontNormal)
+		edit:SetMaxLetters(99999)
+		edit:EnableMouse(true)
+		
+		scroll:SetScrollChild(edit)
+
+		local prev = CreateFrame("Button", "BugSackPrevButton2", f, "UIPanelButtonTemplate")
+		prev:SetWidth(64)
+		prev:SetHeight(24)
+		prev:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 20, 20)
+		prev:SetScript("OnClick", function()
+			sackCurrent = sackCurrent - 1
+			BugSack:UpdateFrameText()
+		end)
+		prev:SetText("Previous")
+		
+		local next = CreateFrame("Button", "BugSackNextButton2", f, "UIPanelButtonTemplate")
+		next:SetWidth(64)
+		next:SetHeight(24)
+		next:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 90, 20)
+		next:SetScript("OnClick", function()
+			sackCurrent = sackCurrent + 1
+			BugSack:UpdateFrameText()
+		end)
+		next:SetText("Next")
+		
+		local last = CreateFrame("Button", "BugSackLastButton2", f, "UIPanelButtonTemplate")
+		last:SetWidth(64)
+		last:SetHeight(24)
+		last:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -20, 20)
+		last:SetScript("OnClick", function()
+			sackCurrent = sackMax
+			BugSack:UpdateFrameText()
+		end)
+		last:SetText("Last")
+		
+		local first = CreateFrame("Button", "BugSackFirstButton2", f, "UIPanelButtonTemplate")
+		first:SetWidth(64)
+		first:SetHeight(24)
+		first:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -90, 20)
+		first:SetScript("OnClick", function()
+			sackCurrent = math.min(sackMax, 1)
+			BugSack:UpdateFrameText()
+		end)
+		first:SetText("First")
+
+		bugSackFrame = f
+	end
+	
+	bugSackFrame:Show()
+end
+
 local function print(t)
 	DEFAULT_CHAT_FRAME:AddMessage("BugSack: " .. t)
 end
@@ -373,7 +452,7 @@ function BugSack:OnInitialize()
 
 	_G.BUGSACK_REVISION = self.revision
 	_G.BUGSACK_VERSION = self.version
-	
+
 	self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, "Default")
 
 	if media then
@@ -524,11 +603,11 @@ function BugSack:ShowFrame(which, nr)
 		sackCurrent = math.min(sackMax, 1)
 	end
 	self:UpdateFrameText()
-
-	_G.BugSackFrame:Show()
 end
 
 function BugSack:UpdateFrameText()
+	showErrorFrame()
+
 	local caption = nil
 
 	if sackCurrent == 0 then
@@ -556,45 +635,25 @@ function BugSack:UpdateFrameText()
 	else
 		caption = caption .. L[" (viewing errors for session %d)"]:format(sackType)
 	end
-	_G.BugSackErrorText:SetText(caption)
+	_G.BugSackErrorText2:SetText(caption)
 
-	_G.BugSackFrameScrollText:SetText(sackText)
+	_G.BugSackFrameScrollText2:SetText(sackText)
 
 	if sackCurrent >= sackMax then
-		_G.BugSackNextButton:Disable()
-		_G.BugSackLastButton:Disable()
+		_G.BugSackNextButton2:Disable()
+		_G.BugSackLastButton2:Disable()
 	else
-		_G.BugSackNextButton:Enable()
-		_G.BugSackLastButton:Enable()
+		_G.BugSackNextButton2:Enable()
+		_G.BugSackLastButton2:Enable()
 	end
 
 	if sackCurrent <= 1 then
-		_G.BugSackPrevButton:Disable()
-		_G.BugSackFirstButton:Disable()
+		_G.BugSackPrevButton2:Disable()
+		_G.BugSackFirstButton2:Disable()
 	else
-		_G.BugSackPrevButton:Enable()
-		_G.BugSackFirstButton:Enable()
+		_G.BugSackPrevButton2:Enable()
+		_G.BugSackFirstButton2:Enable()
 	end
-end
-
-function BugSack:OnFirstClick()
-	sackCurrent = math.min(sackMax, 1)
-	self:UpdateFrameText()
-end
-
-function BugSack:OnPrevClick()
-	sackCurrent = sackCurrent - 1
-	self:UpdateFrameText()
-end
-
-function BugSack:OnLastClick()
-	sackCurrent = sackMax
-	self:UpdateFrameText()
-end
-
-function BugSack:OnNextClick()
-	sackCurrent = sackCurrent + 1
-	self:UpdateFrameText()
 end
 
 function BugSack:FormatError(err)
@@ -700,16 +759,6 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 	receivedFrom = sender
 
 	print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#deSz, sender))
-end
-
--- Editbox handler
-
-function BugSack:OnTextChanged()
-	if this:GetText() ~= sackText then
-		this:SetText(sackText)
-	end
-	this:GetParent():UpdateScrollChildRect()
-	BugSackFrameScrollScrollBar:SetValue(0)
 end
 
 -- vim:set ts=4:
