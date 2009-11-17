@@ -1,18 +1,10 @@
---
--- $Id$
---
 -- The BugSack and BugGrabber team is:
 -- Current Developer: Rabbit
 -- Past Developers: Rowne, Ramble, industrial, Fritti, kergoth
 -- Testers: Ramble, Sariash
 --
 -- Credits to AceGUI & LuaPad for the scrollbar knowledge.
---
 --[[
-
-BugSack, a World of Warcraft addon that interfaces with the !BugGrabber addon
-to present errors in a nice way.
-Copyright (C) 2008 The BugSack Team.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -115,68 +107,6 @@ BugSack.options = {
 					type = "execute",
 					name = L["Received errors"],
 					desc = L["Show errors received from another player."],
-					passValue = "received",
-					order = 6,
-					disabled = function() return not receivedErrors end,
-				},
-			},
-		},
-		list = {
-			type = "group",
-			name = L["List errors"],
-			desc = L["List errors to the chat frame."],
-			order = 101,
-			pass = true,
-			get = false,
-			set = "ListErrors",
-			func = "ListErrors",
-			args = {
-				current = {
-					type = "execute",
-					name = L["Current error"],
-					desc = L["List the current error."],
-					passValue = "current",
-					order = 1,
-				},
-				session = {
-					type = "execute",
-					name = L["Current session"],
-					desc = L["List errors from the current session."],
-					passValue = "session",
-					order = 2,
-				},
-				previous = {
-					type = "execute",
-					name = L["Previous session"],
-					desc = L["List errors from the previous session."],
-					passValue = "previous",
-					order = 3,
-				},
-				number = {
-					type = "text",
-					usage = "#",
-					name = L["By session number"],
-					desc = L["List errors by session number."],
-					validate = function(arg)
-						arg = tonumber(arg)
-						if arg and arg > 0 and math.floor(arg) == arg then
-							return true
-						end
-						return false
-					end,
-					order = 4,
-				},
-				all = {
-					type = "execute",
-					name = L["All errors"],
-					desc = L["List all errors."],
-					passValue = "all",
-					order = 5,
-				},
-				received = {
-					type = "execute",
-					name = L["Received errors"],
-					desc = L["List errors received from another player."],
 					passValue = "received",
 					order = 6,
 					disabled = function() return not receivedErrors end,
@@ -359,6 +289,32 @@ local defaults = {
 	},
 }
 
+--[[
+New frame design?
+
+   /----------------------------------------------------\
+   | < > Session #         [ Received errors V ]  [ X ] |
+   |
+   |
+   |
+   |              BUG TEXT
+   |
+   |
+   |
+   |
+   | [ << ] [ < ]        [ Close ]         [ > ] [ >> ] |
+   \----------------------------------------------------/
+
+the << < > >> buttons at the bottom should be pretty self evident
+the < > buttons at the top allows you to navigate through saved sessions, and
+the "Session #" label shows which session you're currently browsing.
+obviously the highest numbered session is the latest one.
+
+received errors is a dropdown containing the names of people who have
+sent you errors.
+
+]]
+
 local bugSackFrame = nil
 local function showErrorFrame()
 	if not bugSackFrame then
@@ -389,6 +345,7 @@ local function showErrorFrame()
 		edit:SetFontObject(ChatFontNormal)
 		edit:SetMaxLetters(99999)
 		edit:EnableMouse(true)
+		edit:SetScript("OnEscapePressed", edit.ClearFocus)
 		
 		scroll:SetScrollChild(edit)
 
@@ -568,23 +525,6 @@ function BugSack:ToggleFilter()
 		BugGrabber.UnregisterCallback(self, "BugGrabber_EventGrabbed")
 		isEventsRegistered = nil
 		BugGrabber:UnregisterAddonActionEvents()
-	end
-end
-
-function BugSack:ListErrors(which, nr)
-	-- Have to work through some oddities in AceConsole et.al.
-	if type(nr) == "string" then nr = tonumber(nr) end
-	if (which == "ListErrors" or which == "number") then which = nr end
-
-	local bugs = self:GetErrors(which)
-	if not bugs or #bugs == 0 then
-		print(L["You have no errors, yay!"])
-		return
-	end
-
-	print(L["List of errors:"])
-	for i, e in next, bugs do
-		print(("%d. %s"):format(i, self:FormatError(e)))
 	end
 end
 

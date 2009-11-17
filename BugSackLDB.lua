@@ -58,7 +58,7 @@ function BugSackLDB.OnClick(self, button)
 			ReloadUI()
 		elseif IsAltKeyDown() then
 			BugSack:Reset()
-		elseif BugSackFrame2:IsShown() then
+		elseif BugSackFrame2 and BugSackFrame2:IsShown() then
 			BugSackFrame2:Hide()
 		else
 			BugSack:ShowFrame("session")
