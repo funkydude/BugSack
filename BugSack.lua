@@ -40,9 +40,6 @@ local sackErrors = nil
 local sackMax = nil
 local sackCurrent = nil
 
-local receivedFrom = nil
-local receivedErrors = nil
-
 BugSack.options = {
 	type = "group",
 	handler = BugSack,
@@ -85,14 +82,6 @@ BugSack.options = {
 					desc = L["Show all errors."],
 					passValue = "all",
 					order = 5,
-				},
-				received = {
-					type = "execute",
-					name = L["Received errors"],
-					desc = L["Show errors received from another player."],
-					passValue = "received",
-					order = 6,
-					disabled = function() return not receivedErrors end,
 				},
 			},
 		},
@@ -274,7 +263,7 @@ TODO
 * New frame design
 
    /----------------------------------------------------\
-   | < > Session #         [ Received errors V ]  [ X ] |
+   | < > Session #                                [ X ] |
    |
    |
    |
@@ -290,9 +279,6 @@ the << < > >> buttons at the bottom should be pretty self evident
 the < > buttons at the top allows you to navigate through saved sessions, and
 the "Session #" label shows which session you're currently browsing.
 obviously the highest numbered session is the latest one.
-
-received errors is a dropdown containing the names of people who have
-sent you errors.
 
 ]]
 
@@ -314,10 +300,12 @@ local function showErrorFrame()
 		scroll:SetPoint("TOPLEFT", 14, -16)
 		scroll:SetPoint("BOTTOMRIGHT", -32, 52)
 
+		
+
 		local edit = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
 		edit:SetAutoFocus(false)
 		edit:SetMultiLine(true)
-		edit:SetFontObject(ChatFontNormal)
+		edit:SetFontObject(GameFontHighlightSmall)
 		edit:SetMaxLetters(99999)
 		edit:EnableMouse(true)
 		edit:SetScript("OnEscapePressed", edit.ClearFocus)
@@ -464,15 +452,11 @@ do
 			end
 		else
 			local cs = BugGrabberDB.session
-			if which == "received" then
-				return receivedErrors
-			else
-				for i, e in next, db do
-					if (which == "all")
-					or (which == "session" and cs == tonumber(e.session))
-					or (which == "previous" and cs - 1 == tonumber(e.session)) then
-						errors[#errors + 1] = e
-					end
+			for i, e in next, db do
+				if (which == "all")
+				or (which == "session" and cs == tonumber(e.session))
+				or (which == "previous" and cs - 1 == tonumber(e.session)) then
+					errors[#errors + 1] = e
 				end
 			end
 		end
@@ -537,12 +521,14 @@ function BugSack:UpdateFrame()
 	end
 end
 
+local errorFormat = [[|cff999999[%s-%d-x%d@%s]|r: %s]]
+
 function BugSack:FormatError(err)
 	local m = err.message
 	if type(m) == "table" then
 		m = table.concat(m, "")
 	end
-	return string.format("|cff999999[%s-%d-x%d]|r: %s", err.time or "Unknown", err.session or -1, err.counter or -1, self:ColorError(m or ""))
+	return errorFormat:format(err.time or "unknown", err.session or -1, err.counter or -1, err.source or "local", self:ColorError(m or ""))
 end
 
 function BugSack:ColorError(err)
@@ -632,9 +618,13 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 		print("Failure to deserialize incoming data from " .. sender .. ".")
 		return
 	end
-	
-	receivedErrors = deSz
-	receivedFrom = sender
+
+	-- Store recieved errors in the current session database with a source set to the sender
+	for i, err in next, deSz do
+		err.source = sender
+		err.session = BugGrabberDB.session
+		BugGrabber:StoreError(err)
+	end
 
 	print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#deSz, sender))
 end
