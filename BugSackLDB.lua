@@ -61,14 +61,14 @@ function BugSackLDB.OnClick(self, button)
 		elseif BugSackFrame2 and BugSackFrame2:IsShown() then
 			BugSackFrame2:Hide()
 		else
-			BugSack:ShowFrame("session")
+			BugSack:OpenSack()
 		end
 	end
 end
 
 -- Invoked from BugSack
 function BugSackLDB:Update()
-	local e = BugSack:GetErrors("session")
+	local e = BugSack:GetErrors()
 	local count = e and #e or 0
 	self.text = count
 	self.icon = count == 0 and "Interface\\AddOns\\BugSack\\Media\\icon" or "Interface\\AddOns\\BugSack\\Media\\icon_red"
@@ -79,7 +79,7 @@ do
 	local hint = L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
 	local line = "%d. %s (x%d)"
 	function BugSackLDB.OnTooltipShow(tt)
-		local errs = BugSack:GetErrors("session")
+		local errs = BugSack:GetErrors()
 		if not errs or #errs == 0 then
 			tt:AddLine(L["You have no errors, yay!"])
 		else

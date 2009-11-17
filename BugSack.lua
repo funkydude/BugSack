@@ -45,45 +45,11 @@ BugSack.options = {
 	handler = BugSack,
 	args = {
 		show = {
-			type = "group",
+			type = "execute",
 			name = L["Show sack"],
 			desc = L["Show errors in the sack."],
-			pass = true,
-			func = "ShowFrame",
-			get = false,
-			set = "ShowFrame",
-			order = 100,
-			args = {
-				session = {
-					type = "execute",
-					name = L["Current session"],
-					desc = L["Show errors from the current session."],
-					passValue = "session",
-					order = 2,
-				},
-				previous = {
-					type = "execute",
-					name = L["Previous session"],
-					desc = L["Show errors from the previous session."],
-					passValue = "previous",
-					order = 3,
-				},
-				number = {
-					type = "text",
-					usage = "#",
-					name = L["By session number"],
-					desc = L["Show errors by session number."],
-					validate = function(v) return tonumber(v) end,
-					order = 4,
-				},
-				all = {
-					type = "execute",
-					name = L["All errors"],
-					desc = L["Show all errors."],
-					passValue = "all",
-					order = 5,
-				},
-			},
+			func = "OpenSack",
+			order = 1,
 		},
 		limit = {
 			type = "range",
@@ -171,7 +137,7 @@ BugSack.options = {
 			get = false,
 			set = "SendBugsToUser",
 			usage = L["<player name>"],
-			validate = function(v) return type(v) == "string" and v:trim():len() > 0 end,
+			validate = function(v) return type(v) == "string" and v:trim():len() > 1 end,
 			order = 300,
 		},
 		bug = {
@@ -300,8 +266,6 @@ local function showErrorFrame()
 		scroll:SetPoint("TOPLEFT", 14, -16)
 		scroll:SetPoint("BOTTOMRIGHT", -32, 52)
 
-		
-
 		local edit = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
 		edit:SetAutoFocus(false)
 		edit:SetMultiLine(true)
@@ -322,7 +286,7 @@ local function showErrorFrame()
 		prev:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 90, 20)
 		prev:SetScript("OnClick", function()
 			sackCurrent = sackCurrent - 1
-			BugSack:UpdateFrame()
+			BugSack:UpdateSack()
 		end)
 		prev:SetText("<")
 		prevButton = prev
@@ -333,7 +297,7 @@ local function showErrorFrame()
 		next:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -90, 20)
 		next:SetScript("OnClick", function()
 			sackCurrent = sackCurrent + 1
-			BugSack:UpdateFrame()
+			BugSack:UpdateSack()
 		end)
 		next:SetText(">")
 		nextButton = next
@@ -344,7 +308,7 @@ local function showErrorFrame()
 		last:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 20, 20)
 		last:SetScript("OnClick", function()
 			sackCurrent = math.min(sackMax, 1)
-			BugSack:UpdateFrame()
+			BugSack:UpdateSack()
 		end)
 		last:SetText("<<")
 		lastButton = last
@@ -355,7 +319,7 @@ local function showErrorFrame()
 		first:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -20, 20)
 		first:SetScript("OnClick", function()
 			sackCurrent = sackMax
-			BugSack:UpdateFrame()
+			BugSack:UpdateSack()
 		end)
 		first:SetText(">>")
 		firstButton = first
@@ -382,7 +346,7 @@ end
 
 function BugSack:OnEnable()
 	-- Make sure we grab any errors fired before bugsack loaded.
-	local session = self:GetErrors("session")
+	local session = self:GetErrors()
 	if session and #session > 0 then
 		local t = {}
 		for i, v in next, session do
@@ -439,23 +403,19 @@ end
 
 do
 	local errors = {}
-	function BugSack:GetErrors(which)
-		if type(which) ~= "string" and type(which) ~= "number" then return end
+	function BugSack:GetErrors(sessionId)
 		wipe(errors)
-
 		local db = BugGrabber:GetDB()
-		if type(which) == "number" then
+		if type(sessionId) == "number" then
 			for i, e in next, db do
-				if which == err.session then
+				if sessionId == err.session then
 					errors[#errors + 1] = e
 				end
 			end
 		else
 			local cs = BugGrabberDB.session
 			for i, e in next, db do
-				if (which == "all")
-				or (which == "session" and cs == tonumber(e.session))
-				or (which == "previous" and cs - 1 == tonumber(e.session)) then
+				if cs == e.session then
 					errors[#errors + 1] = e
 				end
 			end
@@ -481,19 +441,14 @@ function BugSack:ToggleFilter()
 	end
 end
 
-function BugSack:ShowFrame(which, nr)
-	if which == "number" then which = tonumber(nr) end
-	sackErrors = self:GetErrors(which)
+function BugSack:OpenSack(sessionId)
+	sackErrors = self:GetErrors(sessionId)
 	sackMax = sackErrors and #sackErrors or 0
-	if nr then
-		sackCurrent = math.min(sackMax, math.abs(nr))
-	else
-		sackCurrent = math.min(sackMax, 1)
-	end
-	self:UpdateFrame()
+	sackCurrent = math.min(sackMax, 1)
+	self:UpdateSack()
 end
 
-function BugSack:UpdateFrame()
+function BugSack:UpdateSack()
 	showErrorFrame()
 
 	local t = nil
@@ -521,14 +476,14 @@ function BugSack:UpdateFrame()
 	end
 end
 
-local errorFormat = [[|cff999999[%s-%d-x%d@%s]|r: %s]]
+local errorFormat = [[|cff999999[%s-x%d@%s]|r: %s]]
 
 function BugSack:FormatError(err)
 	local m = err.message
 	if type(m) == "table" then
 		m = table.concat(m, "")
 	end
-	return errorFormat:format(err.time or "unknown", err.session or -1, err.counter or -1, err.source or "local", self:ColorError(m or ""))
+	return errorFormat:format(err.time or "unknown", err.counter or -1, err.source or "local", self:ColorError(m or ""))
 end
 
 function BugSack:ColorError(err)
@@ -545,7 +500,7 @@ function BugSack:ColorError(err)
 	ret = ret:gsub("= nil\n", "= |cffff7f7fnil|r\n") -- locals: nil
 	ret = ret:gsub("= true\n", "= |cffff9100true|r\n") -- locals: true
 	ret = ret:gsub("= false\n", "= |cffff9100false|r\n") -- locals: false
-	ret = ret:gsub("= \"([^\n]+)\"\n", "= |cff00ff00\"%1\"|r\n") -- locals: string
+	ret = ret:gsub("= \"([^\n]+)\"\n", "= |cff8888ff\"%1\"|r\n") -- locals: string
 	ret = ret:gsub("defined %@(.-):(%d+)", "@ |cffeda55f%1|r:|cff00ff00%2|r:") -- Files/Line Numbers of locals
 	ret = ret:gsub("\n(.-):(%d+):", "\n|cffeda55f%1|r:|cff00ff00%2|r:") -- Files/Line Numbers
 	ret = ret:gsub("%-%d+%p+.-%\\", "|cffffff00%1|cffeda55f") -- Version numbers
@@ -583,7 +538,7 @@ do
 				PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.wav")
 			end
 			if self.db.profile.auto then
-				self:ShowFrame("session")
+				self:OpenSack()
 			end
 			if self.db.profile.chatframe then
 				print(L["An error has been recorded."])
@@ -602,7 +557,7 @@ function BugSack:SendBugsToUser(player)
 		error("Player needs to be a valid string.")
 	end
 
-	local errors = self:GetErrors("session")
+	local errors = self:GetErrors()
 	if not errors or #errors == 0 then return end
 	local sz = self:Serialize(errors)
 	self:SendCommMessage("BugSack", sz, "WHISPER", player, "BULK")
@@ -625,6 +580,9 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 		err.session = BugGrabberDB.session
 		BugGrabber:StoreError(err)
 	end
+
+	wipe(deSz)
+	deSz = nil
 
 	print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#deSz, sender))
 end
