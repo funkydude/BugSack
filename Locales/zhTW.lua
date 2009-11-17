@@ -87,10 +87,5 @@ L[" (viewing errors from %s)"] = " (查看接收自%s的錯誤)"
 
 -- FuBar plugin
 L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "\n|cffeda55f左擊: |r打開 BugSack 視窗查看最近的錯誤。\n|cffeda55fShift-左擊: |r重載使用者介面。\n|cffeda55fAlt-左擊: |r清除錯誤。"
-
-if GetLocale() == "zhTW" then
-	BugSackNextButton:SetText("下一個")
-	BugSackLastButton:SetText("最後")
-	BugSackPrevButton:SetText("上一個")
-	BugSackFirstButton:SetText("最初")
-end
+L["Minimap icon"] = "小地圖圖示"
+L["Toggle the minimap icon."] = "啟用小地圖圖示。"
