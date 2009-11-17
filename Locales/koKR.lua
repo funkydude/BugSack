@@ -89,11 +89,5 @@ L[" (viewing errors from %s)"] = " (%s의 오류 보기)"
 
 -- FuBar plugin
 L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "마지막 오류를 표시 하려면 |cffeda55f클릭|r하세요. 사용자 인터페이스를 재실행 하려면 |cffeda55fSHIFT-클릭|r하세요. 초기화 하려면 |cffeda55fALT-클릭|r하세요."
-
-
-if GetLocale() == "koKR" then
-	BugSackNextButton:SetText("다음")
-	BugSackLastButton:SetText("마지막")
-	BugSackPrevButton:SetText("이전")
-	BugSackFirstButton:SetText("처음")
-end
+L["Minimap icon"] = "미니맵 아이콘"
+L["Toggle the minimap icon."] = "미니맵 아이콘을 토글합니다."
