@@ -42,13 +42,6 @@ BugSack.options = {
 	type = "group",
 	handler = BugSack,
 	args = {
-		show = {
-			type = "execute",
-			name = L["Show sack"],
-			desc = L["Show errors in the sack."],
-			func = "OpenSack",
-			order = 1,
-		},
 		limit = {
 			type = "range",
 			name = L["Limit"],
@@ -127,38 +120,6 @@ BugSack.options = {
 			type = "header",
 			name = " ",
 			order = 250,
-		},
-		sendbugs = {
-			type = "text",
-			name = L["Send bugs"],
-			desc = L["Sends your current session bugs to another BugSack user."],
-			get = false,
-			set = "SendBugsToUser",
-			usage = L["<player name>"],
-			validate = function(v) return type(v) == "string" and v:trim():len() > 1 end,
-			order = 300,
-		},
-		bug = {
-			type = "group",
-			name = L["Generate bug"],
-			desc = L["Generate a fake bug for testing."],
-			order = 301,
-			args = {
-				script = {
-					type = "execute",
-					name = L["Script bug"],
-					desc = L["Generate a script bug."],
-					func = "ScriptBug",
-					order = 1,
-				},
-				addon = {
-					type = "execute",
-					name = L["Addon bug"],
-					desc = L["Generate an addon bug."],
-					func = "AddonBug",
-					order = 2,
-				}
-			}
 		},
 		events = {
 			type = "toggle",
@@ -359,6 +320,18 @@ do
 			sackCurrent = sackCurrent - 1
 			BugSack:UpdateSack()
 		end)
+		
+		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate2")
+		sendButton:SetPoint("TOPLEFT", prevButton, "TOPRIGHT", 4)
+		sendButton:SetPoint("BOTTOMRIGHT", nextButton, "BOTTOMLEFT", -4)
+		sendButton:SetText("Send errors")
+		sendButton:SetScript("OnClick", function()
+			local db = BugGrabber:GetDB()
+			local eo = db[sackCurrent]
+			local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
+			popup.data = eo.session
+			window:Hide()
+		end)
 
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", window, "UIPanelScrollFrameTemplate")
 		scroll:SetPoint("TOPLEFT", sessionLabel, "BOTTOMLEFT", 0, -12)
@@ -378,9 +351,10 @@ do
 		scroll:SetScrollChild(textArea)
 	end
 
-	local sessionFormat = "Session: %d (%s)" -- Session: 123 (Today)
+	local sessionFormat = "Session %d (%s)" -- Session: 123 (Today)
 	local countFormat = "%d/%d" -- 1/10
 	local sourceFormat = "Sent by %s (%s)"
+	local localFormat = "Local (%s)"
 
 	function show(eo)
 		if not window then createTipFrame() end
@@ -391,10 +365,11 @@ do
 			textArea:SetText(L["You have no errors, yay!"])
 			nextButton:Disable()
 			prevButton:Disable()
+			sendButton:Disable()
 		else
 			local db = BugGrabber:GetDB()
 			if eo.source then sourceLabel:SetText(sourceFormat:format(eo.source, eo.type))
-			else sourceLabel:SetText(eo.type) end
+			else sourceLabel:SetText(localFormat:format(eo.type)) end
 			if eo.session == BugGrabberDB.session then
 				sessionLabel:SetText(sessionFormat:format(eo.session, "Today"))
 			else
@@ -412,6 +387,7 @@ do
 			else
 				prevButton:Enable()
 			end
+			sendButton:Enable()
 		end
 		window:Show()
 	end
@@ -422,6 +398,35 @@ local function print(t)
 end
 
 function BugSack:OnInitialize()
+	local popup = _G.StaticPopupDialogs
+	if type(popup) ~= "table" then popup = {} end
+	if type(popup["BugSackSendBugs"]) ~= "table" then
+		popup["BugSackSendBugs"] = {
+			text = "Send your errors from the currently viewed session (%d) in the sack to another player.",
+			button1 = "Send",
+			button2 = CLOSE,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			hasEditBox = true,
+			OnAccept = function(self, data)
+				local recipient = self.editBox:GetText()
+				BugSack:SendBugsToUser(recipient, data)
+			end,
+			OnShow = function(self)
+				self.button1:Disable()
+			end,
+			EditBoxOnTextChanged = function(self, data)
+				if self:GetText():len() > 1 then
+					self:GetParent().button1:Enable()
+				else
+					self:GetParent().button1:Disable()
+				end
+			end,
+			enterClicksFirstButton = true,
+		}
+	end
+
 	self.callbacks = cbh:New(self)
 	self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, true)
 
@@ -565,16 +570,6 @@ function BugSack:ColorError(err)
 	return ret
 end
 
-function BugSack:ScriptBug()
-	-- Obviously the given string is not a valid Lua script, and hence produces an error.
-	RunScript(L["BugSack generated this fake error."])
-end
-
-function BugSack:AddonBug()
-	-- This function doesn't exist, and hence it produces an error.
-	self:BugGeneratedByBugSack()
-end
-
 function BugSack:Reset()
 	BugGrabber:Reset()
 	print(L["All errors were wiped."])
@@ -610,12 +605,12 @@ do
 end
 
 -- Sends the current session errors to another player using AceComm-3.0
-function BugSack:SendBugsToUser(player)
+function BugSack:SendBugsToUser(player, session)
 	if type(player) ~= "string" or player:trim():len() < 2 then
 		error("Player needs to be a valid string.")
 	end
 
-	local errors = self:GetErrors(BugGrabberDB.session)
+	local errors = self:GetErrors(session)
 	if not errors or #errors == 0 then return end
 	local sz = self:Serialize(errors)
 	self:SendCommMessage("BugSack", sz, "WHISPER", player, "BULK")
