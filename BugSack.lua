@@ -224,28 +224,6 @@ TODO
 
 * Serious code cleanup.
 
-* New frame design
-
-use the design from the bigwigs tip of the raid box? just scale it up a bit and it would be excellent, I think
-
-   /----------------------------------------------------\
-   | < > Session #                                [ X ] |
-   |
-   |
-   |
-   |              BUG TEXT
-   |
-   |
-   |
-   |
-   | [ << ] [ < ]                          [ > ] [ >> ] |
-   \----------------------------------------------------/
-
-the << < > >> buttons at the bottom should be pretty self evident
-the < > buttons at the top allows you to navigate through saved sessions, and
-the "Session #" label shows which session you're currently browsing.
-obviously the highest numbered session is the latest one.
-
 ]]
 
 local show = nil
@@ -365,7 +343,7 @@ do
 		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
 		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -10, 12)
 		nextButton:SetHeight(32)
-		nextButton:SetWidth(120)
+		nextButton:SetWidth(130)
 		nextButton:SetText("Next >")
 		nextButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent + 1
@@ -375,7 +353,7 @@ do
 		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
 		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 12, 12)
 		prevButton:SetHeight(32)
-		prevButton:SetWidth(120)
+		prevButton:SetWidth(130)
 		prevButton:SetText("< Previous")
 		prevButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent - 1
@@ -402,7 +380,7 @@ do
 
 	local sessionFormat = "Session: %d (%s)" -- Session: 123 (Today)
 	local countFormat = "%d/%d" -- 1/10
-	local sourceFormat = "Sent by %s"
+	local sourceFormat = "Sent by %s (%s)"
 
 	function show(eo)
 		if not window then createTipFrame() end
@@ -415,12 +393,12 @@ do
 			prevButton:Disable()
 		else
 			local db = BugGrabber:GetDB()
-			if eo.source then sourceLabel:SetText(sourceFormat:format(eo.source))
-			else sourceLabel:SetText("Local error") end
+			if eo.source then sourceLabel:SetText(sourceFormat:format(eo.source, eo.type))
+			else sourceLabel:SetText(eo.type) end
 			if eo.session == BugGrabberDB.session then
 				sessionLabel:SetText(sessionFormat:format(eo.session, "Today"))
 			else
-				sessionLabel:SetText(sessionFormat:format(eo.session, eo.date))
+				sessionLabel:SetText(sessionFormat:format(eo.session, eo.time))
 			end
 			countLabel:SetText(countFormat:format(sackCurrent, #db))
 			textArea:SetText(BugSack:FormatError(eo))
@@ -537,8 +515,6 @@ function BugSack:ToggleFilter()
 		BugGrabber:UnregisterAddonActionEvents()
 	end
 end
-
-local headingFormat = "Session %d"
 
 function BugSack:OpenSack()
 	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
