@@ -38,132 +38,6 @@ local isEventsRegistered = nil
 -- Frame state variables
 local sackCurrent = nil
 
-BugSack.options = {
-	type = "group",
-	handler = BugSack,
-	args = {
-		limit = {
-			type = "range",
-			name = L["Limit"],
-			desc = L["Set the limit on the nr of errors saved."],
-			get = "GetLimit",
-			set = "SetLimit",
-			handler = BugGrabber,
-			min = 10,
-			max = MAX_BUGGRABBER_ERRORS or 1000,
-			step = 10,
-			order = 102,
-		},
-		save = {
-			type = "toggle",
-			name = L["Save errors"],
-			desc = L["Toggle whether to save errors to your SavedVariables\\!BugGrabber.lua file."],
-			get = "GetSave",
-			set = "ToggleSave",
-			handler = BugGrabber,
-			order = 103,
-		},
-		reset = {
-			type = "execute",
-			name = L["Clear errors"],
-			desc = L["Clear out the errors database."],
-			func = "Reset",
-			order = 104,
-		},
-		spacer1 = {
-			type = "header",
-			name = " ",
-			order = 105,
-		},
-		auto = {
-			type = "toggle",
-			name = L["Auto popup"],
-			desc = L["Toggle auto BugSack frame popup."],
-			get = function() return BugSack.db.profile.auto end,
-			set = function(v) BugSack.db.profile.auto = v end,
-			order = 200,
-		},
-		chat = {
-			type = "toggle",
-			name = L["Chatframe output"],
-			desc = L["Print a warning to the chat frame when an error occurs."],
-			get = function() return BugSack.db.profile.chatframe end,
-			set = function(v) BugSack.db.profile.chatframe = v end,
-			order = 201,
-		},
-		mute = {
-			type = "toggle",
-			name = L["Mute"],
-			desc = L["Toggle an audible warning everytime an error occurs."],
-			get = function() return BugSack.db.profile.mute end,
-			set = function(v) BugSack.db.profile.mute = v end,
-			hidden = function() return media end,
-			order = 203,
-		},
-		soundMedia = {
-			type = "text",
-			name = L["Sound"],
-			desc = L["What sound to play when an error occurs (Ctrl-Click to preview.)"],
-			get = function() return BugSack.db.profile.soundMedia end,
-			set = function(v)
-				if IsControlKeyDown() then
-					PlaySoundFile(media:Fetch("sound", v))
-				else
-					BugSack.db.profile.soundMedia = v
-				end
-			end,
-			hidden = function() return not media end,
-			usage = "",
-			order = 204,
-		},
-		spacer2 = {
-			type = "header",
-			name = " ",
-			order = 250,
-		},
-		events = {
-			type = "toggle",
-			name = L["Filter addon mistakes"],
-			desc = L["Filters common mistakes that trigger the blocked/forbidden event."],
-			get = "GetFilter",
-			set = "ToggleFilter",
-			order = 302,
-		},
-		throttle = {
-			type = "toggle",
-			name = L["Throttle at excessive amount"],
-			desc = L["Whether to throttle for a default of 60 seconds when BugGrabber catches more than 20 errors per second."],
-			get = "IsThrottling",
-			set = "UseThrottling",
-			handler = BugGrabber,
-			order = 303,
-		},
-		minimapSpacer = {
-			type = "header",
-			name = " ",
-			order = 350,
-			hidden = function() return not icon end,
-		},
-		minimap = {
-			type = "toggle",
-			name = L["Minimap icon"],
-			desc = L["Toggle the minimap icon."],
-			get = function() return not BugSack.db.profile.minimap.hide end,
-			set = function(v)
-				local hide = not v
-				BugSack.db.profile.minimap.hide = hide
-				if hide then
-					icon:Hide("BugSack")
-				else
-					icon:Show("BugSack")
-				end
-			end,
-			hidden = function() return not icon end,
-			order = 400,
-		},
-	}
-}
-
 local defaults = {
 	profile = {
 		mute = nil,
@@ -177,15 +51,6 @@ local defaults = {
 		},
 	},
 }
-
---[[
-TODO
-
-* Replace Dewdrop with blizzard interface options
-
-* Serious code cleanup.
-
-]]
 
 local show = nil
 do
@@ -432,7 +297,6 @@ function BugSack:OnInitialize()
 
 	if media then
 		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
-		self.options.args.soundMedia.validate = media:List("sound")
 	end
 end
 

@@ -31,7 +31,6 @@ local BugSack = BugSack
 BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
 
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
-local dew = AceLibrary("Dewdrop-2.0")
 local icon = LibStub("LibDBIcon-1.0", true)
 
 BugSackLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("BugSack", {
@@ -42,22 +41,14 @@ BugSackLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("BugSack", {
 local BugSackLDB = BugSackLDB
 
 function BugSackLDB.OnClick(self, button)
-	if button == "RightButton" then
-		dew:Open(self,
-			"children", function()
-				dew:FeedAceOptionsTable(BugSack.options)
-			end
-		)
+	if IsShiftKeyDown() then
+		ReloadUI()
+	elseif IsAltKeyDown() then
+		BugSack:Reset()
+	elseif BugSackFrame2 and BugSackFrame2:IsShown() then
+		BugSackFrame2:Hide()
 	else
-		if IsShiftKeyDown() then
-			ReloadUI()
-		elseif IsAltKeyDown() then
-			BugSack:Reset()
-		elseif BugSackFrame2 and BugSackFrame2:IsShown() then
-			BugSackFrame2:Hide()
-		else
-			BugSack:OpenSack()
-		end
+		BugSack:OpenSack()
 	end
 end
 
