@@ -44,7 +44,7 @@ function BugSackLDB.OnClick(self, button)
 		elseif IsAltKeyDown() then
 			BugSack:Reset()
 		elseif BugSackFrame and BugSackFrame:IsShown() then
-			BugSackFrame:Hide()
+			BugSack:CloseSack()
 		else
 			BugSack:OpenSack()
 		end

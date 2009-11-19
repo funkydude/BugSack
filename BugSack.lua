@@ -51,16 +51,24 @@ local defaults = {
 	},
 }
 
-local show = nil
+local show, createBugSack = nil, nil
 do
 	local window, sourceLabel, countLabel, sessionLabel, textArea = nil, nil, nil, nil, nil
+
+	-- We have to create this on load so that we get properly registered as a UIPanel.
+	window = CreateFrame("Frame", "BugSackFrame", UIParent)
+	UIPanelWindows["BugSackFrame"] = { area = "center", pushable = 0, whileDead = 1 }
+	HideUIPanel(BugSackFrame)
+
 	local nextButton, prevButton = nil, nil
 	local function closeWindow()
-		window:Hide()
+		BugSack:CloseSack()
 	end
 
-	local function createBugSack()
-		window = CreateFrame("Frame", "BugSackFrame", UIParent)
+	local created = nil
+	function createBugSack()
+		if created then return end
+		created = true
 		window:SetWidth(500)
 		window:SetHeight(400)
 		window:SetPoint("CENTER")
@@ -221,7 +229,6 @@ do
 	local localFormat = L["Local (%s)"]
 
 	function show(eo)
-		if not window then createBugSack() end
 		if not eo or sackCurrent == 0 then
 			sourceLabel:SetText()
 			countLabel:SetText()
@@ -254,7 +261,7 @@ do
 			end
 			sendButton:Enable()
 		end
-		window:Show()
+		ShowUIPanel(BugSackFrame)
 	end
 end
 
@@ -386,10 +393,15 @@ function BugSack:ToggleFilter()
 	end
 end
 
+function BugSack:CloseSack()
+	HideUIPanel(BugSackFrame)
+end
+
 function BugSack:OpenSack()
 	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
 
+	createBugSack()
 	-- Show the most recent error
 	sackCurrent = #BugGrabber:GetDB()
 	show()
