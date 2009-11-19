@@ -26,12 +26,7 @@ local ldb = LibStub:GetLibrary("LibDataBroker-1.1", true)
 if not ldb then return end
 
 local BugSack = BugSack
-
--- Suppress the default BugGrabber throttle output.
-BUGGRABBER_SUPPRESS_THROTTLE_CHAT = true
-
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
-local icon = LibStub("LibDBIcon-1.0", true)
 
 BugSackLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("BugSack", {
 	type = "data source",
@@ -58,18 +53,18 @@ end
 
 -- Invoked from BugSack
 function BugSackLDB:Update()
-	local count = #BugSack:GetErrors()
+	local count = #BugSack:GetErrors(BugGrabberDB.session)
 	self.text = count
 	self.icon = count == 0 and "Interface\\AddOns\\BugSack\\Media\\icon" or "Interface\\AddOns\\BugSack\\Media\\icon_red"
 end
 
 do
-	local hint = L["|cffeda55fClick|r to open BugSack with the last error. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
+	local hint = L["|cffeda55fClick|r to open BugSack with the last bug. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
 	local line = "%d. %s (x%d)"
 	function BugSackLDB.OnTooltipShow(tt)
-		local errs = BugSack:GetErrors()
+		local errs = BugSack:GetErrors(BugGrabberDB.session)
 		if #errs == 0 then
-			tt:AddLine(L["You have no errors, yay!"])
+			tt:AddLine(L["You have no bugs, yay!"])
 		else
 			tt:AddLine("BugSack")
 			local pattern = "^(.-)\n"
@@ -92,18 +87,18 @@ end
 
 local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function()
-	if icon then
-		icon:Register("BugSack", BugSackLDB, BugSack.db.profile.minimap)
-		SlashCmdList.BugSack = function()
-			BugSack.db.profile.minimap.hide = not BugSack.db.profile.minimap.hide
-			if BugSack.db.profile.minimap.hide then
-				icon:Hide("BugSack")
-			else
-				icon:Show("BugSack")
-			end
+	local icon = LibStub("LibDBIcon-1.0", true)
+	if not icon then return end
+	icon:Register("BugSack", BugSackLDB, BugSack.db.profile.minimap)
+	SlashCmdList.BugSack = function()
+		BugSack.db.profile.minimap.hide = not BugSack.db.profile.minimap.hide
+		if BugSack.db.profile.minimap.hide then
+			icon:Hide("BugSack")
+		else
+			icon:Show("BugSack")
 		end
-		SLASH_BugSack1 = "/bugsack"
 	end
+	SLASH_BugSack1 = "/bugsack"
 end)
 f:RegisterEvent("PLAYER_LOGIN")
 

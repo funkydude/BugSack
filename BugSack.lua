@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 local media = LibStub("LibSharedMedia-3.0", true)
 local cbh = LibStub("CallbackHandler-1.0")
-local icon = LibStub("LibDBIcon-1.0", true)
 
 BugSack = LibStub("AceAddon-3.0"):NewAddon("BugSack", "AceComm-3.0", "AceSerializer-3.0")
 
@@ -170,26 +169,26 @@ do
 		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -10, 12)
 		nextButton:SetHeight(32)
 		nextButton:SetWidth(130)
-		nextButton:SetText("Next >")
+		nextButton:SetText(L["Next >"])
 		nextButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent + 1
-			BugSack:UpdateSack()
+			show()
 		end)
 		
 		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
 		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 12, 12)
 		prevButton:SetHeight(32)
 		prevButton:SetWidth(130)
-		prevButton:SetText("< Previous")
+		prevButton:SetText(L["< Previous"])
 		prevButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent - 1
-			BugSack:UpdateSack()
+			show()
 		end)
 		
 		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate2")
 		sendButton:SetPoint("TOPLEFT", prevButton, "TOPRIGHT", 4)
 		sendButton:SetPoint("BOTTOMRIGHT", nextButton, "BOTTOMLEFT", -4)
-		sendButton:SetText("Send errors")
+		sendButton:SetText(L["Send bugs"])
 		sendButton:SetScript("OnClick", function()
 			local db = BugGrabber:GetDB()
 			local eo = db[sackCurrent]
@@ -216,29 +215,30 @@ do
 		scroll:SetScrollChild(textArea)
 	end
 
-	local sessionFormat = "Session %d (%s)" -- Session: 123 (Today)
+	local sessionFormat = "%s (%d)" -- Today (123)
 	local countFormat = "%d/%d" -- 1/10
-	local sourceFormat = "Sent by %s (%s)"
-	local localFormat = "Local (%s)"
+	local sourceFormat = L["Sent by %s (%s)"]
+	local localFormat = L["Local (%s)"]
 
 	function show(eo)
 		if not window then createBugSack() end
 		if not eo or sackCurrent == 0 then
 			sourceLabel:SetText()
 			countLabel:SetText()
-			sessionLabel:SetText(sessionFormat:format(BugGrabberDB.session, "Today"))
-			textArea:SetText(L["You have no errors, yay!"])
+			sessionLabel:SetText(sessionFormat:format(L["Today"], BugGrabberDB.session))
+			textArea:SetText(L["You have no bugs, yay!"])
 			nextButton:Disable()
 			prevButton:Disable()
 			sendButton:Disable()
 		else
 			local db = BugGrabber:GetDB()
+			if not eo then eo = db[sackCurrent] end
 			if eo.source then sourceLabel:SetText(sourceFormat:format(eo.source, eo.type))
 			else sourceLabel:SetText(localFormat:format(eo.type)) end
 			if eo.session == BugGrabberDB.session then
-				sessionLabel:SetText(sessionFormat:format(eo.session, "Today"))
+				sessionLabel:SetText(sessionFormat:format(L["Today"], eo.session))
 			else
-				sessionLabel:SetText(sessionFormat:format(eo.session, eo.time))
+				sessionLabel:SetText(sessionFormat:format(eo.time, eo.session))
 			end
 			countLabel:SetText(countFormat:format(sackCurrent, #db))
 			textArea:SetText(BugSack:FormatError(eo))
@@ -267,8 +267,8 @@ function BugSack:OnInitialize()
 	if type(popup) ~= "table" then popup = {} end
 	if type(popup["BugSackSendBugs"]) ~= "table" then
 		popup["BugSackSendBugs"] = {
-			text = "Send your errors from the currently viewed session (%d) in the sack to another player.",
-			button1 = "Send",
+			text = L["Send all bugs from the currently viewed session (%d) in the sack to the player specified below."],
+			button1 = L["Send"],
 			button2 = CLOSE,
 			timeout = 0,
 			whileDead = true,
@@ -289,6 +289,7 @@ function BugSack:OnInitialize()
 				end
 			end,
 			enterClicksFirstButton = true,
+			OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
 		}
 	end
 
@@ -391,12 +392,7 @@ function BugSack:OpenSack()
 
 	-- Show the most recent error
 	sackCurrent = #BugGrabber:GetDB()
-	self:UpdateSack()
-end
-
-function BugSack:UpdateSack()
-	local eo = BugGrabber:GetDB()[sackCurrent]
-	show(eo)
+	show()
 end
 
 -- XXX I think a better format is needed that more clearly shows the _source_ component of the error.
@@ -436,7 +432,7 @@ end
 
 function BugSack:Reset()
 	BugGrabber:Reset()
-	print(L["All errors were wiped."])
+	print(L["All stored bugs have been exterminated painfully."])
 
 	if BugSackLDB then
 		BugSackLDB:Update()
@@ -458,7 +454,7 @@ do
 				self:OpenSack()
 			end
 			if self.db.profile.chatframe then
-				print(L["An error has been recorded."])
+				print(L["There's a bug in your soup!"])
 			end
 			lastError = GetTime()
 		end
@@ -479,7 +475,7 @@ function BugSack:SendBugsToUser(player, session)
 	local sz = self:Serialize(errors)
 	self:SendCommMessage("BugSack", sz, "WHISPER", player, "BULK")
 
-	print(L["%d errors has been sent to %s. He must have BugSack to be able to read them."]:format(#errors, player))
+	print(L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."]:format(#errors, player))
 end
 
 function BugSack:OnBugComm(prefix, message, distribution, sender)
@@ -499,7 +495,7 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 	end
 
 	-- XXX slash command doesn't work like that any more
-	print(L["You've received %d errors from %s, you can show them with /bugsack show received."]:format(#deSz, sender))
+	print(L["You've received %d bugs from %s."]:format(#deSz, sender))
 
 	wipe(deSz)
 	deSz = nil

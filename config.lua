@@ -43,6 +43,8 @@ local function newCheckbox(label, description, onClick)
 end
 
 frame:SetScript("OnShow", function(frame)
+	local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
+
 	local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	title:SetPoint("TOPLEFT", 16, -16)
 	title:SetText("BugSack")
@@ -56,8 +58,8 @@ frame:SetScript("OnShow", function(frame)
 
 	local function checkBoxClick(label, value) print(value) end
 	local autoPopup = newCheckbox(
-		"Auto popup",
-		"Makes the BugSack open automatically when an error is encountered.",
+		L["Auto popup"],
+		L.autoDesc,
 		function(self, value)
 			BugSack.db.profile.auto = value
 		end)
@@ -65,8 +67,8 @@ frame:SetScript("OnShow", function(frame)
 	autoPopup:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", -2, -16)
 
 	local chatFrame = newCheckbox(
-		"Chatframe output",
-		"Prints a reminder to the chat frame when an error is encountered. Doesn't print the whole error, just a reminder!",
+		L["Chatframe output"],
+		L.chatFrameDesc,
 		function(self, value)
 			BugSack.db.profile.chatframe = value
 		end)
@@ -80,7 +82,7 @@ frame:SetScript("OnShow", function(frame)
 		soundLabel:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 8, -16)
 		soundLabel:SetJustifyH("LEFT")
 		soundLabel:SetHeight(18)
-		soundLabel:SetText("Sound")
+		soundLabel:SetText(L["Sound"])
 		local dropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
 		dropdown:SetPoint("TOPLEFT", soundLabel, "TOPRIGHT", 16, 0)
 		local function itemOnClick(self)
@@ -104,8 +106,8 @@ frame:SetScript("OnShow", function(frame)
 	end
 
 	local filter = newCheckbox(
-		"Filter addon mistakes",
-		"Toggles whether or not BugSack should treat ADDON_ACTION_BLOCKED and ADDON_ACTION_FORBIDDEN events as errors or not. If that doesn't make sense, just ignore this option.",
+		L["Filter addon mistakes"],
+		L.filterDesc,
 		function(self, value)
 			BugSack:ToggleFilter()
 		end)
@@ -113,8 +115,8 @@ frame:SetScript("OnShow", function(frame)
 	filter:SetPoint("TOPLEFT", soundLabel or chatFrame, "BOTTOMLEFT", soundLabel and -8 or 0, -16)
 	
 	local throttle = newCheckbox(
-		"Throttle at excessive amount",
-		"Sometimes addons can generate hundreds of errors within a second, which might lock up your entire user interface. Enabling this option will throttle the errors, so some of them will just get lost in the void, but they're usually identical anyway.",
+		L["Throttle at excessive amount"],
+		L.throttleDesc,
 		function(self, value)
 			BugGrabber:UseThrottling(value)
 		end)
@@ -122,8 +124,8 @@ frame:SetScript("OnShow", function(frame)
 	throttle:SetChecked(BugGrabber:IsThrottling())
 
 	local save = newCheckbox(
-		"Save errors",
-		"Saves the errors to the database. If this is off, errors will not persist in the sack from session to session.",
+		L["Save errors"],
+		L.saveDesc,
 		function(self, value)
 			BugGrabber:ToggleSave()
 			self:SetChecked(BugGrabber:GetSave())
@@ -133,7 +135,7 @@ frame:SetScript("OnShow", function(frame)
 
 	local sliderLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	sliderLabel:SetJustifyH("LEFT")
-	sliderLabel:SetText("Limit")
+	sliderLabel:SetText(L["Limit"])
 	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -16)
 
 	local sliderValue = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
@@ -163,7 +165,7 @@ frame:SetScript("OnShow", function(frame)
 	sliderValue:SetPoint("LEFT", slider, "RIGHT", 8, 0)
 	
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate2")
-	clear:SetText("Clear saved errors")
+	clear:SetText(L["Wipe saved bugs"])
 	clear:SetWidth(160)
 	clear:SetPoint("TOPLEFT", sliderLabel, "BOTTOMLEFT", -4, -8)
 	clear:SetScript("OnClick", function()
@@ -171,8 +173,8 @@ frame:SetScript("OnShow", function(frame)
 	end)
 	clear:SetScript("OnEnter", onControlEnter)
 	clear:SetScript("OnLeave", onControlLeave)
-	clear.label = "Clear saved errors"
-	clear.description = "Wipes all saved errors from the database."
+	clear.label = L["Wipe saved bugs"]
+	clear.description = L.wipeDesc
 	
 	frame:SetScript("OnShow", nil)
 end)
