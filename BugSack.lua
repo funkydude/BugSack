@@ -31,8 +31,6 @@ local BugSack = BugSack
 local BugGrabber = BugGrabber
 local BugGrabberDB = BugGrabberDB
 
-local eventRegistered = nil
-
 -- Frame state variables
 local sackCurrent = nil
 
@@ -277,17 +275,6 @@ function BugSack:Taint(addon)
 	end
 end
 
---local justUnregistered = nil
---local function clearJustUnregistered() justUnregistered = nil end
-function BugSack:BugGrabber_AddonActionEventsRegistered()
-	--if self:GetFilter() and not justUnregistered then
-	if self:GetFilter() then
-		BugGrabber:UnregisterAddonActionEvents()
-		--justUnregistered = true
-		--self:ScheduleEvent(clearJustUnregistered, 10)
-	end
-end
-
 do
 	local errors = {}
 	function BugSack:GetErrors(sessionId)
@@ -313,13 +300,9 @@ end
 
 function BugSack:ToggleFilter()
 	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes
-	if not self.db.profile.filterAddonMistakes and not eventRegistered then
-		BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
-		eventRegistered = true
+	if not self.db.profile.filterAddonMistakes then
 		BugGrabber:RegisterAddonActionEvents()
-	elseif self.db.profile.filterAddonMistakes and eventRegistered then
-		BugGrabber.UnregisterCallback(self, "BugGrabber_EventGrabbed")
-		eventRegistered = nil
+	else
 		BugGrabber:UnregisterAddonActionEvents()
 	end
 end
@@ -504,11 +487,9 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 
 		-- Set up our error event handler
 		BugGrabber.RegisterCallback(self, "BugGrabber_BugGrabbed", "OnError")
-		BugGrabber.RegisterCallback(self, "BugGrabber_AddonActionEventsRegistered")
+		BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
 
 		if not self:GetFilter() then
-			BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
-			eventRegistered = true
 			BugGrabber:RegisterAddonActionEvents()
 		else
 			BugGrabber:UnregisterAddonActionEvents()
