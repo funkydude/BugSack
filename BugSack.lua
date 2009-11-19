@@ -60,8 +60,8 @@ do
 		window:Hide()
 	end
 
-	local function createTipFrame()
-		window = CreateFrame("Frame", nil, UIParent)
+	local function createBugSack()
+		window = CreateFrame("Frame", "BugSackFrame", UIParent)
 		window:SetWidth(500)
 		window:SetHeight(400)
 		window:SetPoint("CENTER")
@@ -222,7 +222,7 @@ do
 	local localFormat = "Local (%s)"
 
 	function show(eo)
-		if not window then createTipFrame() end
+		if not window then createBugSack() end
 		if not eo or sackCurrent == 0 then
 			sourceLabel:SetText()
 			countLabel:SetText()

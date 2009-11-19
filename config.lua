@@ -178,7 +178,3 @@ frame:SetScript("OnShow", function(frame)
 end)
 InterfaceOptions_AddCategory(frame)
 
---[[function BugSack:OpenConfig()
-	InterfaceOptionsFrame_OpenToCategory(frame)
-end]]
-

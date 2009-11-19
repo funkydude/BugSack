@@ -41,14 +41,18 @@ BugSackLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("BugSack", {
 local BugSackLDB = BugSackLDB
 
 function BugSackLDB.OnClick(self, button)
-	if IsShiftKeyDown() then
-		ReloadUI()
-	elseif IsAltKeyDown() then
-		BugSack:Reset()
-	elseif BugSackFrame2 and BugSackFrame2:IsShown() then
-		BugSackFrame2:Hide()
+	if button == "RightButton" then
+		InterfaceOptionsFrame_OpenToCategory("BugSack")
 	else
-		BugSack:OpenSack()
+		if IsShiftKeyDown() then
+			ReloadUI()
+		elseif IsAltKeyDown() then
+			BugSack:Reset()
+		elseif BugSackFrame and BugSackFrame:IsShown() then
+			BugSackFrame:Hide()
+		else
+			BugSack:OpenSack()
+		end
 	end
 end
 
