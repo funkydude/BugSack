@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 local media = LibStub("LibSharedMedia-3.0", true)
-local cbh = LibStub("CallbackHandler-1.0")
 
 BugSack = CreateFrame("Frame")
 
@@ -32,24 +31,10 @@ local BugSack = BugSack
 local BugGrabber = BugGrabber
 local BugGrabberDB = BugGrabberDB
 
-local isEventsRegistered = nil
+local eventRegistered = nil
 
 -- Frame state variables
 local sackCurrent = nil
-
-local defaults = {
-	profile = {
-		mute = nil,
-		auto = nil,
-		showmsg = nil,
-		chatframe = nil,
-		filterAddonMistakes = true,
-		soundMedia = "BugSack: Fatality",
-		minimap = {
-			hide = false,
-		},
-	},
-}
 
 local show = nil
 do
@@ -292,13 +277,14 @@ function BugSack:Taint(addon)
 	end
 end
 
-local justUnregistered = nil
-local function clearJustUnregistered() justUnregistered = nil end
+--local justUnregistered = nil
+--local function clearJustUnregistered() justUnregistered = nil end
 function BugSack:BugGrabber_AddonActionEventsRegistered()
-	if self:GetFilter() and not justUnregistered then
+	--if self:GetFilter() and not justUnregistered then
+	if self:GetFilter() then
 		BugGrabber:UnregisterAddonActionEvents()
-		justUnregistered = true
-		self:ScheduleEvent(clearJustUnregistered, 10)
+		--justUnregistered = true
+		--self:ScheduleEvent(clearJustUnregistered, 10)
 	end
 end
 
@@ -327,13 +313,13 @@ end
 
 function BugSack:ToggleFilter()
 	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes
-	if not self.db.profile.filterAddonMistakes and not isEventsRegistered then
+	if not self.db.profile.filterAddonMistakes and not eventRegistered then
 		BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
-		isEventsRegistered = true
+		eventRegistered = true
 		BugGrabber:RegisterAddonActionEvents()
-	elseif self.db.profile.filterAddonMistakes and isEventsRegistered then
+	elseif self.db.profile.filterAddonMistakes and eventRegistered then
 		BugGrabber.UnregisterCallback(self, "BugGrabber_EventGrabbed")
-		isEventsRegistered = nil
+		eventRegistered = nil
 		BugGrabber:UnregisterAddonActionEvents()
 	end
 end
@@ -350,10 +336,7 @@ function BugSack:OpenSack()
 	show()
 end
 
--- XXX I think a better format is needed that more clearly shows the _source_ component of the error.
--- XXX especially if it's NOT "local".
 local errorFormat = [[|cff999999[%s-x%d@%s]|r: %s]]
-
 function BugSack:FormatError(err)
 	local m = err.message
 	if type(m) == "table" then
@@ -450,7 +433,6 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 		BugGrabber:StoreError(err)
 	end
 
-	-- XXX slash command doesn't work like that any more
 	print(L["You've received %d bugs from %s."]:format(#deSz, sender))
 
 	wipe(deSz)
@@ -494,8 +476,19 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 			}
 		end
 
-		self.callbacks = cbh:New(self)
-		self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, true)
+		self.db = LibStub("AceDB-3.0"):New("BugSackDB", {
+			profile = {
+				mute = nil,
+				auto = nil,
+				showmsg = nil,
+				chatframe = nil,
+				filterAddonMistakes = true,
+				soundMedia = "BugSack: Fatality",
+				minimap = {
+					hide = false,
+				},
+			},
+		}, true)
 
 		if media then
 			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
@@ -515,7 +508,7 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 
 		if not self:GetFilter() then
 			BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
-			isEventsRegistered = true
+			eventRegistered = true
 			BugGrabber:RegisterAddonActionEvents()
 		else
 			BugGrabber:UnregisterAddonActionEvents()
