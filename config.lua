@@ -15,30 +15,6 @@ local function onControlEnter(self)
 end
 local function onControlLeave() GameTooltip:Hide() end
 
-local sliderBg = {
-	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
-	edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
-	edgeSize = 8, tile = true, tileSize = 8,
-	insets = {left = 3, right = 3, top = 6, bottom = 6}
-}
-local function newSlider(label, low, high)
-	local slider = CreateFrame("Slider", nil, frame)
-	slider:SetHeight(17)
-	slider:SetWidth(144)
-	slider:SetOrientation("HORIZONTAL")
-	slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal") -- Dim: 32x32... can't find API to set this?
-	slider:SetBackdrop(sliderBg)
-	slider:SetMinMaxValues(low, high)
-
-	local fs = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	fs:SetJustifyH("LEFT")
-	fs:SetText(label)
-
-	slider:SetPoint("LEFT", fs, "RIGHT", 16, 0)
-
-	return slider, fs
-end
-
 local function newCheckbox(label, description, onClick)
 	local check = CreateFrame("CheckButton", nil, frame)
 	check:SetWidth(26)
@@ -57,22 +33,12 @@ local function newCheckbox(label, description, onClick)
 	check:SetScript("OnLeave", onControlLeave)
 	check.label = label
 	check.description = description
-	--local r, g, b = GameFontNormal:GetTextColor()
 	local fs = check:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	fs:SetPoint("LEFT", check, "RIGHT", 0, 1)
 	fs:SetPoint("RIGHT", frame, "RIGHT", 0, 0)
 	fs:SetJustifyH("LEFT")
 	fs:SetText(label)
-	--fs:SetTextColor(r, g, b, 1)
 	fs:SetWidth(200)
-	--check.label = fs
-	--[[local desc = check:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	desc:ClearAllPoints()
-	desc:SetPoint("TOPLEFT", check, "TOPRIGHT", 5, -20)
-	desc:SetWidth(230)
-	desc:SetJustifyH("LEFT")
-	desc:SetJustifyV("TOP")
-	desc:SetText(description)]]
 	return check
 end
 
@@ -86,7 +52,7 @@ frame:SetScript("OnShow", function(frame)
 	subtitle:SetWidth(frame:GetWidth() - 24)
 	subtitle:SetJustifyH("LEFT")
 	subtitle:SetJustifyV("TOP")
-	subtitle:SetText("BugSack is a sack to stuff all your bugs in, and NOTHING ELSE! Don't think I don't know what you're up to, little schoolboy. Daddy was a little schoolboy, too. Yes, I know this option screen looks really bad at the moment. Give me some time please.")
+	subtitle:SetText("BugSack is a sack to stuff all your bugs in, and NOTHING ELSE! Don't think I don't know what you're up to, little schoolboy. Daddy was a little schoolboy, too.")
 
 	local function checkBoxClick(label, value) print(value) end
 	local autoPopup = newCheckbox(
@@ -164,17 +130,42 @@ frame:SetScript("OnShow", function(frame)
 		end)
 	save:SetPoint("TOPLEFT", throttle, "BOTTOMLEFT", 0, -16)
 	save:SetChecked(BugGrabber:GetSave())
-	local limit, limitLabel = newSlider("Limit", 10, MAX_BUGGRABBER_ERRORS or 1000)
-	limitLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 0, -8)
-	limit:SetValue(BugGrabber:GetLimit())
-	limit:SetValueStep(50)
-	limit:SetScript("OnValueChanged", function(self, value)
-		BugGrabber:SetLimit(math.abs(value))
+
+	local sliderLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	sliderLabel:SetJustifyH("LEFT")
+	sliderLabel:SetText("Limit")
+	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -16)
+
+	local sliderValue = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	sliderValue:SetJustifyH("LEFT")
+	sliderValue:SetText(BugGrabber:GetLimit())
+
+	local slider = CreateFrame("Slider", nil, frame)
+	slider:SetHeight(17)
+	slider:SetWidth(144)
+	slider:SetOrientation("HORIZONTAL")
+	slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
+	slider:SetBackdrop({
+		bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
+		edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
+		edgeSize = 8, tile = true, tileSize = 8,
+		insets = {left = 3, right = 3, top = 6, bottom = 6}
+	})
+	slider:SetMinMaxValues(10, MAX_BUGGRABBER_ERRORS or 1000)
+	slider:SetValue(BugGrabber:GetLimit())
+	slider:SetValueStep(20)
+	slider:SetScript("OnValueChanged", function(self, value)
+		local v = math.abs(value)
+		BugGrabber:SetLimit(v)
+		sliderValue:SetText(v)
 	end)
+	slider:SetPoint("LEFT", sliderLabel, "RIGHT", 36, 0)
+	sliderValue:SetPoint("LEFT", slider, "RIGHT", 8, 0)
+	
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate2")
 	clear:SetText("Clear saved errors")
 	clear:SetWidth(160)
-	clear:SetPoint("TOPLEFT", limit, "BOTTOMLEFT", 0, -8)
+	clear:SetPoint("TOPLEFT", sliderLabel, "BOTTOMLEFT", -4, -8)
 	clear:SetScript("OnClick", function()
 		BugSack:Reset()
 	end)
@@ -186,22 +177,6 @@ frame:SetScript("OnShow", function(frame)
 	frame:SetScript("OnShow", nil)
 end)
 InterfaceOptions_AddCategory(frame)
-
---[[
-
-	[ ] Auto popup
-	[ ] Chatframe output
-	
-	Sound    [               V ]
-	
-	[ ] Filter addon mistakes
-	[ ] Throttle at excessive amount
-	
-	[ ] Save errors
-	Limit [-----|--------------]
-	[ Clear saved errors ]
-	
-]]
 
 --[[function BugSack:OpenConfig()
 	InterfaceOptionsFrame_OpenToCategory(frame)
