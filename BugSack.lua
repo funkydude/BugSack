@@ -26,7 +26,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 local media = LibStub("LibSharedMedia-3.0", true)
 local cbh = LibStub("CallbackHandler-1.0")
 
-BugSack = LibStub("AceAddon-3.0"):NewAddon("BugSack", "AceComm-3.0", "AceSerializer-3.0")
+BugSack = CreateFrame("Frame")
 
 local BugSack = BugSack
 local BugGrabber = BugGrabber
@@ -190,17 +190,19 @@ do
 			show()
 		end)
 		
-		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate2")
-		sendButton:SetPoint("TOPLEFT", prevButton, "TOPRIGHT", 4)
-		sendButton:SetPoint("BOTTOMRIGHT", nextButton, "BOTTOMLEFT", -4)
-		sendButton:SetText(L["Send bugs"])
-		sendButton:SetScript("OnClick", function()
-			local db = BugGrabber:GetDB()
-			local eo = db[sackCurrent]
-			local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
-			popup.data = eo.session
-			window:Hide()
-		end)
+		if BugSack.Serialize then
+			sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate2")
+			sendButton:SetPoint("TOPLEFT", prevButton, "TOPRIGHT", 4)
+			sendButton:SetPoint("BOTTOMRIGHT", nextButton, "BOTTOMLEFT", -4)
+			sendButton:SetText(L["Send bugs"])
+			sendButton:SetScript("OnClick", function()
+				local db = BugGrabber:GetDB()
+				local eo = db[sackCurrent]
+				local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
+				popup.data = eo.session
+				window:Hide()
+			end)
+		end
 
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", window, "UIPanelScrollFrameTemplate")
 		scroll:SetPoint("TOPLEFT", sessionLabel, "BOTTOMLEFT", 0, -12)
@@ -231,14 +233,14 @@ do
 			createBugSack = nil
 		end
 
-		if not eo or sackCurrent == 0 then
+		if not eo and sackCurrent == 0 then
 			sourceLabel:SetText()
 			countLabel:SetText()
 			sessionLabel:SetText(sessionFormat:format(L["Today"], BugGrabberDB.session))
 			textArea:SetText(L["You have no bugs, yay!"])
 			nextButton:Disable()
 			prevButton:Disable()
-			sendButton:Disable()
+			if sendButton then sendButton:Disable() end
 		else
 			local db = BugGrabber:GetDB()
 			if not eo then eo = db[sackCurrent] end
@@ -261,7 +263,7 @@ do
 			else
 				prevButton:Enable()
 			end
-			sendButton:Enable()
+			if sendButton then sendButton:Enable() end
 		end
 		ShowUIPanel(BugSackFrame)
 	end
@@ -269,65 +271,6 @@ end
 
 local function print(t)
 	DEFAULT_CHAT_FRAME:AddMessage("BugSack: " .. t)
-end
-
-function BugSack:OnInitialize()
-	local popup = _G.StaticPopupDialogs
-	if type(popup) ~= "table" then popup = {} end
-	if type(popup["BugSackSendBugs"]) ~= "table" then
-		popup["BugSackSendBugs"] = {
-			text = L["Send all bugs from the currently viewed session (%d) in the sack to the player specified below."],
-			button1 = L["Send"],
-			button2 = CLOSE,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			hasEditBox = true,
-			OnAccept = function(self, data)
-				local recipient = self.editBox:GetText()
-				BugSack:SendBugsToUser(recipient, data)
-			end,
-			OnShow = function(self)
-				self.button1:Disable()
-			end,
-			EditBoxOnTextChanged = function(self, data)
-				if self:GetText():len() > 1 then
-					self:GetParent().button1:Enable()
-				else
-					self:GetParent().button1:Disable()
-				end
-			end,
-			enterClicksFirstButton = true,
-			OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
-		}
-	end
-
-	self.callbacks = cbh:New(self)
-	self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, true)
-
-	if media then
-		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
-	end
-end
-
-function BugSack:OnEnable()
-	-- Make sure we grab any errors fired before bugsack loaded.
-	local session = self:GetErrors(BugGrabberDB.session)
-	if #session > 0 then self:OnError() end
-
-	self:RegisterComm("BugSack", "OnBugComm")
-
-	-- Set up our error event handler
-	BugGrabber.RegisterCallback(self, "BugGrabber_BugGrabbed", "OnError")
-	BugGrabber.RegisterCallback(self, "BugGrabber_AddonActionEventsRegistered")
-
-	if not self:GetFilter() then
-		BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
-		isEventsRegistered = true
-		BugGrabber:RegisterAddonActionEvents()
-	else
-		BugGrabber:UnregisterAddonActionEvents()
-	end
 end
 
 function BugSack:Taint(addon)
@@ -481,6 +424,7 @@ function BugSack:SendBugsToUser(player, session)
 	if type(player) ~= "string" or player:trim():len() < 2 then
 		error("Player needs to be a valid string.")
 	end
+	if not self.Serialize then return end
 
 	local errors = self:GetErrors(session)
 	if not errors or #errors == 0 then return end
@@ -491,7 +435,7 @@ function BugSack:SendBugsToUser(player, session)
 end
 
 function BugSack:OnBugComm(prefix, message, distribution, sender)
-	if prefix ~= "BugSack" then return end
+	if prefix ~= "BugSack" or not self.Deserialize then return end
 
 	local good, deSz = self:Deserialize(message)
 	if not good then
@@ -512,5 +456,73 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 	wipe(deSz)
 	deSz = nil
 end
+
+BugSack:SetScript("OnEvent", function(self, event, addon)
+	if event == "ADDON_LOADED" and addon == "BugSack" then
+		local ac = LibStub("AceComm-3.0", true)
+		if ac then ac:Embed(self) end
+		local as = LibStub("AceSerializer-3.0", true)
+		if as then as:Embed(self) end
+
+		local popup = _G.StaticPopupDialogs
+		if type(popup) ~= "table" then popup = {} end
+		if type(popup["BugSackSendBugs"]) ~= "table" then
+			popup["BugSackSendBugs"] = {
+				text = L["Send all bugs from the currently viewed session (%d) in the sack to the player specified below."],
+				button1 = L["Send"],
+				button2 = CLOSE,
+				timeout = 0,
+				whileDead = true,
+				hideOnEscape = true,
+				hasEditBox = true,
+				OnAccept = function(self, data)
+					local recipient = self.editBox:GetText()
+					BugSack:SendBugsToUser(recipient, data)
+				end,
+				OnShow = function(self)
+					self.button1:Disable()
+				end,
+				EditBoxOnTextChanged = function(self, data)
+					if self:GetText():len() > 1 then
+						self:GetParent().button1:Enable()
+					else
+						self:GetParent().button1:Disable()
+					end
+				end,
+				enterClicksFirstButton = true,
+				OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
+			}
+		end
+
+		self.callbacks = cbh:New(self)
+		self.db = LibStub("AceDB-3.0"):New("BugSackDB", defaults, true)
+
+		if media then
+			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
+		end
+	elseif event == "PLAYER_LOGIN" then
+		-- Make sure we grab any errors fired before bugsack loaded.
+		local session = self:GetErrors(BugGrabberDB.session)
+		if #session > 0 then self:OnError() end
+
+		if self.RegisterComm then
+			self:RegisterComm("BugSack", "OnBugComm")
+		end
+
+		-- Set up our error event handler
+		BugGrabber.RegisterCallback(self, "BugGrabber_BugGrabbed", "OnError")
+		BugGrabber.RegisterCallback(self, "BugGrabber_AddonActionEventsRegistered")
+
+		if not self:GetFilter() then
+			BugGrabber.RegisterCallback(self, "BugGrabber_EventGrabbed", "OnError")
+			isEventsRegistered = true
+			BugGrabber:RegisterAddonActionEvents()
+		else
+			BugGrabber:UnregisterAddonActionEvents()
+		end
+	end
+end)
+BugSack:RegisterEvent("ADDON_LOADED")
+BugSack:RegisterEvent("PLAYER_LOGIN")
 
 -- vim:set ts=4:
