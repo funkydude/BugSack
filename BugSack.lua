@@ -51,24 +51,15 @@ local defaults = {
 	},
 }
 
-local show, createBugSack = nil, nil
+local show = nil
 do
-	local window, sourceLabel, countLabel, sessionLabel, textArea = nil, nil, nil, nil, nil
-
-	-- We have to create this on load so that we get properly registered as a UIPanel.
-	window = CreateFrame("Frame", "BugSackFrame", UIParent)
-	UIPanelWindows["BugSackFrame"] = { area = "center", pushable = 0, whileDead = 1 }
-	HideUIPanel(BugSackFrame)
-
+	local sourceLabel, countLabel, sessionLabel, textArea = nil, nil, nil, nil, nil
 	local nextButton, prevButton = nil, nil
-	local function closeWindow()
-		BugSack:CloseSack()
-	end
+	local function createBugSack()
+		local window = CreateFrame("Frame", "BugSackFrame", UIParent)
+		UIPanelWindows["BugSackFrame"] = { area = "center", pushable = 0, whileDead = 1 }
+		HideUIPanel(BugSackFrame)
 
-	local created = nil
-	function createBugSack()
-		if created then return end
-		created = true
 		window:SetWidth(500)
 		window:SetHeight(400)
 		window:SetPoint("CENTER")
@@ -78,6 +69,12 @@ do
 		window:RegisterForDrag("LeftButton")
 		window:SetScript("OnDragStart", window.StartMoving)
 		window:SetScript("OnDragStop", window.StopMovingOrSizing)
+		window:SetScript("OnShow", function()
+			PlaySound("igQuestLogOpen")
+		end)
+		window:SetScript("OnHide", function()
+			PlaySound("igQuestLogClose")
+		end)
 
 		local titlebg = window:CreateTexture(nil, "BACKGROUND")
 		titlebg:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background")
@@ -148,7 +145,7 @@ do
 
 		local close = CreateFrame("Button", nil, window, "UIPanelCloseButton")
 		close:SetPoint("TOPRIGHT", 2, 1)
-		close:SetScript("OnClick", closeWindow)
+		close:SetScript("OnClick", BugSack.CloseSack)
 
 		local title = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 		title:SetAllPoints(titlebg)
@@ -229,6 +226,11 @@ do
 	local localFormat = L["Local (%s)"]
 
 	function show(eo)
+		if createBugSack then
+			createBugSack()
+			createBugSack = nil
+		end
+
 		if not eo or sackCurrent == 0 then
 			sourceLabel:SetText()
 			countLabel:SetText()
@@ -400,8 +402,6 @@ end
 function BugSack:OpenSack()
 	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
-
-	createBugSack()
 	-- Show the most recent error
 	sackCurrent = #BugGrabber:GetDB()
 	show()
