@@ -6,6 +6,15 @@ frame:Hide()
 
 -- Credits to Ace3, Tekkub, cladhaire and Tuller for some of the widget stuff.
 
+local function onControlEnter(self)
+	GameTooltip:ClearLines()
+	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+	GameTooltip:AddLine(self.label)
+	GameTooltip:AddLine(self.description, 1, 1, 1, 1)
+	GameTooltip:Show()
+end
+local function onControlLeave() GameTooltip:Hide() end
+
 local sliderBg = {
 	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -21,7 +30,7 @@ local function newSlider(label, low, high)
 	slider:SetBackdrop(sliderBg)
 	slider:SetMinMaxValues(low, high)
 
-	local fs = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	local fs = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	fs:SetJustifyH("LEFT")
 	fs:SetText(label)
 
@@ -44,6 +53,10 @@ local function newCheckbox(label, description, onClick)
 		PlaySound(self:GetChecked() and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff")
 		onClick(self, self:GetChecked())
 	end)
+	check:SetScript("OnEnter", onControlEnter)
+	check:SetScript("OnLeave", onControlLeave)
+	check.label = label
+	check.description = description
 	--local r, g, b = GameFontNormal:GetTextColor()
 	local fs = check:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	fs:SetPoint("LEFT", check, "RIGHT", 0, 1)
@@ -52,7 +65,7 @@ local function newCheckbox(label, description, onClick)
 	fs:SetText(label)
 	--fs:SetTextColor(r, g, b, 1)
 	fs:SetWidth(200)
-	check.label = fs
+	--check.label = fs
 	--[[local desc = check:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	desc:ClearAllPoints()
 	desc:SetPoint("TOPLEFT", check, "TOPRIGHT", 5, -20)
@@ -165,6 +178,12 @@ frame:SetScript("OnShow", function(frame)
 	clear:SetScript("OnClick", function()
 		BugSack:Reset()
 	end)
+	clear:SetScript("OnEnter", onControlEnter)
+	clear:SetScript("OnLeave", onControlLeave)
+	clear.label = "Clear saved errors"
+	clear.description = "Wipes all saved errors from the database."
+	
+	frame:SetScript("OnShow", nil)
 end)
 InterfaceOptions_AddCategory(frame)
 
