@@ -32,7 +32,6 @@ L["Wipe saved bugs"] = true
 L.wipeDesc = "Exterminates all stored bugs from the database."
 
 -- Chat messages
-L["A bug has been spotted, immediate action recommended."] = true
 L["You've received %d bugs from %s."] = true
 L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = true
 L["All stored bugs have been exterminated painfully."] = true
