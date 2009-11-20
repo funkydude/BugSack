@@ -19,7 +19,7 @@ L["Send all bugs from the currently viewed session (%d) in the sack to the playe
 L["Auto popup"] = "自动弹出"
 L.autoDesc = "遇到错误是否自动弹出 BugSack 窗口。"
 L["Chatframe output"] = "聊天栏输出"
-L.chatFrameDesc  = "当发生错误的时，在聊天栏中显示。不是整个错误，只是一个提醒！"
+L.chatFrameDesc = "当发生错误的时，在聊天栏中显示。不是整个错误，只是一个提醒！"
 L["Sound"] = "音效"
 L["Filter addon mistakes"] = "过滤插件错误"
 L.filterDesc = "不论 BugSack 可能对 ADDON_ACTION_BLOCKED 和 ADDON_ACTION_FORBIDDEN 事件认为错误与否。如果这样做没有意义，忽略这个选项。"
@@ -37,7 +37,7 @@ L["%d bugs have been sent to %s. He must have BugSack to be able to examine them
 L["All stored bugs have been exterminated painfully."] = "所有已保存的错误已经被清除。"
 L["There's a bug in your soup!"] = "这里有一个恶心的错误！"
 
-- LDB
+-- LDB
 L["|cffeda55fClick|r to open BugSack with the last bug. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = "|cffeda55f点击|r打开 BugSack 及最后一错误信息。|cffeda55fShift-点击|r重新加载用户界面。|cffeda55fAlt-点击|r清除储存错误信息。"
 L["Minimap icon"] = "小地图按钮"
 L["Toggle the minimap icon."] = "切换小地图按钮。"
