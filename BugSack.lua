@@ -14,7 +14,7 @@ of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License fraidor more details.
+GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
@@ -57,13 +57,14 @@ local sackCurrent = nil
 
 local show = nil
 do
-	local sourceLabel, countLabel, sessionLabel, textArea = nil, nil, nil, nil, nil
+	local countLabel, sessionLabel, textArea = nil, nil, nil, nil
 	local nextButton, prevButton = nil, nil
 	local function createBugSack()
 		local window = CreateFrame("Frame", "BugSackFrame", UIParent)
 		UIPanelWindows["BugSackFrame"] = { area = "center", pushable = 0, whileDead = 1 }
 		HideUIPanel(BugSackFrame)
 
+		window:SetFrameStrata("FULLSCREEN_DIALOG")
 		window:SetWidth(500)
 		window:SetHeight(400)
 		window:SetPoint("CENTER")
@@ -80,16 +81,16 @@ do
 			PlaySound("igQuestLogClose")
 		end)
 
-		local titlebg = window:CreateTexture(nil, "BACKGROUND")
+		local titlebg = window:CreateTexture(nil, "BORDER")
 		titlebg:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background")
 		titlebg:SetPoint("TOPLEFT", 9, -6)
 		titlebg:SetPoint("BOTTOMRIGHT", window, "TOPRIGHT", -28, -24)
 
 		local dialogbg = window:CreateTexture(nil, "BACKGROUND")
-		dialogbg:SetTexture("Interface\\Tooltips\\UI-Tooltip-Background")
-		dialogbg:SetPoint("TOPLEFT", 8, -24)
+		dialogbg:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-CharacterTab-L1")
+		dialogbg:SetPoint("TOPLEFT", 8, -12)
 		dialogbg:SetPoint("BOTTOMRIGHT", -6, 8)
-		dialogbg:SetVertexColor(0, 0, 0, .75)
+		dialogbg:SetTexCoord(0.255, 1, 0.29, 1)
 
 		local topleft = window:CreateTexture(nil, "BORDER")
 		topleft:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Border")
@@ -156,26 +157,27 @@ do
 		title:SetJustifyH("CENTER")
 		title:SetText("BugSack")
 
+		local options = CreateFrame("Button", nil, window)
+		options:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
+		options:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
+		options:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled")
+		options:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+		options:SetWidth(32)
+		options:SetHeight(32)
+		options:SetText("")
+		options:SetPoint("TOPLEFT", 12, -29)
+		options:Disable()
+
 		sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-		sessionLabel:SetPoint("TOPLEFT", 16, -32)
-		sessionLabel:SetWidth(158)
+		sessionLabel:SetPoint("LEFT", options, "RIGHT", 16)
 		sessionLabel:SetJustifyH("LEFT")
-		sessionLabel:SetText("Session: #####")
-		
+
 		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-		countLabel:SetPoint("TOPRIGHT", -12, -32)
-		countLabel:SetWidth(158)
+		countLabel:SetPoint("TOPRIGHT", window, "TOPRIGHT", -12, -38)
 		countLabel:SetJustifyH("RIGHT")
-		countLabel:SetText("X/X")
-		
-		sourceLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-		sourceLabel:SetPoint("TOPLEFT", sessionLabel)
-		sourceLabel:SetPoint("TOPRIGHT", countLabel)
-		sourceLabel:SetJustifyH("CENTER")
-		sourceLabel:SetText("")
 
 		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
-		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -10, 12)
+		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -11, 16)
 		nextButton:SetHeight(32)
 		nextButton:SetWidth(130)
 		nextButton:SetText(L["Next >"])
@@ -185,7 +187,7 @@ do
 		end)
 		
 		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
-		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 12, 12)
+		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 14, 16)
 		prevButton:SetHeight(32)
 		prevButton:SetWidth(130)
 		prevButton:SetText(L["< Previous"])
@@ -196,8 +198,8 @@ do
 		
 		if BugSack.Serialize then
 			sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate2")
-			sendButton:SetPoint("TOPLEFT", prevButton, "TOPRIGHT", 4)
-			sendButton:SetPoint("BOTTOMRIGHT", nextButton, "BOTTOMLEFT", -4)
+			sendButton:SetPoint("TOPLEFT", prevButton, "TOPRIGHT")
+			sendButton:SetPoint("BOTTOMRIGHT", nextButton, "BOTTOMLEFT")
 			sendButton:SetText(L["Send bugs"])
 			sendButton:SetScript("OnClick", function()
 				local db = BugGrabber:GetDB()
@@ -209,7 +211,7 @@ do
 		end
 
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", window, "UIPanelScrollFrameTemplate")
-		scroll:SetPoint("TOPLEFT", sessionLabel, "BOTTOMLEFT", 0, -12)
+		scroll:SetPoint("TOPLEFT", options, "BOTTOMLEFT", 4, -3)
 		scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
 		textArea = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
@@ -226,7 +228,7 @@ do
 		scroll:SetScrollChild(textArea)
 	end
 
-	local sessionFormat = "%s (%d)" -- Today (123)
+	local sessionFormat = "%s (%d) - %s" -- Today (123) - <source>
 	local countFormat = "%d/%d" -- 1/10
 	local sourceFormat = L["Sent by %s (%s)"]
 	local localFormat = L["Local (%s)"]
@@ -238,7 +240,6 @@ do
 		end
 
 		if not eo and sackCurrent == 0 then
-			sourceLabel:SetText()
 			countLabel:SetText()
 			sessionLabel:SetText(sessionFormat:format(L["Today"], BugGrabber:GetSessionId()))
 			textArea:SetText(L["You have no bugs, yay!"])
@@ -248,12 +249,13 @@ do
 		else
 			local db = BugGrabber:GetDB()
 			if not eo then eo = db[sackCurrent] end
-			if eo.source then sourceLabel:SetText(sourceFormat:format(eo.source, eo.type))
-			else sourceLabel:SetText(localFormat:format(eo.type)) end
+			local source = nil
+			if eo.source then source = sourceFormat:format(eo.source, eo.type)
+			else source = localFormat:format(eo.type) end
 			if eo.session == BugGrabber:GetSessionId() then
-				sessionLabel:SetText(sessionFormat:format(L["Today"], eo.session))
+				sessionLabel:SetText(sessionFormat:format(L["Today"], eo.session, source))
 			else
-				sessionLabel:SetText(sessionFormat:format(eo.time, eo.session))
+				sessionLabel:SetText(sessionFormat:format(eo.time, eo.session, source))
 			end
 			countLabel:SetText(countFormat:format(sackCurrent, #db))
 			textArea:SetText(BugSack:FormatError(eo))

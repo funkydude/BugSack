@@ -1,9 +1,5 @@
 --[[
 
-BugSack, a World of Warcraft addon that interfaces with the !BugGrabber addon
-to present errors in a nice way.
-Copyright (C) 2008 The BugSack Team.
-
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
