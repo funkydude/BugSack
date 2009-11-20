@@ -66,7 +66,7 @@ do
 
 		window:SetFrameStrata("FULLSCREEN_DIALOG")
 		window:SetWidth(500)
-		window:SetHeight(400)
+		window:SetHeight(500 / 1.618)
 		window:SetPoint("CENTER")
 		window:SetMovable(true)
 		window:EnableMouse(true)
@@ -156,6 +156,7 @@ do
 		title:SetAllPoints(titlebg)
 		title:SetJustifyH("CENTER")
 		title:SetText("BugSack")
+		title:Hide()
 
 		local options = CreateFrame("Button", nil, window)
 		options:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
@@ -167,18 +168,21 @@ do
 		options:SetText("")
 		options:SetPoint("TOPLEFT", 12, -29)
 		options:Disable()
+		options:Hide()
 
-		sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-		sessionLabel:SetPoint("LEFT", options, "RIGHT", 16)
+		sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+		--sessionLabel:SetPoint("LEFT", options, "RIGHT", 16)
 		sessionLabel:SetJustifyH("LEFT")
+		sessionLabel:SetPoint("TOPLEFT", titlebg, "TOPLEFT", 6, -3)
 
-		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-		countLabel:SetPoint("TOPRIGHT", window, "TOPRIGHT", -12, -38)
+		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+		--countLabel:SetPoint("TOPRIGHT", window, "TOPRIGHT", -12, -38)
+		countLabel:SetPoint("TOPRIGHT", titlebg, "TOPRIGHT", -6, -3)
 		countLabel:SetJustifyH("RIGHT")
 
 		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
 		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -11, 16)
-		nextButton:SetHeight(32)
+		--nextButton:SetHeight(32)
 		nextButton:SetWidth(130)
 		nextButton:SetText(L["Next >"])
 		nextButton:SetScript("OnClick", function()
@@ -188,7 +192,7 @@ do
 		
 		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
 		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 14, 16)
-		prevButton:SetHeight(32)
+		--prevButton:SetHeight(32)
 		prevButton:SetWidth(130)
 		prevButton:SetText(L["< Previous"])
 		prevButton:SetScript("OnClick", function()
@@ -211,7 +215,8 @@ do
 		end
 
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", window, "UIPanelScrollFrameTemplate")
-		scroll:SetPoint("TOPLEFT", options, "BOTTOMLEFT", 4, -3)
+		--scroll:SetPoint("TOPLEFT", options, "BOTTOMLEFT", 4, -3)
+		scroll:SetPoint("TOPLEFT", options, "TOPLEFT", 4, -7)
 		scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
 		textArea = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
@@ -223,7 +228,6 @@ do
 		textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
 		-- XXX why the fuck doesn't SetPoint work on the editbox?
 		textArea:SetWidth(450)
-		textArea:SetHeight(310)
 		
 		scroll:SetScrollChild(textArea)
 	end
