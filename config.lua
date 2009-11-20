@@ -1,3 +1,5 @@
+if not BugGrabber then return end
+
 local media = LibStub("LibSharedMedia-3.0", true)
 
 local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)

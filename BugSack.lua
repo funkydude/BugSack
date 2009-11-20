@@ -14,7 +14,7 @@ of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU General Public License fraidor more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
@@ -22,14 +22,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ]]
 
-local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
+if not LibStub then
+	print("BugSack requires LibStub.")
+	return
+end
+local AL = LibStub:GetLibrary("AceLocale-3.0", true)
+if not AL then
+	print("BugSack requires AceLocale-3.0.")
+	return
+end
+local BugGrabber = BugGrabber
+if not BugGrabber then
+	local msg = "|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"
+	local f = CreateFrame("Frame")
+	f:SetScript("OnEvent", function()
+		RaidNotice_AddMessage(RaidWarningFrame, msg, {r=1, g=0.3, b=0.1})
+		print(msg)
+		f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		f:SetScript("OnEvent", nil)
+		f = nil
+	end)
+	f:RegisterEvent("PLAYER_ENTERING_WORLD")
+	return
+end
+
+local L = AL:GetLocale("BugSack"); AL = nil
 local media = LibStub("LibSharedMedia-3.0", true)
 
 BugSack = CreateFrame("Frame")
-
 local BugSack = BugSack
-local BugGrabber = BugGrabber
-local BugGrabberDB = BugGrabberDB
 
 -- Frame state variables
 local sackCurrent = nil
@@ -219,7 +240,7 @@ do
 		if not eo and sackCurrent == 0 then
 			sourceLabel:SetText()
 			countLabel:SetText()
-			sessionLabel:SetText(sessionFormat:format(L["Today"], BugGrabberDB.session))
+			sessionLabel:SetText(sessionFormat:format(L["Today"], BugGrabber:GetSessionId()))
 			textArea:SetText(L["You have no bugs, yay!"])
 			nextButton:Disable()
 			prevButton:Disable()
@@ -229,7 +250,7 @@ do
 			if not eo then eo = db[sackCurrent] end
 			if eo.source then sourceLabel:SetText(sourceFormat:format(eo.source, eo.type))
 			else sourceLabel:SetText(localFormat:format(eo.type)) end
-			if eo.session == BugGrabberDB.session then
+			if eo.session == BugGrabber:GetSessionId() then
 				sessionLabel:SetText(sessionFormat:format(L["Today"], eo.session))
 			else
 				sessionLabel:SetText(sessionFormat:format(eo.time, eo.session))
@@ -410,9 +431,10 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 	end
 
 	-- Store recieved errors in the current session database with a source set to the sender
+	local s = BugGrabber:GetSessionId()
 	for i, err in next, deSz do
 		err.source = sender
-		err.session = BugGrabberDB.session
+		err.session = s
 		BugGrabber:StoreError(err)
 	end
 
@@ -478,7 +500,7 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 		end
 	elseif event == "PLAYER_LOGIN" then
 		-- Make sure we grab any errors fired before bugsack loaded.
-		local session = self:GetErrors(BugGrabberDB.session)
+		local session = self:GetErrors(BugGrabber:GetSessionId())
 		if #session > 0 then self:OnError() end
 
 		if self.RegisterComm then
