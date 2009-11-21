@@ -245,7 +245,7 @@ do
 
 		if not eo and sackCurrent == 0 then
 			countLabel:SetText()
-			sessionLabel:SetText(sessionFormat:format(L["Today"], BugGrabber:GetSessionId()))
+			sessionLabel:SetText(("%s (%d)"):format(L["Today"], BugGrabber:GetSessionId()))
 			textArea:SetText(L["You have no bugs, yay!"])
 			nextButton:Disable()
 			prevButton:Disable()
