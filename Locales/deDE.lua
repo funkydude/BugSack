@@ -21,6 +21,8 @@ L.autoDesc = "Öffnet BugSack automatisch, sobald ein Fehler auftritt."
 L["Chatframe output"] = "Chatfenster Ausgabe"
 L.chatFrameDesc = "Gibt eine Erinnerung im Chatfenster aus, dass ein Fehler aufgetreten ist. Zeigt nicht den kompletten Fehler an!" 
 L["Sound"] = "Sound"
+L["Mute"] = "Stumm"
+L.muteDesc = "Hindert BugSack daran, den 'Worms'-Sound abzuspielen, sobald ein Fehler entdeckt wurde."
 L["Filter addon mistakes"] = "Filtere falsche Addon Fehler"
 L.filterDesc = "Bestimmt, ob BugSack die Events ADDON_ACTION_BLOCKED und ADDON_ACTION_FORBIDDEN als Fehler betrachten soll oder nicht. Falls dies keinen Sinn ergibt, ignoriere die Option."
 L["Throttle at excessive amount"] = "Bei Übermaß temporär drosseln"
@@ -30,6 +32,8 @@ L.saveDesc = "Speichert Fehler in der Datenbank. Falls diese Option ausgeschalte
 L["Limit"] = "Begrenzung"
 L["Wipe saved bugs"] = "Lösche gespeich. Fehler"
 L.wipeDesc = "Löscht alle gespeicherten Fehler aus der Datenbank."
+L["Minimap icon"] = "Minimap Symbol"
+L.minimapDesc = "Zeigt oder versteckt das Minimap Symbol."
 
 -- Chat messages
 L["You've received %d bugs from %s."] = "Du hast %d Fehler von %s empfangen."
