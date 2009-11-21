@@ -58,35 +58,30 @@ frame:SetScript("OnShow", function(frame)
 	subtitle:SetJustifyV("TOP")
 	subtitle:SetText("BugSack is a sack to stuff all your bugs in, and NOTHING ELSE! Don't think I don't know what you're up to, little schoolboy. Daddy was a little schoolboy, too.")
 
-	local function checkBoxClick(label, value) print(value) end
 	local autoPopup = newCheckbox(
 		L["Auto popup"],
 		L.autoDesc,
-		function(self, value)
-			BugSack.db.profile.auto = value
-		end)
+		function(self, value) BugSack.db.profile.auto = value end)
 	autoPopup:SetChecked(BugSack.db.profile.auto)
 	autoPopup:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", -2, -16)
 
 	local chatFrame = newCheckbox(
 		L["Chatframe output"],
 		L.chatFrameDesc,
-		function(self, value)
-			BugSack.db.profile.chatframe = value
-		end)
+		function(self, value) BugSack.db.profile.chatframe = value end)
 	chatFrame:SetChecked(BugSack.db.profile.chatframe)
 	chatFrame:SetPoint("TOPLEFT", autoPopup, "BOTTOMLEFT", 0, -8)
 
 	-- Jeeeeesus christ dropdowns are funky!
-	local soundLabel = nil
+	local sound = nil
 	if media then
-		soundLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		soundLabel:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 8, -16)
-		soundLabel:SetJustifyH("LEFT")
-		soundLabel:SetHeight(18)
-		soundLabel:SetText(L["Sound"])
+		sound = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		sound:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 8, -16)
+		sound:SetJustifyH("LEFT")
+		sound:SetHeight(18)
+		sound:SetText(L["Sound"])
 		local dropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
-		dropdown:SetPoint("TOPLEFT", soundLabel, "TOPRIGHT", 16, 0)
+		dropdown:SetPoint("TOPLEFT", sound, "TOPRIGHT", 16, 0)
 		local function itemOnClick(self)
 			local selected = self.value
 			BugSack.db.profile.soundMedia = selected
@@ -105,6 +100,13 @@ frame:SetScript("OnShow", function(frame)
 		UIDropDownMenu_SetSelectedValue(dropdown, BugSack.db.profile.soundMedia)
 		UIDropDownMenu_SetWidth(dropdown, 160)
 		UIDropDownMenu_JustifyText(dropdown, "LEFT")
+	else
+		sound = newCheckbox(
+			L["Mute"],
+			L.muteDesc,
+			function(self, value) BugSack.db.profile.mute = value end)
+		sound:SetChecked(BugSack.db.profile.mute)
+		sound:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 0, -16)
 	end
 
 	local filter = newCheckbox(
@@ -114,7 +116,7 @@ frame:SetScript("OnShow", function(frame)
 			BugSack:ToggleFilter()
 		end)
 	filter:SetChecked(BugSack:GetFilter())
-	filter:SetPoint("TOPLEFT", soundLabel or chatFrame, "BOTTOMLEFT", soundLabel and -8 or 0, -16)
+	filter:SetPoint("TOPLEFT", sound, "BOTTOMLEFT", media and -8 or 0, -16)
 	
 	local throttle = newCheckbox(
 		L["Throttle at excessive amount"],
