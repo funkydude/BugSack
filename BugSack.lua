@@ -222,13 +222,13 @@ do
 		textArea = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
 		textArea:SetAutoFocus(false)
 		textArea:SetMultiLine(true)
-		textArea:SetFontObject(GameFontHighlightSmall)
+		textArea:SetFontObject(ChatFontNormal) --GameFontHighlightSmall)
 		textArea:SetMaxLetters(99999)
 		textArea:EnableMouse(true)
 		textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
 		-- XXX why the fuck doesn't SetPoint work on the editbox?
 		textArea:SetWidth(450)
-		
+
 		scroll:SetScrollChild(textArea)
 	end
 
@@ -346,13 +346,15 @@ function BugSack:OpenSack()
 	show()
 end
 
-local errorFormat = [[|cff999999[%s-x%d@%s]|r: %s]]
+--local errorFormat = [[|cff999999[%s-x%d@%s]|r: %s]]
+local errorFormat = [[|cff999999%dx|r %s]]
 function BugSack:FormatError(err)
 	local m = err.message
 	if type(m) == "table" then
 		m = table.concat(m, "")
 	end
-	return errorFormat:format(err.time or "unknown", err.counter or -1, err.source or "local", self:ColorError(m or ""))
+	return errorFormat:format(err.counter or -1, self:ColorError(m))
+	--return errorFormat:format(err.time or "unknown", err.counter or -1, err.source or "local", self:ColorError(m or ""))
 end
 
 function BugSack:ColorError(err)
