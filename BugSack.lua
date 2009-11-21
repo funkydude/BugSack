@@ -54,15 +54,84 @@ local BugSack = BugSack
 
 -- Frame state variables
 local sackCurrent = nil
+local currentSackContents = nil
 
 local show = nil
 do
+	local function findPreviousSessionWithBugs(current)
+		for i = (current - 1), 0, -1 do
+			local bugs = BugSack:GetErrors(i)
+			if #bugs > 0 then
+				return i, bugs
+			end
+		end
+	end
+
+	local tabs = nil
 	local function setActiveMethod(tab)
-		print(tab.bugs)
+		if not tab.bugs then
+			currentSackContents = BugSack:GetErrors()
+			BugSack.db.lastSackSession = nil
+		elseif tab.bugs == 0 then
+			local session = BugGrabber:GetSessionId()
+			currentSackContents = BugSack:GetErrors(session)
+			BugSack.db.lastSackSession = session
+		else
+			local session = tab.bugs == -1 and BugGrabber:GetSessionId() or tab.bugs
+			local s, b = findPreviousSessionWithBugs(session)
+			if not s or not b or #b == 0 then
+				print("no earlier sessions found, looping over again")
+				tab.bugs = -1
+				return
+			end
+			tab.bugs, currentSackContents = s, b
+			BugSack.db.lastSackSession = s
+		end
+
+		for i, t in next, tabs do
+			if t == tab then
+				t:SetNormalFontObject(GameFontHighlight)
+			else
+				t:SetNormalFontObject(GameFontNormal)
+			end
+		end
+		
+		sackCurrent = nil
+		BugSack:OpenSack()
 	end
 
 	local countLabel, sessionLabel, textArea = nil, nil, nil, nil
 	local nextButton, prevButton, sendButton = nil, nil, nil
+
+	local sessionFormat = "%s - |cffff4411%s|r - |cff44ff44%d|r" -- <date> - <sent by> - <session id>
+	local countFormat = "%d/%d" -- 1/10
+	local sourceFormat = L["Sent by %s (%s)"]
+	local localFormat = L["Local (%s)"]
+	local function updateSack()
+		local eo = currentSackContents[sackCurrent]
+		local size = #currentSackContents
+		local source = nil
+		if eo.source then source = sourceFormat:format(eo.source, eo.type)
+		else source = localFormat:format(eo.type) end
+		if eo.session == BugGrabber:GetSessionId() then
+			sessionLabel:SetText(sessionFormat:format(L["Today"], source, eo.session))
+		else
+			sessionLabel:SetText(sessionFormat:format(eo.time, source, eo.session))
+		end
+		countLabel:SetText(countFormat:format(sackCurrent, size))
+		textArea:SetText(BugSack:FormatError(eo))
+		if sackCurrent >= size then
+			nextButton:Disable()
+		else
+			nextButton:Enable()
+		end
+		if sackCurrent <= 1 then
+			prevButton:Disable()
+		else
+			prevButton:Enable()
+		end
+	end
+
 	local function createBugSack()
 		local window = CreateFrame("Frame", "BugSackFrame", UIParent)
 		UIPanelWindows["BugSackFrame"] = { area = "center", pushable = 0, whileDead = 1 }
@@ -158,10 +227,12 @@ do
 		sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 		sessionLabel:SetJustifyH("LEFT")
 		sessionLabel:SetPoint("TOPLEFT", titlebg, "TOPLEFT", 6, -3)
+		sessionLabel:SetTextColor(1, 1, 1, 1)
 
 		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 		countLabel:SetPoint("TOPRIGHT", titlebg, "TOPRIGHT", -6, -3)
 		countLabel:SetJustifyH("RIGHT")
+		countLabel:SetTextColor(1, 1, 1, 1)
 
 		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
 		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -11, 16)
@@ -169,7 +240,7 @@ do
 		nextButton:SetText(L["Next >"])
 		nextButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent + 1
-			show()
+			updateSack()
 		end)
 
 		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
@@ -178,7 +249,7 @@ do
 		prevButton:SetText(L["< Previous"])
 		prevButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent - 1
-			show()
+			updateSack()
 		end)
 
 		if BugSack.Serialize then
@@ -187,8 +258,7 @@ do
 			sendButton:SetPoint("RIGHT", nextButton, "LEFT")
 			sendButton:SetText(L["Send bugs"])
 			sendButton:SetScript("OnClick", function()
-				local db = BugGrabber:GetDB()
-				local eo = db[sackCurrent]
+				local eo = currentSackContents[sackCurrent]
 				local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
 				popup.data = eo.session
 				window:Hide()
@@ -214,51 +284,51 @@ do
 		local all = CreateFrame("Button", "BugSackTabAll", window, "CharacterFrameTabButtonTemplate")
 		all:SetFrameStrata("FULLSCREEN")
 		all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", 0, 8)
-		all:SetText("Show all bugs")
+		all:SetText("All bugs")
 		all:SetScript("OnLoad", nil)
 		all:SetScript("OnShow", nil)
 		all:SetScript("OnClick", setActiveMethod)
-		all.bugs = "all"
+		all:SetNormalFontObject(GameFontHighlight)
+		all.bugs = nil
 
 		local session = CreateFrame("Button", "BugSackTabSession", window, "CharacterFrameTabButtonTemplate")
 		session:SetFrameStrata("FULLSCREEN")
 		session:SetPoint("LEFT", all, "RIGHT")
-		session:SetText("Show current session")
+		session:SetText("Current session")
 		session:SetScript("OnLoad", nil)
 		session:SetScript("OnShow", nil)
 		session:SetScript("OnClick", setActiveMethod)
-		session.bugs = "session"
+		session:SetNormalFontObject(GameFontNormal)
+		session.bugs = 0
 
 		local last = CreateFrame("Button", "BugSackTabLast", window, "CharacterFrameTabButtonTemplate")
 		last:SetFrameStrata("FULLSCREEN")
 		last:SetPoint("LEFT", session, "RIGHT")
-		last:SetText("Show last session")
+		last:SetText("Previous session")
 		last:SetScript("OnLoad", nil)
 		last:SetScript("OnShow", nil)
 		last:SetScript("OnClick", setActiveMethod)
-		last.bugs = "last"
-
+		last:SetNormalFontObject(GameFontNormal)
+		last.bugs = -1
+		
+		tabs = {all, session, last}
 		local size = 500 / 3
-		PanelTemplates_TabResize(all, nil, size, size)
-		PanelTemplates_TabResize(session, nil, size, size)
-		PanelTemplates_TabResize(last, nil, size, size)
-		PanelTemplates_DeselectTab(all)
-		PanelTemplates_DeselectTab(session)
-		PanelTemplates_DeselectTab(last)
+		for i, t in next, tabs do
+			PanelTemplates_TabResize(t, nil, size, size)
+			PanelTemplates_DeselectTab(t)
+		end
 	end
 
-	local sessionFormat = "%s (%d) - %s" -- Today (123) - <source>
-	local countFormat = "%d/%d" -- 1/10
-	local sourceFormat = L["Sent by %s (%s)"]
-	local localFormat = L["Local (%s)"]
-
-	function show(eo)
+	-- Called when the sack is supposed to be opened or refreshed,
+	-- and can only be called by :OpenSack or something that is available
+	-- from the sack window, so we know that currentSackContents is set.
+	function show()
 		if createBugSack then
 			createBugSack()
 			createBugSack = nil
 		end
-
-		if not eo and sackCurrent == 0 then
+		local size = #currentSackContents
+		if size == 0 then
 			countLabel:SetText()
 			sessionLabel:SetText(("%s (%d)"):format(L["Today"], BugGrabber:GetSessionId()))
 			textArea:SetText(L["You have no bugs, yay!"])
@@ -266,28 +336,8 @@ do
 			prevButton:Disable()
 			if sendButton then sendButton:Disable() end
 		else
-			local db = BugGrabber:GetDB()
-			if not eo then eo = db[sackCurrent] end
-			local source = nil
-			if eo.source then source = sourceFormat:format(eo.source, eo.type)
-			else source = localFormat:format(eo.type) end
-			if eo.session == BugGrabber:GetSessionId() then
-				sessionLabel:SetText(sessionFormat:format(L["Today"], eo.session, source))
-			else
-				sessionLabel:SetText(sessionFormat:format(eo.time, eo.session, source))
-			end
-			countLabel:SetText(countFormat:format(sackCurrent, #db))
-			textArea:SetText(BugSack:FormatError(eo))
-			if sackCurrent >= #db then
-				nextButton:Disable()
-			else
-				nextButton:Enable()
-			end
-			if sackCurrent <= 1 then
-				prevButton:Disable()
-			else
-				prevButton:Enable()
-			end
+			sackCurrent = size
+			updateSack()
 			if sendButton then sendButton:Enable() end
 		end
 		ShowUIPanel(BugSackFrame)
@@ -356,8 +406,9 @@ end
 function BugSack:OpenSack()
 	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
-	-- Show the most recent error
-	sackCurrent = #BugGrabber:GetDB()
+	if not currentSackContents then
+		currentSackContents = BugGrabber:GetDB(self.db.lastSackSession)
+	end
 	show()
 end
 
@@ -513,6 +564,7 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 		if type(sv.chatframe) ~= "boolean" then sv.chatframe = false end
 		if type(sv.filterAddonMistakes) ~= "boolean" then sv.filterAddonMistakes = true end
 		if type(sv.soundMedia) ~= "string" then sv.soundMedia = "BugSack: Fatality" end
+		if type(sv.lastSackSession ~= "number") then sv.lastSackSession = nil end
 		self.db = sv
 
 		if media then
