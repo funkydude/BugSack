@@ -87,15 +87,6 @@ f:SetScript("OnEvent", function()
 	if not icon then return end
 	if not BugSackLDBIconDB then BugSackLDBIconDB = {} end
 	icon:Register("BugSack", BugSackLDB, BugSackLDBIconDB)
-	SlashCmdList.BugSack = function()
-		BugSackLDBIconDB.hide = not BugSackLDBIconDB.hide
-		if BugSackLDBIconDB.hide then
-			icon:Hide("BugSack")
-		else
-			icon:Show("BugSack")
-		end
-	end
-	SLASH_BugSack1 = "/bugsack"
 end)
 f:RegisterEvent("PLAYER_LOGIN")
 

@@ -519,6 +519,9 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 		else
 			BugGrabber:UnregisterAddonActionEvents()
 		end
+		
+		SlashCmdList.BugSack = function() InterfaceOptionsFrame_OpenToCategory("BugSack") end
+		SLASH_BugSack1 = "/bugsack"
 	end
 end)
 BugSack:RegisterEvent("ADDON_LOADED")
