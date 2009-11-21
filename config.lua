@@ -10,7 +10,7 @@ frame:Hide()
 
 local function onControlEnter(self)
 	GameTooltip:ClearLines()
-	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
 	GameTooltip:AddLine(self.label)
 	GameTooltip:AddLine(self.description, 1, 1, 1, 1)
 	GameTooltip:Show()
@@ -29,7 +29,7 @@ local function newCheckbox(label, description, onClick)
 	check:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check")
 	check:SetScript("OnClick", function(self)
 		PlaySound(self:GetChecked() and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff")
-		onClick(self, self:GetChecked())
+		onClick(self, self:GetChecked() and true or false)
 	end)
 	check:SetScript("OnEnter", onControlEnter)
 	check:SetScript("OnLeave", onControlLeave)
@@ -61,16 +61,16 @@ frame:SetScript("OnShow", function(frame)
 	local autoPopup = newCheckbox(
 		L["Auto popup"],
 		L.autoDesc,
-		function(self, value) BugSack.db.profile.auto = value end)
-	autoPopup:SetChecked(BugSack.db.profile.auto)
-	autoPopup:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", -2, -16)
+		function(self, value) BugSack.db.auto = value end)
+	autoPopup:SetChecked(BugSack.db.auto)
+	autoPopup:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", -2, -8)
 
 	local chatFrame = newCheckbox(
 		L["Chatframe output"],
 		L.chatFrameDesc,
-		function(self, value) BugSack.db.profile.chatframe = value end)
-	chatFrame:SetChecked(BugSack.db.profile.chatframe)
-	chatFrame:SetPoint("TOPLEFT", autoPopup, "BOTTOMLEFT", 0, -8)
+		function(self, value) BugSack.db.chatframe = value end)
+	chatFrame:SetChecked(BugSack.db.chatframe)
+	chatFrame:SetPoint("TOPLEFT", autoPopup, "BOTTOMLEFT", 0, -4)
 
 	-- Jeeeeesus christ dropdowns are funky!
 	local sound = nil
@@ -84,7 +84,7 @@ frame:SetScript("OnShow", function(frame)
 		dropdown:SetPoint("TOPLEFT", sound, "TOPRIGHT", 16, 0)
 		local function itemOnClick(self)
 			local selected = self.value
-			BugSack.db.profile.soundMedia = selected
+			BugSack.db.soundMedia = selected
 			UIDropDownMenu_SetSelectedValue(dropdown, selected)
 		end
 		UIDropDownMenu_Initialize(dropdown, function()
@@ -93,19 +93,19 @@ frame:SetScript("OnShow", function(frame)
 				info.text = sound
 				info.value = sound
 				info.func = itemOnClick
-				info.checked = sound == BugSack.db.profile.soundMedia
+				info.checked = sound == BugSack.db.soundMedia
 				UIDropDownMenu_AddButton(info)
 			end
 		end)
-		UIDropDownMenu_SetSelectedValue(dropdown, BugSack.db.profile.soundMedia)
+		UIDropDownMenu_SetSelectedValue(dropdown, BugSack.db.soundMedia)
 		UIDropDownMenu_SetWidth(dropdown, 160)
 		UIDropDownMenu_JustifyText(dropdown, "LEFT")
 	else
 		sound = newCheckbox(
 			L["Mute"],
 			L.muteDesc,
-			function(self, value) BugSack.db.profile.mute = value end)
-		sound:SetChecked(BugSack.db.profile.mute)
+			function(self, value) BugSack.db.mute = value end)
+		sound:SetChecked(BugSack.db.mute)
 		sound:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 0, -16)
 	end
 
@@ -124,7 +124,7 @@ frame:SetScript("OnShow", function(frame)
 		function(self, value)
 			BugGrabber:UseThrottling(value)
 		end)
-	throttle:SetPoint("TOPLEFT", filter, "BOTTOMLEFT", 0, -8)
+	throttle:SetPoint("TOPLEFT", filter, "BOTTOMLEFT", 0, -4)
 	throttle:SetChecked(BugGrabber:IsThrottling())
 
 	local save = newCheckbox(
@@ -140,7 +140,7 @@ frame:SetScript("OnShow", function(frame)
 	local sliderLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	sliderLabel:SetJustifyH("LEFT")
 	sliderLabel:SetText(L["Limit"])
-	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -16)
+	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -8)
 
 	local sliderValue = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	sliderValue:SetJustifyH("LEFT")
@@ -171,7 +171,7 @@ frame:SetScript("OnShow", function(frame)
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate2")
 	clear:SetText(L["Wipe saved bugs"])
 	clear:SetWidth(160)
-	clear:SetPoint("TOPLEFT", sliderLabel, "BOTTOMLEFT", -4, -8)
+	clear:SetPoint("TOPLEFT", sliderLabel, "BOTTOMLEFT", -4, -4)
 	clear:SetScript("OnClick", function()
 		BugSack:Reset()
 	end)
@@ -179,6 +179,23 @@ frame:SetScript("OnShow", function(frame)
 	clear:SetScript("OnLeave", onControlLeave)
 	clear.label = L["Wipe saved bugs"]
 	clear.description = L.wipeDesc
+
+	local icon = LibStub("LibDBIcon-1.0", true)
+	if icon then
+		local minimap = newCheckbox(
+			L["Minimap icon"],
+			L.minimapDesc,
+			function(self, value)
+				BugSackLDBIconDB.hide = not value
+				if BugSackLDBIconDB.hide then
+					icon:Hide("BugSack")
+				else
+					icon:Show("BugSack")
+				end
+			end)
+		minimap:SetPoint("TOPLEFT", clear, "BOTTOMLEFT", -4, -16)
+		minimap:SetChecked(BugGrabber:GetSave())
+	end
 	
 	frame:SetScript("OnShow", nil)
 end)

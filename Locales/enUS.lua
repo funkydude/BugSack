@@ -32,6 +32,8 @@ L.saveDesc = "Saves the bugs in the database. If this is off, bugs will not pers
 L["Limit"] = true
 L["Wipe saved bugs"] = true
 L.wipeDesc = "Exterminates all stored bugs from the database."
+L["Minimap icon"] = true
+L.minimapDesc = "Shows the BugSack icon around your minimap."
 
 -- Chat messages
 L["You've received %d bugs from %s."] = true

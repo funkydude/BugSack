@@ -66,7 +66,7 @@ do
 			local pattern = "^(.-)\n"
 			local counter = 1
 			for i, err in next, errs do
-				if not BugSack.db.profile.filterAddonMistakes or (BugSack.db.profile.filterAddonMistakes and err.type == "error") then
+				if not BugSack.db.filterAddonMistakes or (BugSack.db.filterAddonMistakes and err.type == "error") then
 					local m = err.message
 					if type(m) == "table" then m = table.concat(m, "") end
 					m = select(3, m:find(pattern))
@@ -85,10 +85,11 @@ local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function()
 	local icon = LibStub("LibDBIcon-1.0", true)
 	if not icon then return end
-	icon:Register("BugSack", BugSackLDB, BugSack.db.profile.minimap)
+	if not BugSackLDBIconDB then BugSackLDBIconDB = {} end
+	icon:Register("BugSack", BugSackLDB, BugSackLDBIconDB)
 	SlashCmdList.BugSack = function()
-		BugSack.db.profile.minimap.hide = not BugSack.db.profile.minimap.hide
-		if BugSack.db.profile.minimap.hide then
+		BugSackLDBIconDB.hide = not BugSackLDBIconDB.hide
+		if BugSackLDBIconDB.hide then
 			icon:Hide("BugSack")
 		else
 			icon:Show("BugSack")

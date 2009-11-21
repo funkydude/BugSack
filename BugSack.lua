@@ -322,12 +322,12 @@ do
 end
 
 function BugSack:GetFilter()
-	return self.db.profile.filterAddonMistakes
+	return self.db.filterAddonMistakes
 end
 
 function BugSack:ToggleFilter()
-	self.db.profile.filterAddonMistakes = not self.db.profile.filterAddonMistakes
-	if not self.db.profile.filterAddonMistakes then
+	self.db.filterAddonMistakes = not self.db.filterAddonMistakes
+	if not self.db.filterAddonMistakes then
 		BugGrabber:RegisterAddonActionEvents()
 	else
 		BugGrabber:UnregisterAddonActionEvents()
@@ -395,15 +395,15 @@ do
 	function BugSack:OnError()
 		if not lastError or GetTime() > (lastError + 2) then
 			if media then
-				local sound = media:Fetch("sound", self.db.profile.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.wav"
+				local sound = media:Fetch("sound", self.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.wav"
 				PlaySoundFile(sound)
-			elseif not self.db.profile.mute then
+			elseif not self.db.mute then
 				PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.wav")
 			end
-			if self.db.profile.auto then
+			if self.db.auto then
 				self:OpenSack()
 			end
-			if self.db.profile.chatframe then
+			if self.db.chatframe then
 				print(L["There's a bug in your soup!"])
 			end
 			lastError = GetTime()
@@ -489,19 +489,14 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 			}
 		end
 
-		self.db = LibStub("AceDB-3.0"):New("BugSackDB", {
-			profile = {
-				mute = nil,
-				auto = nil,
-				showmsg = nil,
-				chatframe = nil,
-				filterAddonMistakes = true,
-				soundMedia = "BugSack: Fatality",
-				minimap = {
-					hide = false,
-				},
-			},
-		}, true)
+		if type(BugSackDB) ~= "table" then BugSackDB = {} end
+		local sv = BugSackDB
+		if type(sv.mute) ~= "boolean" then sv.mute = false end
+		if type(sv.auto) ~= "boolean" then sv.auto = false end
+		if type(sv.chatframe) ~= "boolean" then sv.chatframe = false end
+		if type(sv.filterAddonMistakes) ~= "boolean" then sv.filterAddonMistakes = true end
+		if type(sv.soundMedia) ~= "string" then sv.soundMedia = "BugSack: Fatality" end
+		self.db = sv
 
 		if media then
 			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
