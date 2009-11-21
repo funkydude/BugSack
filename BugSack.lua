@@ -62,7 +62,7 @@ do
 	end
 
 	local countLabel, sessionLabel, textArea = nil, nil, nil, nil
-	local nextButton, prevButton = nil, nil
+	local nextButton, prevButton, sendButton = nil, nil, nil
 	local function createBugSack()
 		local window = CreateFrame("Frame", "BugSackFrame", UIParent)
 		UIPanelWindows["BugSackFrame"] = { area = "center", pushable = 0, whileDead = 1 }
@@ -195,11 +195,11 @@ do
 			end)
 		end
 
-		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", window, "UIPanelScrollFrameTemplate")
+		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll", window, "UIPanelScrollFrameTemplate")
 		scroll:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
 		scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
-		textArea = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
+		textArea = CreateFrame("EditBox", "BugSackFrameScrollText", scroll)
 		textArea:SetAutoFocus(false)
 		textArea:SetMultiLine(true)
 		textArea:SetFontObject(ChatFontNormal) --GameFontHighlightSmall)
