@@ -57,6 +57,10 @@ local sackCurrent = nil
 
 local show = nil
 do
+	local function setActiveMethod(tab)
+		print(tab.bugs)
+	end
+
 	local countLabel, sessionLabel, textArea = nil, nil, nil, nil
 	local nextButton, prevButton = nil, nil
 	local function createBugSack()
@@ -70,7 +74,6 @@ do
 		window:SetPoint("CENTER")
 		window:SetMovable(true)
 		window:EnableMouse(true)
-		window:SetClampedToScreen(true)
 		window:RegisterForDrag("LeftButton")
 		window:SetScript("OnDragStart", window.StartMoving)
 		window:SetScript("OnDragStop", window.StopMovingOrSizing)
@@ -230,6 +233,41 @@ do
 		textArea:SetWidth(450)
 
 		scroll:SetScrollChild(textArea)
+
+		local all = CreateFrame("Button", "BugSackTabAll", window, "CharacterFrameTabButtonTemplate")
+		all:SetFrameStrata("FULLSCREEN")
+		all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", 0, 8)
+		all:SetText("Show all bugs")
+		all:SetScript("OnLoad", nil)
+		all:SetScript("OnShow", nil)
+		all:SetScript("OnClick", setActiveMethod)
+		all.bugs = "all"
+
+		local session = CreateFrame("Button", "BugSackTabSession", window, "CharacterFrameTabButtonTemplate")
+		session:SetFrameStrata("FULLSCREEN")
+		session:SetPoint("LEFT", all, "RIGHT")
+		session:SetText("Show current session")
+		session:SetScript("OnLoad", nil)
+		session:SetScript("OnShow", nil)
+		session:SetScript("OnClick", setActiveMethod)
+		session.bugs = "session"
+
+		local last = CreateFrame("Button", "BugSackTabLast", window, "CharacterFrameTabButtonTemplate")
+		last:SetFrameStrata("FULLSCREEN")
+		last:SetPoint("LEFT", session, "RIGHT")
+		last:SetText("Show last session")
+		last:SetScript("OnLoad", nil)
+		last:SetScript("OnShow", nil)
+		last:SetScript("OnClick", setActiveMethod)
+		last.bugs = "last"
+
+		local size = 500 / 3
+		PanelTemplates_TabResize(all, nil, size, size)
+		PanelTemplates_TabResize(session, nil, size, size)
+		PanelTemplates_TabResize(last, nil, size, size)
+		PanelTemplates_DeselectTab(all)
+		PanelTemplates_DeselectTab(session)
+		PanelTemplates_DeselectTab(last)
 	end
 
 	local sessionFormat = "%s (%d) - %s" -- Today (123) - <source>
@@ -491,6 +529,8 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 
 		if type(BugSackDB) ~= "table" then BugSackDB = {} end
 		local sv = BugSackDB
+		sv.profileKeys = nil
+		sv.profiles = nil
 		if type(sv.mute) ~= "boolean" then sv.mute = false end
 		if type(sv.auto) ~= "boolean" then sv.auto = false end
 		if type(sv.chatframe) ~= "boolean" then sv.chatframe = false end

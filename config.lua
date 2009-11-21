@@ -1,7 +1,5 @@
 if not BugGrabber then return end
 
-local media = LibStub("LibSharedMedia-3.0", true)
-
 local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
 frame.name = "BugSack"
 frame:Hide()
@@ -72,6 +70,7 @@ frame:SetScript("OnShow", function(frame)
 	chatFrame:SetChecked(BugSack.db.chatframe)
 	chatFrame:SetPoint("TOPLEFT", autoPopup, "BOTTOMLEFT", 0, -4)
 
+	local media = LibStub("LibSharedMedia-3.0", true)
 	-- Jeeeeesus christ dropdowns are funky!
 	local sound = nil
 	if media then
