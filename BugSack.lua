@@ -155,58 +155,36 @@ do
 		close:SetPoint("TOPRIGHT", 2, 1)
 		close:SetScript("OnClick", BugSack.CloseSack)
 
-		local title = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-		title:SetAllPoints(titlebg)
-		title:SetJustifyH("CENTER")
-		title:SetText("BugSack")
-		title:Hide()
-
-		local options = CreateFrame("Button", nil, window)
-		options:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
-		options:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
-		options:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled")
-		options:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-		options:SetWidth(32)
-		options:SetHeight(32)
-		options:SetText("")
-		options:SetPoint("TOPLEFT", 12, -29)
-		options:Disable()
-		options:Hide()
-
 		sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-		--sessionLabel:SetPoint("LEFT", options, "RIGHT", 16)
 		sessionLabel:SetJustifyH("LEFT")
 		sessionLabel:SetPoint("TOPLEFT", titlebg, "TOPLEFT", 6, -3)
 
 		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-		--countLabel:SetPoint("TOPRIGHT", window, "TOPRIGHT", -12, -38)
 		countLabel:SetPoint("TOPRIGHT", titlebg, "TOPRIGHT", -6, -3)
 		countLabel:SetJustifyH("RIGHT")
 
 		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
 		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -11, 16)
-		--nextButton:SetHeight(32)
 		nextButton:SetWidth(130)
 		nextButton:SetText(L["Next >"])
 		nextButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent + 1
 			show()
 		end)
-		
+
 		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
 		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 14, 16)
-		--prevButton:SetHeight(32)
 		prevButton:SetWidth(130)
 		prevButton:SetText(L["< Previous"])
 		prevButton:SetScript("OnClick", function()
 			sackCurrent = sackCurrent - 1
 			show()
 		end)
-		
+
 		if BugSack.Serialize then
 			sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate2")
-			sendButton:SetPoint("TOPLEFT", prevButton, "TOPRIGHT")
-			sendButton:SetPoint("BOTTOMRIGHT", nextButton, "BOTTOMLEFT")
+			sendButton:SetPoint("LEFT", prevButton, "RIGHT")
+			sendButton:SetPoint("RIGHT", nextButton, "LEFT")
 			sendButton:SetText(L["Send bugs"])
 			sendButton:SetScript("OnClick", function()
 				local db = BugGrabber:GetDB()
@@ -218,8 +196,7 @@ do
 		end
 
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll2", window, "UIPanelScrollFrameTemplate")
-		--scroll:SetPoint("TOPLEFT", options, "BOTTOMLEFT", 4, -3)
-		scroll:SetPoint("TOPLEFT", options, "TOPLEFT", 4, -7)
+		scroll:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
 		scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
 		textArea = CreateFrame("EditBox", "BugSackFrameScrollText2", scroll)
