@@ -55,6 +55,7 @@ local BugSack = BugSack
 -- Frame state variables
 local sackCurrent = nil
 local currentSackContents = nil
+local currentSackSession = nil
 
 local show = nil
 do
@@ -71,11 +72,11 @@ do
 	local function setActiveMethod(tab)
 		if not tab.bugs then
 			currentSackContents = BugSack:GetErrors()
-			BugSack.db.lastSackSession = nil
+			currentSackSession = nil
 		elseif tab.bugs == 0 then
 			local session = BugGrabber:GetSessionId()
 			currentSackContents = BugSack:GetErrors(session)
-			BugSack.db.lastSackSession = session
+			currentSackSession = session
 		else
 			local session = tab.bugs == -1 and BugGrabber:GetSessionId() or tab.bugs
 			local s, b = findPreviousSessionWithBugs(session)
@@ -85,7 +86,7 @@ do
 				return
 			end
 			tab.bugs, currentSackContents = s, b
-			BugSack.db.lastSackSession = s
+			currentSackSession = s
 		end
 
 		for i, t in next, tabs do
@@ -407,7 +408,7 @@ function BugSack:OpenSack()
 	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
 	if not currentSackContents then
-		currentSackContents = BugGrabber:GetDB(self.db.lastSackSession)
+		currentSackContents = BugGrabber:GetDB(currentSackSession)
 	end
 	show()
 end
@@ -564,7 +565,6 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 		if type(sv.chatframe) ~= "boolean" then sv.chatframe = false end
 		if type(sv.filterAddonMistakes) ~= "boolean" then sv.filterAddonMistakes = true end
 		if type(sv.soundMedia) ~= "string" then sv.soundMedia = "BugSack: Fatality" end
-		if type(sv.lastSackSession ~= "number") then sv.lastSackSession = nil end
 		self.db = sv
 
 		if media then
