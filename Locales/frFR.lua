@@ -21,6 +21,8 @@ L.autoDesc = "Fait en sorte que BugSack s'ouvre automatiquement quand une erreur
 L["Chatframe output"] = "Sortie fenêtre de conversation"
 L.chatFrameDesc = "Affiche un rappel dans la fenêtre de conversation quand une erreur est rencontrée. N'affiche pas l'erreur complète, juste un rappel!"
 L["Sound"] = "Son"
+L["Mute"] = "Muet"
+L.muteDesc = "Empêche BugSack de jouer le son 'Worms' lorsqu'un bug est détecté."
 L["Filter addon mistakes"] = "Filtrer les erreurs des addons"
 L.filterDesc = "Défini si BugSack devrait traiter les évènements ADDON_ACTION_BLOCKED et ADDON_ACTION_FORBIDDEN comme des erreurs ou non. Si cela n'a aucun sens, ignorez cette option."
 L["Throttle at excessive amount"] = "Réduire à partir un certain nombre"
@@ -28,8 +30,10 @@ L.throttleDesc = "Parfois, les addons peuvent générer des centaines d'erreurs 
 L["Save errors"] = "Sauver les erreurs"
 L.saveDesc = "Saves the bugs in the database. If this is off, bugs will not persist in the sack from session to session."
 L["Limit"] = "Limite"
-L["Wipe saved bugs"] = "Nettoyer les erreurs sauvegardées"
+L["Wipe saved bugs"] = "Suppr. les erreurs"
 L.wipeDesc = "Effacer toutes les erreurs sauvegardées de la base."
+L["Minimap icon"] = "Icône de la minicarte"
+L.minimapDesc = "Affiche l'icône de BugSack autour de votre minicarte."
 
 -- Chat messages
 L["You've received %d bugs from %s."] = "Vous avez reçu %d erreurs de %s."
