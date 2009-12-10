@@ -193,7 +193,7 @@ frame:SetScript("OnShow", function(frame)
 				end
 			end)
 		minimap:SetPoint("TOPLEFT", clear, "BOTTOMLEFT", -4, -16)
-		minimap:SetChecked(BugGrabber:GetSave())
+		minimap:SetChecked(not BugSackLDBIconDB.hide)
 	end
 	
 	frame:SetScript("OnShow", nil)
