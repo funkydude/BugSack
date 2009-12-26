@@ -240,7 +240,11 @@ do
 		nextButton:SetWidth(130)
 		nextButton:SetText(L["Next >"])
 		nextButton:SetScript("OnClick", function()
-			sackCurrent = sackCurrent + 1
+			if IsShiftKeyDown() then
+				sackCurrent = #currentSackContents
+			else
+				sackCurrent = sackCurrent + 1
+			end
 			updateSack()
 		end)
 
@@ -249,7 +253,11 @@ do
 		prevButton:SetWidth(130)
 		prevButton:SetText(L["< Previous"])
 		prevButton:SetScript("OnClick", function()
-			sackCurrent = sackCurrent - 1
+			if IsShiftKeyDown() then
+				sackCurrent = 1
+			else
+				sackCurrent = sackCurrent - 1
+			end
 			updateSack()
 		end)
 
