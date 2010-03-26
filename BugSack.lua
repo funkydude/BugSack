@@ -227,16 +227,16 @@ do
 
 		sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 		sessionLabel:SetJustifyH("LEFT")
-		sessionLabel:SetPoint("TOPLEFT", titlebg, "TOPLEFT", 6, -3)
+		sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -3)
 		sessionLabel:SetTextColor(1, 1, 1, 1)
 
 		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-		countLabel:SetPoint("TOPRIGHT", titlebg, "TOPRIGHT", -6, -3)
+		countLabel:SetPoint("TOPRIGHT", titlebg, -6, -3)
 		countLabel:SetJustifyH("RIGHT")
 		countLabel:SetTextColor(1, 1, 1, 1)
 
 		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
-		nextButton:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -11, 16)
+		nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
 		nextButton:SetWidth(130)
 		nextButton:SetText(L["Next >"])
 		nextButton:SetScript("OnClick", function()
@@ -249,7 +249,7 @@ do
 		end)
 
 		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate2")
-		prevButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 14, 16)
+		prevButton:SetPoint("BOTTOMLEFT", window, 14, 16)
 		prevButton:SetWidth(130)
 		prevButton:SetText(L["< Previous"])
 		prevButton:SetScript("OnClick", function()
@@ -275,7 +275,7 @@ do
 		end
 
 		local scroll = CreateFrame("ScrollFrame", "BugSackFrameScroll", window, "UIPanelScrollFrameTemplate")
-		scroll:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
+		scroll:SetPoint("TOPLEFT", window, 16, -36)
 		scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
 		textArea = CreateFrame("EditBox", "BugSackFrameScrollText", scroll)
