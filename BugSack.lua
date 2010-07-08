@@ -469,6 +469,7 @@ do
 	local lastError = nil
 	function BugSack:OnError()
 		if not lastError or GetTime() > (lastError + 2) then
+			if not media then media = LibStub("LibSharedMedia-3.0", true) end
 			if media then
 				local sound = media:Fetch("sound", self.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.wav"
 				PlaySoundFile(sound)

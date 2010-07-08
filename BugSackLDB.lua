@@ -25,7 +25,7 @@ local BugSack = BugSack
 local BugGrabber = BugGrabber
 local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
 
-BugSackLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("BugSack", {
+BugSackLDB = ldb:NewDataObject("BugSack", {
 	type = "data source",
 	text = "0",
 	icon = "Interface\\AddOns\\BugSack\\Media\\icon",
