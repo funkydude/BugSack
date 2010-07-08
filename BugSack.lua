@@ -469,7 +469,9 @@ do
 	function BugSack:EnsureLSM3()
 		if media then return media end
 		media = LibStub("LibSharedMedia-3.0", true)
-		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
+		if media then
+			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
+		end
 		return media
 	end
 end
