@@ -84,7 +84,7 @@ frame:SetScript("OnShow", function(frame)
 	throttle:SetPoint("TOPLEFT", filter, "BOTTOMLEFT", 0, -8)
 	throttle:SetChecked(BugGrabber:IsThrottling())
 
-	local media = LibStub("LibSharedMedia-3.0", true)
+	local media = BugSack:EnsureLSM3()
 	-- Jeeeeesus christ dropdowns are funky!
 	local sound = nil
 	if media then

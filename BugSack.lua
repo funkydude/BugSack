@@ -47,7 +47,6 @@ if not BugGrabber then
 end
 
 local L = AL:GetLocale("BugSack"); AL = nil
-local media = LibStub("LibSharedMedia-3.0", true)
 
 BugSack = CreateFrame("Frame")
 local BugSack = BugSack
@@ -466,10 +465,19 @@ end
 
 -- The Error catching function.
 do
+	local media = nil
+	function BugSack:EnsureLSM3()
+		if media then return media end
+		media = LibStub("LibSharedMedia-3.0", true)
+		media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
+		return media
+	end
+end
+do
 	local lastError = nil
 	function BugSack:OnError()
 		if not lastError or GetTime() > (lastError + 2) then
-			if not media then media = LibStub("LibSharedMedia-3.0", true) end
+			local media = self:EnsureLSM3()
 			if media then
 				local sound = media:Fetch("sound", self.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.wav"
 				PlaySoundFile(sound)
@@ -576,9 +584,7 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 		if type(sv.soundMedia) ~= "string" then sv.soundMedia = "BugSack: Fatality" end
 		self.db = sv
 
-		if media then
-			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
-		end
+		self:EnsureLSM3()
 	elseif event == "PLAYER_LOGIN" then
 		-- Make sure we grab any errors fired before bugsack loaded.
 		local session = self:GetErrors(BugGrabber:GetSessionId())
