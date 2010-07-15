@@ -92,6 +92,7 @@ frame:SetScript("OnShow", function(frame)
 		sound:SetPoint("TOPLEFT", minimap or chatFrame, "BOTTOMLEFT", 8, -24)
 		sound:SetJustifyH("LEFT")
 		sound:SetHeight(18)
+		sound:SetWidth(70)
 		sound:SetText(L["Sound"])
 		local dropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
 		dropdown:SetPoint("TOPLEFT", sound, "TOPRIGHT", 16, 3)
@@ -122,6 +123,38 @@ frame:SetScript("OnShow", function(frame)
 		sound:SetPoint("TOPLEFT", minimap or chatFrame, "BOTTOMLEFT", 0, -8)
 	end
 
+	local size = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	size:SetPoint("TOPLEFT", sound, "BOTTOMLEFT", media and 0 or 6, -24)
+	size:SetJustifyH("LEFT")
+	size:SetHeight(18)
+	size:SetWidth(70)
+	size:SetText("Font size")
+	local dropdown = CreateFrame("Frame", "BugSackFontSize", frame, "UIDropDownMenuTemplate")
+	dropdown:SetPoint("TOPLEFT", size, "TOPRIGHT", 16, 3)
+	local function itemOnClick(self)
+		local selected = self.value
+		BugSack.db.font = selected
+		if _G.BugSackFrameScrollText then
+			_G.BugSackFrameScrollText:SetFontObject(_G[selected])
+		end
+		UIDropDownMenu_SetSelectedValue(dropdown, selected)
+	end
+	UIDropDownMenu_Initialize(dropdown, function()
+		local info = UIDropDownMenu_CreateInfo()
+		local fonts = {"GameFontHighlightSmall", "GameFontHighlight", "GameFontHighlightMedium", "GameFontHighlightLarge"}
+		local names = {"Small", "Medium", "Large", "X-Large"}
+		for i, font in next, fonts do
+			info.text = names[i]
+			info.value = font
+			info.func = itemOnClick
+			info.checked = font == BugSack.db.fontSize
+			UIDropDownMenu_AddButton(info)
+		end
+	end)
+	UIDropDownMenu_SetSelectedValue(dropdown, BugSack.db.fontSize)
+	UIDropDownMenu_SetWidth(dropdown, 160)
+	UIDropDownMenu_JustifyText(dropdown, "LEFT")
+
 	local save = newCheckbox(
 		L["Save errors"],
 		L.saveDesc,
@@ -129,18 +162,14 @@ frame:SetScript("OnShow", function(frame)
 			BugGrabber:ToggleSave()
 			self:SetChecked(BugGrabber:GetSave())
 		end)
-	if media then
-		save:SetPoint("TOPLEFT", sound, "BOTTOMLEFT", -6, -24)
-	else
-		save:SetPoint("TOPLEFT", sound, "BOTTOMLEFT", 0, -8)
-	end
+	save:SetPoint("TOPLEFT", size, "BOTTOMLEFT", -6, -24)
 	save:SetChecked(BugGrabber:GetSave())
 
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate2")
 	clear:SetText(L["Wipe saved bugs"])
 	clear:SetWidth(160)
 	clear:SetPoint("TOP", save, "TOP")
-	clear:SetPoint("LEFT", save.label, "RIGHT", 16, 0)
+	clear:SetPoint("LEFT", save.label, "RIGHT", 20, 0)
 	clear:SetScript("OnClick", function()
 		BugSack:Reset()
 	end)
@@ -150,7 +179,8 @@ frame:SetScript("OnShow", function(frame)
 	local sliderLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	sliderLabel:SetJustifyH("LEFT")
 	sliderLabel:SetText(L["Limit"])
-	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -8)
+	sliderLabel:SetWidth(70)
+	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -16)
 
 	local sliderValue = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	sliderValue:SetJustifyH("LEFT")
@@ -175,7 +205,7 @@ frame:SetScript("OnShow", function(frame)
 		BugGrabber:SetLimit(v)
 		sliderValue:SetText(v)
 	end)
-	slider:SetPoint("LEFT", sliderLabel, "RIGHT", 36, 0)
+	slider:SetPoint("LEFT", sliderLabel, "RIGHT", 32, 0)
 	sliderValue:SetPoint("LEFT", slider, "RIGHT", 8, 0)
 	
 	frame:SetScript("OnShow", nil)

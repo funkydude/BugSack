@@ -280,7 +280,7 @@ do
 		textArea = CreateFrame("EditBox", "BugSackFrameScrollText", scroll)
 		textArea:SetAutoFocus(false)
 		textArea:SetMultiLine(true)
-		textArea:SetFontObject(ChatFontNormal) --GameFontHighlightSmall)
+		textArea:SetFontObject(_G[BugSack.db.fontSize] or GameFontHighlightSmall) --GameFontHighlightSmall)
 		textArea:SetMaxLetters(99999)
 		textArea:EnableMouse(true)
 		textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
@@ -584,6 +584,7 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 		if type(sv.chatframe) ~= "boolean" then sv.chatframe = false end
 		if type(sv.filterAddonMistakes) ~= "boolean" then sv.filterAddonMistakes = true end
 		if type(sv.soundMedia) ~= "string" then sv.soundMedia = "BugSack: Fatality" end
+		if type(sv.fontSize) ~= "string" then sv.fontSize = "GameFontHighlight" end
 		self.db = sv
 
 		self:EnsureLSM3()
