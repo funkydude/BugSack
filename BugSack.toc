@@ -1,4 +1,5 @@
 ﻿## Interface: 30300
+## X-Compatible-With: 40000
 ## Title: BugSack
 ## Version: 3.3
 ## Notes: Toss those bugs inna sack.
