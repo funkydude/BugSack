@@ -470,7 +470,7 @@ do
 		if media then return media end
 		media = LibStub("LibSharedMedia-3.0", true)
 		if media then
-			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.wav")
+			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.ogg")
 		end
 		return media
 	end
@@ -481,10 +481,10 @@ do
 		if not lastError or GetTime() > (lastError + 2) then
 			local media = self:EnsureLSM3()
 			if media then
-				local sound = media:Fetch("sound", self.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.wav"
+				local sound = media:Fetch("sound", self.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.ogg"
 				PlaySoundFile(sound)
 			elseif not self.db.mute then
-				PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.wav")
+				PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.ogg")
 			end
 			if self.db.auto then
 				self:OpenSack()
