@@ -52,9 +52,9 @@ BugSack = CreateFrame("Frame")
 local BugSack = BugSack
 
 -- Frame state variables
-local sackCurrent = nil
-local currentSackContents = nil
-local currentSackSession = nil
+local sackCurrent = nil -- Index of the error in the currentSackContents currently shown
+local currentSackContents = nil -- List of all the errors currently navigated in the sack
+local currentSackSession = nil -- Current session ID available in the sack
 
 local show = nil
 do
@@ -90,17 +90,17 @@ do
 
 		for i, t in next, tabs do
 			if t == tab then
-				t:SetNormalFontObject(GameFontHighlight)
+				PanelTemplates_SelectTab(t)
 			else
-				t:SetNormalFontObject(GameFontNormal)
+				PanelTemplates_DeselectTab(t)
 			end
 		end
-		
+
 		sackCurrent = nil
 		BugSack:OpenSack()
 	end
 
-	local countLabel, sessionLabel, textArea = nil, nil, nil, nil
+	local countLabel, sessionLabel, textArea = nil, nil, nil
 	local nextButton, prevButton, sendButton = nil, nil, nil
 
 	local sessionFormat = "%s - |cffff4411%s|r - |cff44ff44%d|r" -- <date> - <sent by> - <session id>
@@ -296,7 +296,6 @@ do
 		all:SetScript("OnLoad", nil)
 		all:SetScript("OnShow", nil)
 		all:SetScript("OnClick", setActiveMethod)
-		all:SetNormalFontObject(GameFontHighlight)
 		all.bugs = nil
 
 		local session = CreateFrame("Button", "BugSackTabSession", window, "CharacterFrameTabButtonTemplate")
@@ -306,7 +305,6 @@ do
 		session:SetScript("OnLoad", nil)
 		session:SetScript("OnShow", nil)
 		session:SetScript("OnClick", setActiveMethod)
-		session:SetNormalFontObject(GameFontNormal)
 		session.bugs = 0
 
 		local last = CreateFrame("Button", "BugSackTabLast", window, "CharacterFrameTabButtonTemplate")
@@ -316,14 +314,17 @@ do
 		last:SetScript("OnLoad", nil)
 		last:SetScript("OnShow", nil)
 		last:SetScript("OnClick", setActiveMethod)
-		last:SetNormalFontObject(GameFontNormal)
 		last.bugs = -1
 		
 		tabs = {all, session, last}
 		local size = 500 / 3
 		for i, t in next, tabs do
 			PanelTemplates_TabResize(t, nil, size, size)
-			PanelTemplates_DeselectTab(t)
+			if i == 1 then
+				PanelTemplates_SelectTab(t)
+			else
+				PanelTemplates_DeselectTab(t)
+			end
 		end
 	end
 
