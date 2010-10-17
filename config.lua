@@ -133,7 +133,7 @@ frame:SetScript("OnShow", function(frame)
 	dropdown:SetPoint("TOPLEFT", size, "TOPRIGHT", 16, 3)
 	local function itemOnClick(self)
 		local selected = self.value
-		BugSack.db.font = selected
+		BugSack.db.fontSize = selected
 		if _G.BugSackFrameScrollText then
 			_G.BugSackFrameScrollText:SetFontObject(_G[selected])
 		end
