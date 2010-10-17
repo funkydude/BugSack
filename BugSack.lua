@@ -345,7 +345,9 @@ do
 			prevButton:Disable()
 			if sendButton then sendButton:Disable() end
 		else
-			sackCurrent = size
+			if not BugSackFrame:IsVisible() then
+				sackCurrent = size
+			end
 			updateSack()
 			if sendButton then sendButton:Enable() end
 		end
