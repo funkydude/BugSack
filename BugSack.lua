@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ]]
 
+local function print(...) _G.print("|cff259054BugSack:|r", ...) end
 if not LibStub then
 	print("BugSack requires LibStub.")
 	return
@@ -96,7 +97,7 @@ do
 			end
 		end
 
-		sackCurrent = #currentSackContents
+		sackCurrent = nil
 		BugSack:OpenSack()
 	end
 
@@ -345,36 +346,11 @@ do
 			prevButton:Disable()
 			if sendButton then sendButton:Disable() end
 		else
-			if not BugSackFrame:IsShown() then
-				sackCurrent = size
-			end
+			sackCurrent = size
 			updateSack()
 			if sendButton then sendButton:Enable() end
 		end
 		ShowUIPanel(BugSackFrame)
-	end
-end
-
-local function print(t)
-	DEFAULT_CHAT_FRAME:AddMessage("BugSack: " .. t)
-end
-
-function BugSack:Taint(addon)
-	if type(addon) ~= "string" then return end
-	local printer = AceLibrary("AceConsole-2.0")
-	local result = {}
-	for k,v in pairs(_G) do
-		local secure, tainter = issecurevariable(k)
-		if not secure and tainter and tainter:find(addon) then
-			result[#result + 1] = tostring(k)
-		end
-	end
-	if #result > 0 then
-		table.sort(result)
-		printer:Print("Globals found for " .. addon .. ":")
-		printer:Print(table.concat(result, ", "))
-	else
-		printer:Print("No taint found for " .. addon .. ".")
 	end
 end
 
@@ -419,9 +395,6 @@ function BugSack:OpenSack()
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
 	if not currentSackContents then
 		currentSackContents = BugGrabber:GetDB(currentSackSession)
-	end
-	if BugSackFrame and BugSackFrame:IsShown() then
-		sackCurrent = sackCurrent - 1
 	end
 	show()
 end
