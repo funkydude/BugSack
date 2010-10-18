@@ -96,7 +96,7 @@ do
 			end
 		end
 
-		sackCurrent = nil
+		sackCurrent = #currentSackContents
 		BugSack:OpenSack()
 	end
 
@@ -345,7 +345,7 @@ do
 			prevButton:Disable()
 			if sendButton then sendButton:Disable() end
 		else
-			if not BugSackFrame:IsVisible() then
+			if not BugSackFrame:IsShown() then
 				sackCurrent = size
 			end
 			updateSack()
@@ -419,6 +419,9 @@ function BugSack:OpenSack()
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
 	if not currentSackContents then
 		currentSackContents = BugGrabber:GetDB(currentSackSession)
+	end
+	if BugSackFrame and BugSackFrame:IsShown() then
+		sackCurrent = sackCurrent - 1
 	end
 	show()
 end
