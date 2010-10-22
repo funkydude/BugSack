@@ -270,7 +270,7 @@ do
 				local eo = currentSackContents[sackCurrent]
 				local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
 				popup.data = eo.session
-				window:Hide()
+				HideUIPanel(BugSackFrame)
 			end)
 		end
 
