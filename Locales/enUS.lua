@@ -11,6 +11,9 @@ L["Send bugs"] = true
 L["Today"] = true
 L["Sent by %s (%s)"] = true
 L["Local (%s)"] = true
+L["All bugs"] = true
+L["Current session"] = true
+L["Previous session"] = true
 
 L["Send"] = true
 L["Send all bugs from the currently viewed session (%d) in the sack to the player specified below."] = true
@@ -34,12 +37,20 @@ L["Wipe saved bugs"] = true
 L.wipeDesc = "Exterminates all stored bugs from the database."
 L["Minimap icon"] = true
 L.minimapDesc = "Shows the BugSack icon around your minimap."
+L["Font size"] = true
+L["Small"] = true
+L["Medium"] = true
+L["Large"] = true
+L["X-Large"] = true
 
 -- Chat messages
 L["You've received %d bugs from %s."] = true
 L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = true
 L["All stored bugs have been exterminated painfully."] = true
 L["There's a bug in your soup!"] = true
+L["Failure to deserialize incoming data from %s."] = true
+L["Player needs to be a valid name."] = true
+L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = true
 
 -- LDB
 L["|cffeda55fClick|r to open BugSack with the last bug. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."] = true

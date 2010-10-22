@@ -128,7 +128,7 @@ frame:SetScript("OnShow", function(frame)
 	size:SetJustifyH("LEFT")
 	size:SetHeight(18)
 	size:SetWidth(70)
-	size:SetText("Font size")
+	size:SetText(L["Font size"])
 	local dropdown = CreateFrame("Frame", "BugSackFontSize", frame, "UIDropDownMenuTemplate")
 	dropdown:SetPoint("TOPLEFT", size, "TOPRIGHT", 16, 3)
 	local function itemOnClick(self)
@@ -142,7 +142,7 @@ frame:SetScript("OnShow", function(frame)
 	UIDropDownMenu_Initialize(dropdown, function()
 		local info = UIDropDownMenu_CreateInfo()
 		local fonts = {"GameFontHighlightSmall", "GameFontHighlight", "GameFontHighlightMedium", "GameFontHighlightLarge"}
-		local names = {"Small", "Medium", "Large", "X-Large"}
+		local names = {L["Small"], L["Medium"], L["Large"], L["X-Large"]}
 		for i, font in next, fonts do
 			info.text = names[i]
 			info.value = font

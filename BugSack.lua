@@ -34,7 +34,7 @@ if not AL then
 end
 local BugGrabber = BugGrabber
 if not BugGrabber then
-	local msg = "|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"
+	local msg = L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"]
 	local f = CreateFrame("Frame")
 	f:SetScript("OnEvent", function()
 		RaidNotice_AddMessage(RaidWarningFrame, msg, {r=1, g=0.3, b=0.1})
@@ -81,7 +81,7 @@ do
 			local session = tab.bugs == -1 and BugGrabber:GetSessionId() or tab.bugs
 			local s, b = findPreviousSessionWithBugs(session)
 			if not s or not b or #b == 0 then
-				print("no earlier sessions found, looping over again")
+				print("No earlier sessions found.") -- not localized because I want it gone, just disable tab instead
 				tab.bugs = -1
 				return
 			end
@@ -281,7 +281,7 @@ do
 		textArea = CreateFrame("EditBox", "BugSackFrameScrollText", scroll)
 		textArea:SetAutoFocus(false)
 		textArea:SetMultiLine(true)
-		textArea:SetFontObject(_G[BugSack.db.fontSize] or GameFontHighlightSmall) --GameFontHighlightSmall)
+		textArea:SetFontObject(_G[BugSack.db.fontSize] or GameFontHighlightSmall)
 		textArea:SetMaxLetters(99999)
 		textArea:EnableMouse(true)
 		textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
@@ -293,7 +293,7 @@ do
 		local all = CreateFrame("Button", "BugSackTabAll", window, "CharacterFrameTabButtonTemplate")
 		all:SetFrameStrata("FULLSCREEN")
 		all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", 0, 8)
-		all:SetText("All bugs")
+		all:SetText(L["All bugs"])
 		all:SetScript("OnLoad", nil)
 		all:SetScript("OnShow", nil)
 		all:SetScript("OnClick", setActiveMethod)
@@ -302,7 +302,7 @@ do
 		local session = CreateFrame("Button", "BugSackTabSession", window, "CharacterFrameTabButtonTemplate")
 		session:SetFrameStrata("FULLSCREEN")
 		session:SetPoint("LEFT", all, "RIGHT")
-		session:SetText("Current session")
+		session:SetText(L["Current session"])
 		session:SetScript("OnLoad", nil)
 		session:SetScript("OnShow", nil)
 		session:SetScript("OnClick", setActiveMethod)
@@ -311,7 +311,7 @@ do
 		local last = CreateFrame("Button", "BugSackTabLast", window, "CharacterFrameTabButtonTemplate")
 		last:SetFrameStrata("FULLSCREEN")
 		last:SetPoint("LEFT", session, "RIGHT")
-		last:SetText("Previous session")
+		last:SetText(L["Previous session"])
 		last:SetScript("OnLoad", nil)
 		last:SetScript("OnShow", nil)
 		last:SetScript("OnClick", setActiveMethod)
@@ -482,7 +482,7 @@ end
 -- Sends the current session errors to another player using AceComm-3.0
 function BugSack:SendBugsToUser(player, session)
 	if type(player) ~= "string" or player:trim():len() < 2 then
-		error("Player needs to be a valid string.")
+		error(L["Player needs to be a valid name."])
 	end
 	if not self.Serialize then return end
 
@@ -499,7 +499,7 @@ function BugSack:OnBugComm(prefix, message, distribution, sender)
 
 	local good, deSz = self:Deserialize(message)
 	if not good then
-		print("Failure to deserialize incoming data from " .. sender .. ".")
+		print(L["Failure to deserialize incoming data from %s."]:format(sender))
 		return
 	end
 
@@ -551,6 +551,7 @@ BugSack:SetScript("OnEvent", function(self, event, addon)
 				end,
 				enterClicksFirstButton = true,
 				OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
+				preferredIndex = STATICPOPUP_NUMDIALOGS,
 			}
 		end
 
