@@ -32,6 +32,8 @@ if not AL then
 	print("BugSack requires AceLocale-3.0.")
 	return
 end
+local L = AL:GetLocale("BugSack"); AL = nil
+
 local BugGrabber = BugGrabber
 if not BugGrabber then
 	local msg = L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"]
@@ -46,8 +48,6 @@ if not BugGrabber then
 	f:RegisterEvent("PLAYER_ENTERING_WORLD")
 	return
 end
-
-local L = AL:GetLocale("BugSack"); AL = nil
 
 BugSack = CreateFrame("Frame")
 local BugSack = BugSack
