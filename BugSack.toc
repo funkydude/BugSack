@@ -16,8 +16,11 @@
 ## X-Email: rabbit.magtheridon@gmail.com
 ## X-BugGrabber-Display: BugSack
 
+#@no-lib-strip@
 Libs\LibStub\Libstub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+#@end-no-lib-strip@
+
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 
 #@no-lib-strip@
