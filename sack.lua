@@ -67,6 +67,7 @@ local function updateSackDisplay(forceRefresh)
 			end
 		end
 	end
+	if not eo then eo = currentSackContents[currentErrorIndex] end
 
 	if size > 0 then
 		local source = nil
