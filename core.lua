@@ -78,7 +78,7 @@ do
 			lastError = GetTime()
 		end
 		-- If the frame is shown, we need to update it.
-		if addon.db.auto or BugSackFrame:IsShown() then
+		if addon.db.auto or BugSackFrame and BugSackFrame:IsShown() then
 			addon:OpenSack(errorObject)
 		end
 		addon:UpdateDisplay()
