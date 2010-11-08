@@ -1,7 +1,9 @@
-if not BugGrabber then return end
+local addonName, addon = ...
+if not addon.healthCheck then return end
+local L = addon.L
 
 local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
-frame.name = "BugSack"
+frame.name = addonName
 frame:Hide()
 
 -- Credits to Ace3, Tekkub, cladhaire and Tuller for some of the widget stuff.
@@ -20,32 +22,34 @@ local function newCheckbox(label, description, onClick)
 end
 
 frame:SetScript("OnShow", function(frame)
-	local L = LibStub("AceLocale-3.0"):GetLocale("BugSack")
-
 	local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	title:SetPoint("TOPLEFT", 16, -16)
-	title:SetText("BugSack")
+	title:SetText(addonName)
 
-	local subtitle = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-	subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
-	subtitle:SetPoint("RIGHT", -32, 0)
-	subtitle:SetHeight(32)
+	local subTitleWrapper = CreateFrame("Frame", nil, frame)
+	subTitleWrapper:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
+	subTitleWrapper:SetPoint("RIGHT", -16, 0)
+	local subtitle = subTitleWrapper:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	subtitle:SetPoint("TOPLEFT", subTitleWrapper)
+	subtitle:SetWidth(subTitleWrapper:GetRight() - subTitleWrapper:GetLeft())
 	subtitle:SetJustifyH("LEFT")
+	subtitle:SetNonSpaceWrap(false)
 	subtitle:SetJustifyV("TOP")
 	subtitle:SetText("BugSack is a sack to stuff all your bugs in, and NOTHING ELSE! Don't think I don't know what you're up to, little schoolboy. Daddy was a little schoolboy, too.")
+	subTitleWrapper:SetHeight(subtitle:GetHeight())
 
 	local autoPopup = newCheckbox(
 		L["Auto popup"],
 		L.autoDesc,
-		function(self, value) BugSack.db.auto = value end)
-	autoPopup:SetChecked(BugSack.db.auto)
-	autoPopup:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", -2, -8)
+		function(self, value) addon.db.auto = value end)
+	autoPopup:SetChecked(addon.db.auto)
+	autoPopup:SetPoint("TOPLEFT", subTitleWrapper, "BOTTOMLEFT", -2, -16)
 
 	local chatFrame = newCheckbox(
 		L["Chatframe output"],
 		L.chatFrameDesc,
-		function(self, value) BugSack.db.chatframe = value end)
-	chatFrame:SetChecked(BugSack.db.chatframe)
+		function(self, value) addon.db.chatframe = value end)
+	chatFrame:SetChecked(addon.db.chatframe)
 	chatFrame:SetPoint("TOPLEFT", autoPopup, "BOTTOMLEFT", 0, -8)
 
 	local icon = LibStub("LibDBIcon-1.0", true)
@@ -57,9 +61,9 @@ frame:SetScript("OnShow", function(frame)
 			function(self, value)
 				BugSackLDBIconDB.hide = not value
 				if BugSackLDBIconDB.hide then
-					icon:Hide("BugSack")
+					icon:Hide(addonName)
 				else
-					icon:Show("BugSack")
+					icon:Show(addonName)
 				end
 			end)
 		minimap:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 0, -8)
@@ -70,10 +74,10 @@ frame:SetScript("OnShow", function(frame)
 		L["Filter addon mistakes"],
 		L.filterDesc,
 		function(self, value)
-			BugSack:ToggleFilter()
+			addon:ToggleFilter()
 		end)
-	filter:SetChecked(BugSack:GetFilter())
-	filter:SetPoint("TOPLEFT", subtitle, "BOTTOMRIGHT", -160, -8)
+	filter:SetChecked(addon:GetFilter())
+	filter:SetPoint("TOPLEFT", subTitleWrapper, "BOTTOMRIGHT", -176, -16)
 	
 	local throttle = newCheckbox(
 		L["Throttle at excessive amount"],
@@ -84,7 +88,7 @@ frame:SetScript("OnShow", function(frame)
 	throttle:SetPoint("TOPLEFT", filter, "BOTTOMLEFT", 0, -8)
 	throttle:SetChecked(BugGrabber:IsThrottling())
 
-	local media = BugSack:EnsureLSM3()
+	local media = addon:EnsureLSM3()
 	-- Jeeeeesus christ dropdowns are funky!
 	local sound = nil
 	if media then
@@ -98,7 +102,7 @@ frame:SetScript("OnShow", function(frame)
 		dropdown:SetPoint("TOPLEFT", sound, "TOPRIGHT", 16, 3)
 		local function itemOnClick(self)
 			local selected = self.value
-			BugSack.db.soundMedia = selected
+			addon.db.soundMedia = selected
 			UIDropDownMenu_SetSelectedValue(dropdown, selected)
 		end
 		UIDropDownMenu_Initialize(dropdown, function()
@@ -107,19 +111,19 @@ frame:SetScript("OnShow", function(frame)
 				info.text = sound
 				info.value = sound
 				info.func = itemOnClick
-				info.checked = sound == BugSack.db.soundMedia
+				info.checked = sound == addon.db.soundMedia
 				UIDropDownMenu_AddButton(info)
 			end
 		end)
-		UIDropDownMenu_SetSelectedValue(dropdown, BugSack.db.soundMedia)
+		UIDropDownMenu_SetSelectedValue(dropdown, addon.db.soundMedia)
 		UIDropDownMenu_SetWidth(dropdown, 160)
 		UIDropDownMenu_JustifyText(dropdown, "LEFT")
 	else
 		sound = newCheckbox(
 			L["Mute"],
 			L.muteDesc,
-			function(self, value) BugSack.db.mute = value end)
-		sound:SetChecked(BugSack.db.mute)
+			function(self, value) addon.db.mute = value end)
+		sound:SetChecked(addon.db.mute)
 		sound:SetPoint("TOPLEFT", minimap or chatFrame, "BOTTOMLEFT", 0, -8)
 	end
 
@@ -133,7 +137,7 @@ frame:SetScript("OnShow", function(frame)
 	dropdown:SetPoint("TOPLEFT", size, "TOPRIGHT", 16, 3)
 	local function itemOnClick(self)
 		local selected = self.value
-		BugSack.db.fontSize = selected
+		addon.db.fontSize = selected
 		if _G.BugSackFrameScrollText then
 			_G.BugSackFrameScrollText:SetFontObject(_G[selected])
 		end
@@ -147,11 +151,11 @@ frame:SetScript("OnShow", function(frame)
 			info.text = names[i]
 			info.value = font
 			info.func = itemOnClick
-			info.checked = font == BugSack.db.fontSize
+			info.checked = font == addon.db.fontSize
 			UIDropDownMenu_AddButton(info)
 		end
 	end)
-	UIDropDownMenu_SetSelectedValue(dropdown, BugSack.db.fontSize)
+	UIDropDownMenu_SetSelectedValue(dropdown, addon.db.fontSize)
 	UIDropDownMenu_SetWidth(dropdown, 160)
 	UIDropDownMenu_JustifyText(dropdown, "LEFT")
 
@@ -167,11 +171,11 @@ frame:SetScript("OnShow", function(frame)
 
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate2")
 	clear:SetText(L["Wipe saved bugs"])
-	clear:SetWidth(160)
+	clear:SetWidth(177)
 	clear:SetPoint("TOP", save, "TOP")
-	clear:SetPoint("LEFT", save.label, "RIGHT", 20, 0)
+	clear:SetPoint("LEFT", save.label, "RIGHT", 24, 0)
 	clear:SetScript("OnClick", function()
-		BugSack:Reset()
+		addon:Reset()
 	end)
 	clear.tooltipText = L["Wipe saved bugs"]
 	clear.newbieText = L.wipeDesc
@@ -180,23 +184,13 @@ frame:SetScript("OnShow", function(frame)
 	sliderLabel:SetJustifyH("LEFT")
 	sliderLabel:SetText(L["Limit"])
 	sliderLabel:SetWidth(70)
-	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -16)
+	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -20)
 
-	local sliderValue = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-	sliderValue:SetJustifyH("LEFT")
+	local slider = CreateFrame("Slider", "BugSackLimitSlider", frame, "OptionsSliderTemplate")
+	local sliderValue = _G.BugSackLimitSliderText
 	sliderValue:SetText(BugGrabber:GetLimit())
-
-	local slider = CreateFrame("Slider", nil, frame)
 	slider:SetHeight(17)
-	slider:SetWidth(100)
-	slider:SetOrientation("HORIZONTAL")
-	slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
-	slider:SetBackdrop({
-		bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
-		edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
-		edgeSize = 8, tile = true, tileSize = 8,
-		insets = {left = 3, right = 3, top = 6, bottom = 6}
-	})
+	slider:SetWidth(175)
 	slider:SetMinMaxValues(10, MAX_BUGGRABBER_ERRORS or 1000)
 	slider:SetValue(BugGrabber:GetLimit())
 	slider:SetValueStep(20)
@@ -206,8 +200,7 @@ frame:SetScript("OnShow", function(frame)
 		sliderValue:SetText(v)
 	end)
 	slider:SetPoint("LEFT", sliderLabel, "RIGHT", 32, 0)
-	sliderValue:SetPoint("LEFT", slider, "RIGHT", 8, 0)
-	
+
 	frame:SetScript("OnShow", nil)
 end)
 InterfaceOptions_AddCategory(frame)

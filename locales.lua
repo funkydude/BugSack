@@ -1,43 +1,28 @@
-local AL = LibStub("AceLocale-3.0", true)
-if not AL then return end
-local debug = false
+local addonName, addon = ...
+function addon:LoadTranslations(AL)
+	local debug = nil
 --@debug@
-debug = true
+	debug = true
 --@end-debug@
-local L = AL:NewLocale("BugSack", "enUS", true, debug)
-if L then
+	local L = AL:NewLocale(addonName, "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "deDE")
-if L then
+	local locale = GetLocale()
+	L = AL:NewLocale(addonName, locale)
+	if locale == "deDE" then
 --@localization(locale="deDE", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "esES")
-if L then
+	elseif locale == "esES" then
 --@localization(locale="esES", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "esMX")
-if L then
+	elseif locale == "esMX" then
 --@localization(locale="esMX", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "frFR")
-if L then
+	elseif locale == "frFR" then
 --@localization(locale="frFR", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "koKR")
-if L then
+	elseif locale == "koKR" then
 --@localization(locale="koKR", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "ruRU")
-if L then
+	elseif locale == "ruRU" then
 --@localization(locale="ruRU", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "zhCN")
-if L then
+	elseif locale == "zhCN" then
 --@localization(locale="zhCN", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
-end
-L = AL:NewLocale("BugSack", "zhTW")
-if L then
+	elseif locale == "zhTW" then
 --@localization(locale="zhTW", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
+	end
 end
-

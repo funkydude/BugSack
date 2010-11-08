@@ -1,6 +1,6 @@
 ﻿## Interface: 40000
 ## Title: BugSack
-## Version: 3.3
+## Version: 4.0
 ## Notes: Toss those bugs inna sack.
 ## Notes-zhCN: 错误信息收集器。
 ## Notes-esES: Mete esos errores en un saco.
@@ -31,7 +31,8 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 #@end-no-lib-strip@
 
 locales.lua
+core.lua
+sack.lua
 config.lua
-BugSack.lua
-BugSackLDB.lua
+ldb.lua
 
