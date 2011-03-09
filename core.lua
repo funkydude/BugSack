@@ -224,9 +224,10 @@ do
 	local errorFormat = [[|cff999999%dx|r %s]]
 	function addon:FormatError(err)
 		local m = err.message
-		if type(m) == "table" then
-			m = table.concat(m, "")
-		end
+		if type(m) == "table" then m = table.concat(m, "") end
+		local l = err.locals
+		if type(l) == "table" then l = table.concat(l, "") end
+		if type(l) == "string" then m = m .. "\nLocals:|r\n" .. l end
 		return errorFormat:format(err.counter or -1, self:ColorError(m))
 	end
 end
@@ -235,22 +236,22 @@ function addon:ColorError(err)
 	local ret = err
 	ret = ret:gsub("|([^chHr])", "||%1") -- pipe char
 	ret = ret:gsub("|$", "||") -- pipe char
-	ret = ret:gsub("\nLocals:\n", "\n|cFFFFFFFFLocals:|r\n")
 	ret = ret:gsub("[Ii][Nn][Tt][Ee][Rr][Ff][Aa][Cc][Ee]\\[Aa][Dd][Dd][Oo][Nn][Ss]\\", "")
+	ret = ret:gsub("Interface\\FrameXML", "FrameXML")
 	ret = ret:gsub("%{\n +%}", "{}") -- locals: empty table spanning lines
 	ret = ret:gsub("([ ]-)([%a_][%a_%d]+) = ", "%1|cffffff80%2|r = ") -- local
-	ret = ret:gsub("= (%d+)\n", "= |cffff7fff%1|r\n") -- locals: number
-	ret = ret:gsub("<function>", "|cffffea00<function>|r") -- locals: function
-	ret = ret:gsub("<table>", "|cffffea00<table>|r") -- locals: table
+	ret = ret:gsub("= (%d+)\n", "= |cffff7fff%1|r\n") -- locals: number XXX doesn't catch decimals or negatives
 	ret = ret:gsub("= nil\n", "= |cffff7f7fnil|r\n") -- locals: nil
 	ret = ret:gsub("= true\n", "= |cffff9100true|r\n") -- locals: true
 	ret = ret:gsub("= false\n", "= |cffff9100false|r\n") -- locals: false
-	ret = ret:gsub("= \"([^\n]+)\"\n", "= |cff8888ff\"%1\"|r\n") -- locals: string
 	ret = ret:gsub("defined %@(.-):(%d+)", "@ |cffeda55f%1|r:|cff00ff00%2|r:") -- Files/Line Numbers of locals
-	ret = ret:gsub("\n(.-):(%d+):", "\n|cffeda55f%1|r:|cff00ff00%2|r:") -- Files/Line Numbers
+	ret = ret:gsub("\n(.-):", "\n|cffeda55f%1|r:") -- Files
 	ret = ret:gsub("%-%d+%p+.-%\\", "|cffffff00%1|cffeda55f") -- Version numbers
-	ret = ret:gsub("%(.-%)", "|cff999999%1|r") -- Parantheses
-	ret = ret:gsub("([`'])(.-)([`'])", "|cff8888ff%1%2%3|r") -- Other quotes
+	ret = ret:gsub("<(.-)>", "|cffffea00<%1>|r") -- Things wrapped in <>
+	ret = ret:gsub(":(%d+)[:%s]", ":|cff00ff00%1|r:") -- Line numbers
+	ret = ret:gsub("%(.-%)", "|cff999999%1|r") -- Paranthesis
+	ret = ret:gsub(": in function ", ": |cff999999in function|r ")
+	ret = ret:gsub("([\"`'])(.-)([\"`'])", "|cff8888ff%1%2%3|r") -- Quotes
 	return ret
 end
 
