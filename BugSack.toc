@@ -1,6 +1,6 @@
 ﻿## Interface: 40000
 ## Title: BugSack
-## Version: 4.0
+## Version: 5.0-alpha
 ## Notes: Toss those bugs inna sack.
 ## Notes-zhCN: 错误信息收集器。
 ## Notes-esES: Mete esos errores en un saco.

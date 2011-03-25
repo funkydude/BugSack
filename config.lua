@@ -20,7 +20,81 @@ local function newCheckbox(label, description, onClick)
 	check.tooltipRequirement = description
 	return check
 end
+--[[
+local function colorCallback(self, r, g, b, a, isAlpha)
+	if not ColorPickerFrame:IsVisible() and isAlpha then
+		print(tostringall(r, g, b, a, isAlpha))
+	end
+end
 
+local function ColorSwatch_OnClick(frame)
+	HideUIPanel(ColorPickerFrame)
+	ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+
+	ColorPickerFrame.func = function()
+		local r, g, b = ColorPickerFrame:GetColorRGB()
+		colorCallback(self, r, g, b)
+	end
+
+	ColorPickerFrame.hasOpacity = false
+
+	local r, g, b, a = self.r, self.g, self.b, self.a
+	ColorPickerFrame:SetColorRGB(r, g, b)
+
+	ColorPickerFrame.cancelFunc = function()
+		colorCallback(self, r, g, b)
+	end
+
+	ShowUIPanel(ColorPickerFrame)
+end]]
+
+--[[
+local function newColorbox(label, onColorChanged)
+	local color = CreateFrame("Button", nil, frame)
+
+	color:EnableMouse(true)
+	color:SetScript("OnClick", ColorSwatch_OnClick)
+
+	local colorSwatch = color:CreateTexture(nil, "OVERLAY")
+	colorSwatch:SetWidth(19)
+	colorSwatch:SetHeight(19)
+	colorSwatch:SetTexture("Interface\\ChatFrame\\ChatFrameColorSwatch")
+	colorSwatch:SetPoint("LEFT")
+
+	local texture = color:CreateTexture(nil, "BACKGROUND")
+	texture:SetWidth(16)
+	texture:SetHeight(16)
+	texture:SetTexture(1, 1, 1)
+	texture:SetPoint("CENTER", colorSwatch)
+
+	local checkers = color:CreateTexture(nil, "BACKGROUND")
+	checkers:SetWidth(14)
+	checkers:SetHeight(14)
+	checkers:SetTexture("Tileset\\Generic\\Checkers")
+	checkers:SetTexCoord(.25, 0, 0.5, .25)
+	checkers:SetDesaturated(true)
+	checkers:SetVertexColor(1, 1, 1, 0.75)
+	checkers:SetPoint("CENTER", colorSwatch)
+
+	local text = color:CreateFontString(nil,"OVERLAY","GameFontHighlight")
+	text:SetHeight(24)
+	text:SetJustifyH("LEFT")
+	text:SetTextColor(1, 1, 1)
+	text:SetPoint("LEFT", colorSwatch, "RIGHT", 2, 0)
+	text:SetPoint("RIGHT")
+	text:SetText(label)
+
+	local highlight = color:CreateTexture(nil, "HIGHLIGHT")
+	highlight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+	highlight:SetBlendMode("ADD")
+	highlight:SetAllPoints(color)
+
+	color:SetWidth(200)
+	color:SetHeight(24)
+	color:Show()
+	return color
+end
+]]
 frame:SetScript("OnShow", function(frame)
 	local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	title:SetPoint("TOPLEFT", 16, -16)
@@ -69,24 +143,6 @@ frame:SetScript("OnShow", function(frame)
 		minimap:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 0, -8)
 		minimap:SetChecked(not BugSackLDBIconDB.hide)
 	end
-
-	local filter = newCheckbox(
-		L["Filter addon mistakes"],
-		L.filterDesc,
-		function(self, value)
-			addon:ToggleFilter()
-		end)
-	filter:SetChecked(addon:GetFilter())
-	filter:SetPoint("TOPLEFT", subTitleWrapper, "BOTTOMRIGHT", -176, -16)
-	
-	local throttle = newCheckbox(
-		L["Throttle at excessive amount"],
-		L.throttleDesc,
-		function(self, value)
-			BugGrabber:UseThrottling(value)
-		end)
-	throttle:SetPoint("TOPLEFT", filter, "BOTTOMLEFT", 0, -8)
-	throttle:SetChecked(BugGrabber:IsThrottling())
 
 	local media = addon:EnsureLSM3()
 	-- Jeeeeesus christ dropdowns are funky!
@@ -159,48 +215,20 @@ frame:SetScript("OnShow", function(frame)
 	UIDropDownMenu_SetWidth(dropdown, 160)
 	UIDropDownMenu_JustifyText(dropdown, "LEFT")
 
-	local save = newCheckbox(
-		L["Save errors"],
-		L.saveDesc,
-		function(self, value)
-			BugGrabber:ToggleSave()
-			self:SetChecked(BugGrabber:GetSave())
-		end)
-	save:SetPoint("TOPLEFT", size, "BOTTOMLEFT", -6, -24)
-	save:SetChecked(BugGrabber:GetSave())
-
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate2")
 	clear:SetText(L["Wipe saved bugs"])
 	clear:SetWidth(177)
-	clear:SetPoint("TOP", save, "TOP")
-	clear:SetPoint("LEFT", save.label, "RIGHT", 24, 0)
+	clear:SetHeight(24)
+	clear:SetPoint("TOPLEFT", size, "BOTTOMLEFT", -6, -24)
 	clear:SetScript("OnClick", function()
 		addon:Reset()
 	end)
 	clear.tooltipText = L["Wipe saved bugs"]
 	clear.newbieText = L.wipeDesc
-
-	local sliderLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	sliderLabel:SetJustifyH("LEFT")
-	sliderLabel:SetText(L["Limit"])
-	sliderLabel:SetWidth(70)
-	sliderLabel:SetPoint("TOPLEFT", save, "BOTTOMLEFT", 8, -20)
-
-	local slider = CreateFrame("Slider", "BugSackLimitSlider", frame, "OptionsSliderTemplate")
-	local sliderValue = _G.BugSackLimitSliderText
-	sliderValue:SetText(BugGrabber:GetLimit())
-	slider:SetHeight(17)
-	slider:SetWidth(175)
-	slider:SetMinMaxValues(10, MAX_BUGGRABBER_ERRORS or 1000)
-	slider:SetValue(BugGrabber:GetLimit())
-	slider:SetValueStep(20)
-	slider:SetScript("OnValueChanged", function(self, value)
-		local v = math.abs(value)
-		BugGrabber:SetLimit(v)
-		sliderValue:SetText(v)
-	end)
-	slider:SetPoint("LEFT", sliderLabel, "RIGHT", 32, 0)
-
+--[[
+	local f = newColorbox("Test 1!", function() end)
+	f:SetPoint("TOPLEFT", clear, "BOTTOMLEFT", 8, -20)
+]]
 	frame:SetScript("OnShow", nil)
 end)
 InterfaceOptions_AddCategory(frame)

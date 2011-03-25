@@ -72,8 +72,8 @@ local function updateSackDisplay(forceRefresh)
 
 	if size > 0 then
 		local source = nil
-		if eo.source then source = sourceFormat:format(eo.source, eo.type)
-		else source = localFormat:format(eo.type) end
+		if eo.source then source = sourceFormat:format(eo.source, "error")
+		else source = localFormat:format("error") end
 		if eo.session == BugGrabber:GetSessionId() then
 			sessionLabel:SetText(sessionFormat:format(L["Today"], source, eo.session))
 		else
@@ -275,6 +275,7 @@ local function createBugSack()
 	scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
 	textArea = CreateFrame("EditBox", "BugSackScrollText", scroll)
+	textArea:SetTextColor(.5, .5, .5, 1)
 	textArea:SetAutoFocus(false)
 	textArea:SetMultiLine(true)
 	textArea:SetFontObject(_G[addon.db.fontSize] or GameFontHighlightSmall)
