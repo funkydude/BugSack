@@ -208,6 +208,7 @@ do
 		ret = ret:gsub("([^\\]+%.lua)", "|cffffffff%1|r") -- Lua files
 		return ret
 	end
+	addon.ColorStack = colorStack
 
 	local function colorLocals(ret)
 		ret = ret:gsub("|(%a)", "||%1"):gsub("|$", "||") -- Pipes
@@ -220,6 +221,7 @@ do
 		ret = ret:gsub("= <(.-)>", "= |cffffea00<%1>|r") -- Things wrapped in <>
 		return ret
 	end
+	addon.ColorLocals = colorLocals
 
 	local errorFormat = "%dx %s\n\nLocals:\n%s"
 	function addon:FormatError(err)

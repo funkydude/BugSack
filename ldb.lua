@@ -44,17 +44,9 @@ do
 			tt:AddLine(L["You have no bugs, yay!"])
 		else
 			tt:AddLine(addonName)
-			local pattern = "^(.-)\n"
-			local counter = 1
 			for i, err in next, errs do
-				if not addon.db.filterAddonMistakes or (addon.db.filterAddonMistakes and err.type == "error") then
-					local m = err.message
-					if type(m) == "table" then m = table.concat(m, "") end
-					m = select(3, m:find(pattern))
-					tt:AddLine(line:format(counter, addon:ColorError(m), err.counter))
-					counter = counter + 1
-					if counter > 10 then break end
-				end
+				tt:AddLine(line:format(i, addon.ColorStack(err.message), err.counter), .5, .5, .5)
+				if i > 8 then break end
 			end
 		end
 		tt:AddLine(" ")
