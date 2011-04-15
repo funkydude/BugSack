@@ -7,6 +7,8 @@ local window = nil
 
 -- What state is the sack in?
 local state = "BugSackTabAll"
+local searchResults = {}
+local searchThrough = nil
 
 -- Frame state variables
 local currentErrorIndex = nil -- Index of the error in the currentSackContents currently shown
@@ -18,6 +20,7 @@ local tabs = nil
 
 local countLabel, sessionLabel, textArea = nil, nil, nil
 local nextButton, prevButton, sendButton = nil, nil, nil
+local searchLabel, searchBox = nil, nil
 
 local sessionFormat = "%s - |cffff4411%s|r - |cff44ff44%d|r" -- <date> - <sent by> - <session id>
 local countFormat = "%d/%d" -- 1/10
@@ -48,6 +51,9 @@ local function updateSackDisplay(forceRefresh)
 		local s = BugGrabber:GetSessionId() - 1
 		currentSackContents = addon:GetErrors(s)
 		currentSackSession = s
+	elseif state == "BugSackSearch" then
+		currentSackSession = -1
+		currentSackContents = searchResults
 	end
 
 	local size = #currentSackContents
@@ -69,6 +75,7 @@ local function updateSackDisplay(forceRefresh)
 	end
 	if not eo then eo = currentSackContents[currentErrorIndex] end
 	if not eo then eo = currentSackContents[size] end
+	if currentSackSession == -1 then currentSackSession = eo.session end
 
 	if size > 0 then
 		local source = nil
@@ -122,7 +129,42 @@ end)
 
 -- Only invoked when actually clicking a tab
 local function setActiveMethod(tab)
+	searchLabel:Hide()
+	searchBox:Hide()
+	sessionLabel:Show()
+	wipe(searchResults)
+	wipe(searchThrough)
+
 	state = tab:GetName()
+	updateSackDisplay(true)
+end
+
+local function clearSearch()
+	setActiveMethod("BugSackTabAll")
+end
+
+local function filterSack(editbox)
+	for i, t in next, tabs do
+		PanelTemplates_DeselectTab(t)
+	end
+	wipe(searchResults)
+
+	local text = editbox:GetText()
+	-- If there's no text in the box, we reset to all bugs so the search can start over
+	if not searchThrough or not text or text:trim():len() == 0 then
+		state = "BugSackTabAll"
+	else
+		for i, err in next, searchThrough do
+			if err.message and err.message:find(text) then
+				searchResults[#searchResults + 1] = err
+			elseif err.stack and err.stack:find(text) then
+				searchResults[#searchResults + 1] = err
+			elseif err.locals and err.locals:find(text) then
+				searchResults[#searchResults + 1] = err
+			end
+		end
+		state = "BugSackSearch"
+	end
 	updateSackDisplay(true)
 end
 
@@ -221,15 +263,77 @@ local function createBugSack()
 	close:SetPoint("TOPRIGHT", 2, 1)
 	close:SetScript("OnClick", addon.CloseSack)
 
-	sessionLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	sessionLabel:SetJustifyH("LEFT")
-	sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -3)
-	sessionLabel:SetTextColor(1, 1, 1, 1)
-
 	countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	countLabel:SetPoint("TOPRIGHT", titlebg, -6, -3)
 	countLabel:SetJustifyH("RIGHT")
 	countLabel:SetTextColor(1, 1, 1, 1)
+
+	sessionLabel = CreateFrame("Button", nil, window)
+	sessionLabel:SetNormalFontObject("GameFontNormalLeft")
+	sessionLabel:SetHighlightFontObject("GameFontHighlightLeft")
+	sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -4)
+	sessionLabel:SetPoint("BOTTOMRIGHT", countLabel, "BOTTOMLEFT", -4, 1)
+	sessionLabel:SetScript("OnHide", function()
+		window:StopMovingOrSizing()
+	end)
+	sessionLabel:SetScript("OnMouseUp", function()
+		window:StopMovingOrSizing()
+	end)
+	sessionLabel:SetScript("OnMouseDown", function()
+		window:StartMoving()
+	end)
+	sessionLabel:SetScript("OnDoubleClick", function()
+		sessionLabel:Hide()
+		searchLabel:Show()
+		searchBox:Show()
+		searchThrough = currentSackContents
+	end)
+	local quickTips = "|cff44ff44Double-click|r to filter bug reports. After you are done with the search results, return to the full sack by selecting a tab at the bottom. |cff44ff44Left-click|r and drag to move the window. |cff44ff44Right-click|r to close the sack and open the interface options for BugSack."
+	sessionLabel:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", -8, 8)
+		GameTooltip:AddLine("Quick tips")
+		GameTooltip:AddLine(quickTips, 1, 1, 1, 1)
+		GameTooltip:Show()
+	end)
+	sessionLabel:SetScript("OnLeave", function(self)
+		if GameTooltip:IsOwned(self) then
+			GameTooltip:Hide()
+		end
+	end)
+
+	searchLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	searchLabel:SetText("Filter:")
+	searchLabel:SetJustifyH("LEFT")
+	searchLabel:SetPoint("TOPLEFT", titlebg, 6, -3)
+	searchLabel:SetTextColor(1, 1, 1, 1)
+	searchLabel:Hide()
+
+	searchBox = CreateFrame("EditBox", nil, window)
+	searchBox:SetTextInsets(4, 4, 0, 0)
+	searchBox:SetMaxLetters(50)
+	searchBox:SetFontObject("ChatFontNormal")
+	searchBox:SetBackdrop({
+		edgeFile = nil,
+		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+		insets = { left = 0, right = 0, top = 0, bottom = 0 },
+		tile = true,
+		tileSize = 16,
+		edgeSize = 0,
+	})
+	searchBox:SetBackdropColor(0, 0, 0, 0.5)
+	searchBox:SetScript("OnShow", function(self)
+		self:SetFocus()
+	end)
+	searchBox:SetScript("OnHide", function(self)
+		self:ClearFocus()
+		self:SetText("")
+	end)
+	searchBox:SetScript("OnEscapePressed", clearSearch)
+	searchBox:SetScript("OnTextChanged", filterSack)
+	searchBox:SetAutoFocus(false)
+	searchBox:SetPoint("TOPLEFT", searchLabel, "TOPRIGHT", 6, 1)
+	searchBox:SetPoint("BOTTOMRIGHT", countLabel, "BOTTOMLEFT", -3, -1)
+	searchBox:Hide()
 
 	nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate2")
 	nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
