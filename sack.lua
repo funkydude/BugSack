@@ -133,7 +133,10 @@ local function setActiveMethod(tab)
 	searchBox:Hide()
 	sessionLabel:Show()
 	wipe(searchResults)
-	wipe(searchThrough)
+	if searchThrough then
+		wipe(searchThrough)
+		searchThrough = nil
+	end
 
 	state = tab:GetName()
 	updateSackDisplay(true)
