@@ -65,12 +65,14 @@ do
 	local lastError = nil
 	function onError(event, errorObject)
 		if not lastError or GetTime() > (lastError + 2) then
-			local media = addon:EnsureLSM3()
-			if media then
-				local sound = media:Fetch("sound", addon.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.ogg"
-				PlaySoundFile(sound)
-			elseif not addon.db.mute then
-				PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.ogg")
+			if not addon.db.mute then
+				local media = addon:EnsureLSM3()
+				if media then
+					local sound = media:Fetch("sound", addon.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.ogg"
+					PlaySoundFile(sound)
+				else
+					PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.ogg")
+				end
 			end
 			if addon.db.chatframe then
 				print(L["There's a bug in your soup!"])

@@ -144,12 +144,19 @@ frame:SetScript("OnShow", function(frame)
 		minimap:SetChecked(not BugSackLDBIconDB.hide)
 	end
 
+	local mute = newCheckbox(
+		L["Mute"],
+		L.muteDesc,
+		function(self, value) addon.db.mute = value end)
+	mute:SetChecked(addon.db.mute)
+	mute:SetPoint("TOPLEFT", minimap or chatFrame, "BOTTOMLEFT", 0, -8)
+
 	local media = addon:EnsureLSM3()
 	-- Jeeeeesus christ dropdowns are funky!
 	local sound = nil
 	if media then
 		sound = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		sound:SetPoint("TOPLEFT", minimap or chatFrame, "BOTTOMLEFT", 8, -24)
+		sound:SetPoint("TOPLEFT", mute, "BOTTOMLEFT", 8, -24)
 		sound:SetJustifyH("LEFT")
 		sound:SetHeight(18)
 		sound:SetWidth(70)
@@ -174,13 +181,6 @@ frame:SetScript("OnShow", function(frame)
 		UIDropDownMenu_SetSelectedValue(dropdown, addon.db.soundMedia)
 		UIDropDownMenu_SetWidth(dropdown, 160)
 		UIDropDownMenu_JustifyText(dropdown, "LEFT")
-	else
-		sound = newCheckbox(
-			L["Mute"],
-			L.muteDesc,
-			function(self, value) addon.db.mute = value end)
-		sound:SetChecked(addon.db.mute)
-		sound:SetPoint("TOPLEFT", minimap or chatFrame, "BOTTOMLEFT", 0, -8)
 	end
 
 	local size = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
