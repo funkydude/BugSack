@@ -24,5 +24,7 @@ function addon:LoadTranslations(AL)
 --@localization(locale="zhCN", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
 	elseif locale == "zhTW" then
 --@localization(locale="zhTW", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
+	elseif locale == "ptBR" then
+--@localization(locale="ptBR", format="lua_additive_table", escape-non-ascii=true, same-key-is-true=true)@
 	end
 end
