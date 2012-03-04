@@ -1,13 +1,13 @@
 ﻿## Interface: 40300
 ## Title: BugSack
-## Version: 5.0-alpha
+## Version: 5.0
 ## Notes: Toss those bugs inna sack.
 ## Notes-zhCN: 错误信息收集器。
 ## Notes-esES: Mete esos errores en un saco.
 ## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
 ## Notes-ruRU: Аддон ловит текущие ошибки в мешок.
 ## Author: Rabbit
-## X-Credits: Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
+## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
 ## X-Category: Development Tools
