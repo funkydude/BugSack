@@ -1,4 +1,4 @@
-﻿## Interface: 40300
+﻿## Interface: 50001
 ## Title: BugSack
 ## Version: 5.0
 ## Notes: Toss those bugs inna sack.
