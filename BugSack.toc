@@ -1,6 +1,5 @@
-## Interface: 50300
+## Interface: 50400
 ## Title: BugSack
-## Version: 5.0
 ## Notes: Toss those bugs inna sack.
 ## Notes-zhCN: 错误信息收集器。
 ## Notes-esES: Mete esos errores en un saco.
@@ -11,9 +10,7 @@
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
 ## X-Category: Development Tools
-## X-RelSite-WoWI: 5995
 ## X-License: GPL v2 or later.
-## X-Email: rabbit.magtheridon@gmail.com
 ## X-BugGrabber-Display: BugSack
 
 #@no-lib-strip@
