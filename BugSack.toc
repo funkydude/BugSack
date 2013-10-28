@@ -5,7 +5,7 @@
 ## Notes-esES: Mete esos errores en un saco.
 ## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
 ## Notes-ruRU: Аддон ловит текущие ошибки в мешок.
-## Author: Rabbit
+## Author: Funkydude, Rabbit
 ## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
