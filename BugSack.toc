@@ -10,7 +10,7 @@
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
 ## X-Category: Development Tools
-## X-License: GPL v2 or later.
+## X-License: All Rights Reserved
 ## X-BugGrabber-Display: BugSack
 
 #@no-lib-strip@
@@ -21,7 +21,6 @@ Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 
 #@no-lib-strip@
-Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\AceComm-3.0\AceComm-3.0.xml
 Libs\AceSerializer-3.0\AceSerializer-3.0.xml
 Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua

@@ -1,3 +1,4 @@
+
 local addonName, addon = ...
 if not addon.healthCheck then return end
 local L = addon.L
