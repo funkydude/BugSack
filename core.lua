@@ -155,7 +155,10 @@ function eventFrame:PLAYER_LOGIN()
 	-- Set up our error event handler
 	BugGrabber.RegisterCallback(addon, "BugGrabber_BugGrabbed", onError)
 
-	SlashCmdList.BugSack = function() InterfaceOptionsFrame_OpenToCategory(addonName) end
+	SlashCmdList.BugSack = function()
+		InterfaceOptionsFrame_OpenToCategory(addonName)
+		InterfaceOptionsFrame_OpenToCategory(addonName)
+	end
 	SLASH_BugSack1 = "/bugsack"
 
 	self.PLAYER_LOGIN = nil
