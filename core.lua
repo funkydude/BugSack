@@ -207,7 +207,8 @@ do
 	addon.ColorStack = colorStack
 
 	local function colorLocals(ret)
-		ret = tostring(ret) or ""   -- yes, it gets called with nonstring from somewhere /mikk
+		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
+		ret = ret:gsub("Interface\\AddOns\\", "")
 		ret = ret:gsub("|(%a)", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("> %@(.-):(%d+)", "> @|cffeda55f%1|r:|cff00ff00%2|r") -- Files/Line Numbers of locals
 		ret = ret:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1|cffffff80%2|r = ") -- Table keys
