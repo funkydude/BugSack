@@ -194,9 +194,11 @@ end
 
 do
 	local function colorStack(ret)
-		ret = tostring(ret) or ""	-- yes, it gets called with nonstring from somewhere /mikk
+		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
+		ret = ret:gsub("Interface\\", "")
 		ret = ret:gsub("|([^chHr])", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("<(.-)>", "|cffffea00<%1>|r") -- Things wrapped in <>
+		ret = ret:gsub("%[(.-)%]", "|cffffea00[%1]|r") -- Things wrapped in []
 		ret = ret:gsub("([\"`'])(.-)([\"`'])", "|cff8888ff%1%2%3|r") -- Quotes
 		ret = ret:gsub(":(%d+)([%S\n])", ":|cff00ff00%1|r%2") -- Line numbers
 		ret = ret:gsub("([^\\]+%.lua)", "|cffffffff%1|r") -- Lua files
