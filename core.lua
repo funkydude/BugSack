@@ -195,7 +195,8 @@ end
 do
 	local function colorStack(ret)
 		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
-		ret = ret:gsub("Interface\\", "")
+		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face\\", "")
+		ret = ret:gsub("%.?%.?%.?\\?AddOns\\", "")
 		ret = ret:gsub("|([^chHr])", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("<(.-)>", "|cffffea00<%1>|r") -- Things wrapped in <>
 		ret = ret:gsub("%[(.-)%]", "|cffffea00[%1]|r") -- Things wrapped in []
@@ -208,7 +209,8 @@ do
 
 	local function colorLocals(ret)
 		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
-		ret = ret:gsub("Interface\\AddOns\\", "")
+		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face\\", "")
+		ret = ret:gsub("%.?%.?%.?\\?AddOns\\", "")
 		ret = ret:gsub("|(%a)", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("> %@(.-):(%d+)", "> @|cffeda55f%1|r:|cff00ff00%2|r") -- Files/Line Numbers of locals
 		ret = ret:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1|cffffff80%2|r = ") -- Table keys
