@@ -6,14 +6,13 @@
 ## Notes-ruRU: Аддон ловит текущие ошибки в мешок.
 ## Notes-zhCN: 错误信息收集器。
 ## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
-## Author: Funkydude, Rabbit
-## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
+## Author: Funkydude
+## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti, Rabbit
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
 ## X-Category: Development Tools
 ## X-License: All Rights Reserved
 ## X-BugGrabber-Display: BugSack
-## X-Curse-Project-ID: bugsack
 ## X-WoWI-ID: 5995
 
 #@no-lib-strip@
