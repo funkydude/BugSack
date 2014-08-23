@@ -1,10 +1,11 @@
 ## Interface: 50400
 ## Title: BugSack
 ## Notes: Toss those bugs inna sack.
-## Notes-zhCN: 错误信息收集器。
+## Notes-deDE: Werft den Fehler in einen Sack.
 ## Notes-esES: Mete esos errores en un saco.
-## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
 ## Notes-ruRU: Аддон ловит текущие ошибки в мешок.
+## Notes-zhCN: 错误信息收集器。
+## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
 ## Author: Funkydude, Rabbit
 ## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
@@ -12,6 +13,8 @@
 ## X-Category: Development Tools
 ## X-License: All Rights Reserved
 ## X-BugGrabber-Display: BugSack
+## X-Curse-Project-ID: bugsack
+## X-WoWI-ID: 5995
 
 #@no-lib-strip@
 Libs\LibStub\Libstub.lua
@@ -31,4 +34,3 @@ core.lua
 sack.lua
 config.lua
 ldb.lua
-
