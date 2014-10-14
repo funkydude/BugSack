@@ -1,4 +1,4 @@
-## Interface: 50400
+## Interface: 60000
 ## Title: BugSack
 ## Notes: Toss those bugs inna sack.
 ## Notes-deDE: Werft den Fehler in einen Sack.
