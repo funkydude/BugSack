@@ -79,52 +79,15 @@ end
 -- Event handling
 --
 
-local eventFrame = CreateFrame("Frame")
+local eventFrame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
 eventFrame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("PLAYER_LOGIN")
+addon.frame = eventFrame
 
 function eventFrame:ADDON_LOADED(loadedAddon)
 	if loadedAddon ~= addonName then return end
 	self:UnregisterEvent("ADDON_LOADED")
-
-	local ac = LibStub("AceComm-3.0", true)
-	if ac then ac:Embed(addon) end
-	local as = LibStub("AceSerializer-3.0", true)
-	if as then as:Embed(addon) end
-
-	local popup = _G.StaticPopupDialogs
-	if type(popup) ~= "table" then popup = {} end
-	if type(popup.BugSackSendBugs) ~= "table" then
-		popup.BugSackSendBugs = {
-			text = L["Send all bugs from the currently viewed session (%d) in the sack to the player specified below."],
-			button1 = L["Send"],
-			button2 = CLOSE,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			hasEditBox = true,
-			OnAccept = function(self, data)
-				local recipient = self.editBox:GetText()
-				addon:SendBugsToUser(recipient, data)
-			end,
-			OnShow = function(self)
-				self.button1:Disable()
-			end,
-			EditBoxOnTextChanged = function(self, data)
-				local t = self:GetText()
-				if t:len() > 2 and not t:find("%s") then
-					self:GetParent().button1:Enable()
-				else
-					self:GetParent().button1:Disable()
-				end
-			end,
-			enterClicksFirstButton = true,
-			--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
-			preferredIndex = STATICPOPUP_NUMDIALOGS,
-		}
-	end
-
 	if type(BugSackDB) ~= "table" then BugSackDB = {} end
 	local sv = BugSackDB
 	sv.profileKeys = nil
@@ -147,10 +110,6 @@ function eventFrame:PLAYER_LOGIN()
 	-- Make sure we grab any errors fired before bugsack loaded.
 	local session = addon:GetErrors(BugGrabber:GetSessionId())
 	if #session > 0 then onError() end
-
-	if addon.RegisterComm then
-		addon:RegisterComm("BugSack", "OnBugComm")
-	end
 
 	-- Set up our error event handler
 	BugGrabber.RegisterCallback(addon, "BugGrabber_BugGrabbed", onError)
@@ -236,109 +195,4 @@ function addon:Reset()
 	self:UpdateDisplay()
 	print(L["All stored bugs have been exterminated painfully."])
 end
-
--- Sends the current session errors to another player using AceComm-3.0
-function addon:SendBugsToUser(player, session)
-	if type(player) ~= "string" or player:trim():len() < 2 then
-		error(L["Player needs to be a valid name."])
-	end
-	if not self.Serialize then return end
-
-	local errors = self:GetErrors(session)
-	if not errors or #errors == 0 then return end
-	local sz = self:Serialize(errors)
-	self:SendCommMessage("BugSack", sz, "WHISPER", player, "BULK")
-
-	print(L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."]:format(#errors, player))
-end
-
-function addon:OnBugComm(prefix, message, distribution, sender)
-	if prefix ~= "BugSack" or not self.Deserialize then return end
-
-	local good, deSz = self:Deserialize(message)
-	if not good then
-		print(L["Failure to deserialize incoming data from %s."]:format(sender))
-		return
-	end
-
-	-- Store recieved errors in the current session database with a source set to the sender
-	local s = BugGrabber:GetSessionId()
-	for i, err in next, deSz do
-		err.source = sender
-		err.session = s
-		BugGrabber:StoreError(err)
-	end
-
-	print(L["You've received %d bugs from %s."]:format(#deSz, sender))
-
-	wipe(deSz)
-	deSz = nil
-end
-
---[[
-
-do
-	local commFormat = "1#%s#%s"
-	local function transmit(command, target, argument)
-		SendAddonMessage("BugGrabber", commFormat:format(command, argument), "WHISPER", target)
-	end
-
-	local retrievedErrors = {}
-	function addon:GetErrorByPlayerAndID(player, id)
-		if player == playerName then return self:GetErrorByID(id) end
-		-- This error was linked by someone else, we need to retrieve it from them
-		-- using the addon communication channel.
-		if retrievedErrors[id] then return retrievedErrors[id] end
-		transmit("FETCH", player, id)
-		print(L.ERROR_INCOMING:format(id, player))
-	end
-
-	local fakeAddon, comm, serializer = nil, nil, nil
-	local function commBugCatcher(prefix, message, distribution, sender)
-		local good, deSz = fakeAddon:Deserialize(message)
-		if not good then
-			print("damnit")
-			return
-		end
-		retrievedErrors[deSz.originalId] = deSz
-		
-	end
-	local function hasTransmitFacilities()
-		if fakeAddon then return true end
-		if not serializer then serializer = LibStub("AceSerializer-3.0", true) end
-		if not comm then comm = LibStub("AceComm-3.0", true) end
-		if comm and serializer then
-			fakeAddon = {}
-			comm:Embed(fakeAddon)
-			serializer:Embed(fakeAddon)
-			fakeAddon:RegisterComm("BGBug", commBugCatcher)
-			return true
-		end
-	end
-
-	function frame:CHAT_MSG_ADDON(event, prefix, message, distribution, sender)
-		if prefix ~= "BugGrabber" then return end
-		local version, command, argument = strsplit("#", message)
-		if tonumber(version) ~= 1 or not command then return end
-		if command == "FETCH" then
-			local errorObject = addon:GetErrorByID(argument)
-			if errorObject then
-				if hasTransmitFacilities() then
-					errorObject.originalId = argument
-					local sz = fakeAddon:Serialize(errorObject)
-					fakeAddon:SendCommMessage("BGBug", sz, "WHISPER", sender, "BULK")
-				else
-					-- We can only transmit a gimped and sanitized message
-					transmit("BUG", sender, errorObject.message:sub(1, 240):gsub("#", ""))
-				end
-			else
-				transmit("FAIL", sender, argument)
-			end
-		elseif command == "FAIL" then
-			print(L.ERROR_FAILED_FETCH:format(argument, sender))
-		elseif command == "BUG" then
-			print(L.CRIPPLED_ERROR:format(sender, argument))
-		end
-	end
-end]]
 
