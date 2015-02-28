@@ -31,22 +31,14 @@ end
 _G[addonName] = addon
 addon.healthCheck = true
 
+
+-- Sound
+local media = LibStub("LibSharedMedia-3.0")
+media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.ogg")
+
 -----------------------------------------------------------------------
 -- Utility
 --
-
-do
-	-- bah this should be local but we need it in config.lua
-	local media = nil
-	function addon:EnsureLSM3()
-		if media then return media end
-		media = LibStub("LibSharedMedia-3.0", true)
-		if media then
-			media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.ogg")
-		end
-		return media
-	end
-end
 
 local onError
 do
@@ -54,13 +46,8 @@ do
 	function onError(event, errorObject)
 		if not lastError or GetTime() > (lastError + 2) then
 			if not addon.db.mute then
-				local media = addon:EnsureLSM3()
-				if media then
-					local sound = media:Fetch("sound", addon.db.soundMedia) or "Interface\\AddOns\\BugSack\\Media\\error.ogg"
-					PlaySoundFile(sound)
-				else
-					PlaySoundFile("Interface\\AddOns\\BugSack\\Media\\error.ogg")
-				end
+				local sound = media:Fetch("sound", addon.db.soundMedia)
+				PlaySoundFile(sound)
 			end
 			if addon.db.chatframe then
 				print(L["There's a bug in your soup!"])
@@ -136,8 +123,6 @@ function eventFrame:ADDON_LOADED(loadedAddon)
 	if type(sv.soundMedia) ~= "string" then sv.soundMedia = "BugSack: Fatality" end
 	if type(sv.fontSize) ~= "string" then sv.fontSize = "GameFontHighlight" end
 	addon.db = sv
-
-	addon:EnsureLSM3()
 
 	self.ADDON_LOADED = nil
 end

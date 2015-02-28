@@ -39,30 +39,26 @@ frame:SetScript("OnShow", function(frame)
 	chatFrame:SetChecked(addon.db.chatframe)
 	chatFrame:SetPoint("TOPLEFT", autoPopup, "BOTTOMLEFT", 0, -8)
 
-	local icon = LibStub("LibDBIcon-1.0", true)
-	local minimap
-	if icon then
-		minimap = newCheckbox(
-			L["Minimap icon"],
-			L.minimapDesc,
-			function(self, value)
-				BugSackLDBIconDB.hide = not value
-				if BugSackLDBIconDB.hide then
-					icon:Hide(addonName)
-				else
-					icon:Show(addonName)
-				end
-			end)
-		minimap:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 0, -8)
-		minimap:SetChecked(not BugSackLDBIconDB.hide)
-	end
+	local minimap = newCheckbox(
+		L["Minimap icon"],
+		L.minimapDesc,
+		function(self, value)
+			BugSackLDBIconDB.hide = not value
+			if BugSackLDBIconDB.hide then
+				LibStub("LibDBIcon-1.0"):Hide(addonName)
+			else
+				LibStub("LibDBIcon-1.0"):Show(addonName)
+			end
+		end)
+	minimap:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 0, -8)
+	minimap:SetChecked(not BugSackLDBIconDB.hide)
 
 	local mute = newCheckbox(
 		L["Mute"],
 		L.muteDesc,
 		function(self, value) addon.db.mute = value end)
 	mute:SetChecked(addon.db.mute)
-	mute:SetPoint("TOPLEFT", minimap or chatFrame, "BOTTOMLEFT", 0, -8)
+	mute:SetPoint("TOPLEFT", minimap, "BOTTOMLEFT", 0, -8)
 
 	local info = {}
 	local fontSizeDropdown = CreateFrame("Frame", "BugSackFontSize", frame, "UIDropDownMenuTemplate")
@@ -87,25 +83,22 @@ frame:SetScript("OnShow", function(frame)
 	end
 	BugSackFontSizeText:SetText(L["Font size"])
 
-	local media = addon:EnsureLSM3()
-	if media then
-		local dropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
-		dropdown:SetPoint("LEFT", fontSizeDropdown, "RIGHT", 150, 0)
-		dropdown.initialize = function()
-			wipe(info)
-			for idx, sound in next, media:List("sound") do
-				info.text = sound
-				info.value = sound
-				info.func = function(self)
-					addon.db.soundMedia = self.value
-					BugSackSoundDropdownText:SetText(self:GetText())
-				end
-				info.checked = sound == addon.db.soundMedia
-				UIDropDownMenu_AddButton(info)
+	local dropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
+	dropdown:SetPoint("LEFT", fontSizeDropdown, "RIGHT", 150, 0)
+	dropdown.initialize = function()
+		wipe(info)
+		for idx, sound in next, LibStub("LibSharedMedia-3.0"):List("sound") do
+			info.text = sound
+			info.value = sound
+			info.func = function(self)
+				addon.db.soundMedia = self.value
+				BugSackSoundDropdownText:SetText(self:GetText())
 			end
+			info.checked = sound == addon.db.soundMedia
+			UIDropDownMenu_AddButton(info)
 		end
-		BugSackSoundDropdownText:SetText(L["Sound"])
 	end
+	BugSackSoundDropdownText:SetText(L["Sound"])
 
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate")
 	clear:SetText(L["Wipe saved bugs"])
