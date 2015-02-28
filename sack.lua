@@ -363,18 +363,18 @@ local function createBugSack()
 		updateSackDisplay()
 	end)
 
-	--if addon.Serialize then
-	--	sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
-	--	sendButton:SetPoint("LEFT", prevButton, "RIGHT")
-	--	sendButton:SetPoint("RIGHT", nextButton, "LEFT")
-	--	sendButton:SetText(L["Send bugs"])
-	--	sendButton:SetScript("OnClick", function()
-	--		local eo = currentSackContents[currentErrorIndex]
-	--		local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
-	--		popup.data = eo.session
-	--		window:Hide()
-	--	end)
-	--end
+	if addon.Serialize then
+		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
+		sendButton:SetPoint("LEFT", prevButton, "RIGHT")
+		sendButton:SetPoint("RIGHT", nextButton, "LEFT")
+		sendButton:SetText(L["Send bugs"])
+		sendButton:SetScript("OnClick", function()
+			local eo = currentSackContents[currentErrorIndex]
+			local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
+			popup.data = eo.session
+			window:Hide()
+		end)
+	end
 
 	local scroll = CreateFrame("ScrollFrame", "BugSackScroll", window, "UIPanelScrollFrameTemplate")
 	scroll:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
