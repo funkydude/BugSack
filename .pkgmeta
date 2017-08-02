@@ -1,5 +1,6 @@
 package-as: BugSack
 wowi-archive-previous: no
+enable-nolib-creation: no
 
 externals:
     Libs/AceComm-3.0: https://repos.wowace.com/wow/ace3/trunk/AceComm-3.0
