@@ -1,19 +1,27 @@
-## Interface: 70100
+## Interface: 70200
+## Version: @project-version@
 ## Title: BugSack
 ## Notes: Toss those bugs inna sack.
 ## Notes-deDE: Werft den Fehler in einen Sack.
-## Notes-esES: Mete esos errores en un saco.
 ## Notes-ruRU: Аддон ловит текущие ошибки в мешок.
 ## Notes-zhCN: 错误信息收集器。
 ## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
+## Notes-koKR: Toss those bugs inna sack.
+## Notes-frFR: Toss those bugs inna sack.
+## Notes-esES: Mete esos errores en un saco.
+## Notes-esMX: Mete esos errores en un saco.
+## Notes-ptBR: Toss those bugs inna sack.
+## Notes-itIT: Toss those bugs inna sack.
 ## Author: Funkydude
-## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti, Rabbit
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
+
 ## X-Category: Development Tools
-## X-License: All Rights Reserved
-## X-BugGrabber-Display: BugSack
+## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti, Rabbit
+## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
+## X-Curse-Project-ID: 6273
 ## X-WoWI-ID: 5995
+## X-BugGrabber-Display: BugSack
 
 embeds.xml
 
