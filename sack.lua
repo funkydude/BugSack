@@ -450,7 +450,7 @@ function addon:CloseSack()
 	window:Hide()
 end
 
-function addon:OpenSack(errorObject)
+function addon:OpenSack()
 	if window and window:IsShown() then
 		-- Window is already open, we just need to update various texts.
 		return

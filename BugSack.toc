@@ -19,6 +19,7 @@
 ## X-Category: Development Tools
 ## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti, Rabbit
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
+## X-Website: https://github.com/funkydude/BugSack
 ## X-Curse-Project-ID: 6273
 ## X-WoWI-ID: 5995
 ## X-BugGrabber-Display: BugSack

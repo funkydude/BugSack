@@ -43,7 +43,7 @@ media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\
 local onError
 do
 	local lastError = nil
-	function onError(event, errorObject)
+	function onError()
 		if not lastError or GetTime() > (lastError + 2) then
 			if not addon.db.mute then
 				local sound = media:Fetch("sound", addon.db.soundMedia)
@@ -56,7 +56,7 @@ do
 		end
 		-- If the frame is shown, we need to update it.
 		if (addon.db.auto and not InCombatLockdown()) or (BugSackFrame and BugSackFrame:IsShown()) then
-			addon:OpenSack(errorObject)
+			addon:OpenSack()
 		end
 		addon:UpdateDisplay()
 	end
@@ -99,7 +99,7 @@ function eventFrame:ADDON_LOADED(loadedAddon)
 			OnShow = function(self)
 				self.button1:Disable()
 			end,
-			EditBoxOnTextChanged = function(self, data)
+			EditBoxOnTextChanged = function(self)
 				local t = self:GetText()
 				if t:len() > 2 and not t:find("%s") then
 					self:GetParent().button1:Enable()
@@ -243,7 +243,7 @@ function addon:SendBugsToUser(player, session)
 	print(L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."]:format(#errors, player))
 end
 
-function addon:OnBugComm(prefix, message, distribution, sender)
+function addon:OnBugComm(prefix, message, _, sender)
 	if prefix ~= "BugSack" or not self.Deserialize then return end
 
 	local good, deSz = self:Deserialize(message)
