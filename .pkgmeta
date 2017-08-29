@@ -1,5 +1,4 @@
 package-as: BugSack
-wowi-archive-previous: no
 enable-nolib-creation: no
 
 externals:
