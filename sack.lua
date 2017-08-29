@@ -185,13 +185,13 @@ local function createBugSack()
 	window:SetScript("OnDragStart", window.StartMoving)
 	window:SetScript("OnDragStop", window.StopMovingOrSizing)
 	window:SetScript("OnShow", function()
-		PlaySound(PlaySoundKitID and "igQuestLogOpen" or 844) -- SOUNDKIT.IG_QUEST_LOG_OPEN
+		PlaySound(844) -- SOUNDKIT.IG_QUEST_LOG_OPEN
 	end)
 	window:SetScript("OnHide", function()
 		currentErrorObject = nil
 		currentSackSession = nil
 		currentSackContents = nil
-		PlaySound(PlaySoundKitID and "igQuestLogClose" or 845) -- SOUNDKIT.IG_QUEST_LOG_CLOSE
+		PlaySound(845) -- SOUNDKIT.IG_QUEST_LOG_CLOSE
 	end)
 
 	local titlebg = window:CreateTexture(nil, "BORDER")
