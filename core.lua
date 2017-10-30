@@ -292,7 +292,7 @@ do
 			return
 		end
 		retrievedErrors[deSz.originalId] = deSz
-		
+
 	end
 	local function hasTransmitFacilities()
 		if fakeAddon then return true end
