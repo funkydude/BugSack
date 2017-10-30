@@ -75,7 +75,7 @@ local function updateSackDisplay(forceRefresh)
 	end
 	if not eo then eo = currentSackContents[currentErrorIndex] end
 	if not eo then eo = currentSackContents[size] end
-	if currentSackSession == -1 then currentSackSession = eo.session end
+	if currentSackSession == -1 and eo then currentSackSession = eo.session end
 
 	if size > 0 then
 		local source = nil
@@ -133,10 +133,10 @@ local function setActiveMethod(tab)
 	searchBox:Hide()
 	sessionLabel:Show()
 	wipe(searchResults)
-	if searchThrough then
+	--[[if searchThrough then
 		wipe(searchThrough)
 		searchThrough = nil
-	end
+	end]]
 
 	state = type(tab) == "table" and tab:GetName() or tab
 	updateSackDisplay(true)
@@ -273,17 +273,17 @@ local function createBugSack()
 	sessionLabel = CreateFrame("Button", nil, window)
 	sessionLabel:SetNormalFontObject("GameFontNormalLeft")
 	sessionLabel:SetHighlightFontObject("GameFontHighlightLeft")
-	sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -4)
-	sessionLabel:SetPoint("BOTTOMRIGHT", countLabel, "BOTTOMLEFT", -4, 1)
+	sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -1)
+	sessionLabel:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
 	sessionLabel:SetScript("OnHide", function()
 		window:StopMovingOrSizing()
 	end)
-	sessionLabel:SetScript("OnMouseUp", function()
+	--[[sessionLabel:SetScript("OnMouseUp", function()
 		window:StopMovingOrSizing()
 	end)
 	sessionLabel:SetScript("OnMouseDown", function()
 		window:StartMoving()
-	end)
+	end)]]
 	sessionLabel:SetScript("OnDoubleClick", function()
 		sessionLabel:Hide()
 		searchLabel:Show()
@@ -334,7 +334,7 @@ local function createBugSack()
 	searchBox:SetScript("OnTextChanged", filterSack)
 	searchBox:SetAutoFocus(false)
 	searchBox:SetPoint("TOPLEFT", searchLabel, "TOPRIGHT", 6, 1)
-	searchBox:SetPoint("BOTTOMRIGHT", countLabel, "BOTTOMLEFT", -3, -1)
+	searchBox:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
 	searchBox:Hide()
 
 	nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate")
