@@ -124,7 +124,7 @@ end
 hooksecurefunc(addon, "UpdateDisplay", function()
 	if not window or not window:IsShown() then return end
 	-- can't just hook it right in because it would pass |self| as forceRefresh
-	updateSackDisplay()
+	updateSackDisplay(true)
 end)
 
 -- Only invoked when actually clicking a tab
@@ -442,7 +442,7 @@ local function show()
 		createBugSack()
 		createBugSack = nil
 	end
-	updateSackDisplay()
+	updateSackDisplay(true)
 	window:Show()
 end
 
