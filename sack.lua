@@ -442,7 +442,7 @@ local function show()
 		createBugSack()
 		createBugSack = nil
 	end
-	updateSackDisplay()
+	updateSackDisplay(true)
 	window:Show()
 end
 
