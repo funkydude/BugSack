@@ -207,11 +207,18 @@ do
 	end
 	addon.ColorLocals = colorLocals
 
-	local errorFormat = "%dx %s\n\nLocals:\n%s"
+	local errorFormat = "%dx %s"
+	local errorFormatLocals = "%dx %s\n\nLocals:\n%s"
 	function addon:FormatError(err)
-		local s = colorStack(tostring(err.message) .. "\n" .. tostring(err.stack))
-		local l = colorLocals(tostring(err.locals))
-		return errorFormat:format(err.counter or -1, s, l)
+		if not err.locals then
+			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
+			local l = colorLocals(tostring(err.locals))
+			return errorFormat:format(err.counter or -1, s, l)
+		else
+			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
+			local l = colorLocals(tostring(err.locals))
+			return errorFormatLocals:format(err.counter or -1, s, l)
+		end
 	end
 end
 
