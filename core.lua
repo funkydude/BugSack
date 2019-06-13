@@ -108,6 +108,29 @@ do
 				preferredIndex = STATICPOPUP_NUMDIALOGS,
 			}
 		end
+		if type(popup.BugSackExportBugs) ~= "table" then
+			popup.BugSackExportBugs = {
+				text = L["Copy / Paste this string"],
+				button1 = CLOSE,
+				timeout = 0,
+				whileDead = true,
+				hideOnEscape = true,
+				hasEditBox = true,
+				editBoxWidth = 260,
+				wide = true,
+				OnShow = function(self)
+					local str = addon:ExportBugsToString()
+					self.editBox:SetText(str)
+					self.editBox:HighlightText()
+				end,
+				OnAccept = function(self)
+					self:Hide()
+				end,
+				enterClicksFirstButton = true,
+				--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
+				preferredIndex = STATICPOPUP_NUMDIALOGS,
+			}
+		end
 
 		if type(BugSackDB) ~= "table" then BugSackDB = {} end
 		local sv = BugSackDB
@@ -226,6 +249,23 @@ function addon:Reset()
 	BugGrabber:Reset()
 	self:UpdateDisplay()
 	print(L["All stored bugs have been exterminated painfully."])
+end
+
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
+local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
+local configForDeflate = {level = 9} -- the biggest bottleneck by far is in transmission and printing; so use maximal compression
+function addon:ExportBugsToString(session)
+	if not self.Serialize or not LibDeflate then return end
+	local errors
+	if not session then
+		errors = BugGrabber:GetDB()
+	else
+		errors = self:GetErrors(session)
+	end
+	if not errors or #errors == 0 then return end
+	local serialized = Serializer:Serialize(errors)
+	local compressed = LibDeflate:CompressDeflate(serialized, configForDeflate)
+	return "!BugSack!".. LibDeflate:EncodeForPrint(compressed)
 end
 
 -- Sends the current session errors to another player using AceComm-3.0

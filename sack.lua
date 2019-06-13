@@ -19,7 +19,7 @@ local currentErrorObject = nil
 local tabs = nil
 
 local countLabel, sessionLabel, textArea = nil, nil, nil
-local nextButton, prevButton, sendButton = nil, nil, nil
+local nextButton, prevButton, sendButton, exportButton = nil, nil, nil, nil
 local searchLabel, searchBox = nil, nil
 
 local sessionFormat = "%s - |cffff4411%s|r - |cff44ff44%d|r" -- <date> - <sent by> - <session id>
@@ -100,6 +100,7 @@ local function updateSackDisplay(forceRefresh)
 			prevButton:Enable()
 		end
 		if sendButton then sendButton:Enable() end
+		if exportButton then exportButton:Enable() end
 	else
 		countLabel:SetText()
 		if currentSackSession == BugGrabber:GetSessionId() then
@@ -111,6 +112,7 @@ local function updateSackDisplay(forceRefresh)
 		nextButton:Disable()
 		prevButton:Disable()
 		if sendButton then sendButton:Disable() end
+		if exportButton then exportButton:Disable() end
 	end
 
 	for i, t in next, tabs do
@@ -368,13 +370,22 @@ local function createBugSack()
 	if addon.Serialize then
 		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
 		sendButton:SetPoint("LEFT", prevButton, "RIGHT")
-		sendButton:SetPoint("RIGHT", nextButton, "LEFT")
+		sendButton:SetWidth(110)
 		sendButton:SetFrameStrata("FULLSCREEN")
 		sendButton:SetText(L["Send bugs"])
 		sendButton:SetScript("OnClick", function()
 			local eo = currentSackContents[currentErrorIndex]
-			local popup = StaticPopup_Show("BugSackSendBugs", eo.session)
-			popup.data = eo.session
+			StaticPopup_Show("BugSackSendBugs", eo.session, nil, { session = eo.session})
+			window:Hide()
+		end)
+		exportButton = CreateFrame("Button", "BugSackExportButton", window, "UIPanelButtonTemplate")
+		exportButton:SetPoint("LEFT", sendButton, "RIGHT")
+		exportButton:SetPoint("RIGHT", nextButton, "LEFT")
+		exportButton:SetFrameStrata("FULLSCREEN")
+		exportButton:SetText(L["Export bugs"])
+		exportButton:SetScript("OnClick", function()
+			local eo = currentSackContents[currentErrorIndex]
+			StaticPopup_Show("BugSackExportBugs")
 			window:Hide()
 		end)
 	end
