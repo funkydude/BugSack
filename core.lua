@@ -132,6 +132,35 @@ do
 				--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
 				preferredIndex = STATICPOPUP_NUMDIALOGS,
 			}
+			if type(popup.BugSackImportBugs) ~= "table" then
+				popup.BugSackImportBugs = {
+					text = L["Paste encoded string"],
+					button1 = L["Import"],
+					button2 = CLOSE,
+					timeout = 0,
+					whileDead = true,
+					hideOnEscape = true,
+					hasEditBox = true,
+					OnAccept = function(self)
+						local encodedstring = self.editBox:GetText()
+						addon:ImportBugs(encodedstring)
+					end,
+					OnShow = function(self)
+						self.button1:Disable()
+					end,
+					EditBoxOnTextChanged = function(self)
+						local t = self:GetText()
+						if t:len() > 2 and not t:find("%s") then
+							self:GetParent().button1:Enable()
+						else
+							self:GetParent().button1:Disable()
+						end
+					end,
+					enterClicksFirstButton = true,
+					--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
+					preferredIndex = STATICPOPUP_NUMDIALOGS,
+				}
+			end
 		end
 
 		if type(BugSackDB) ~= "table" then BugSackDB = {} end
@@ -261,6 +290,33 @@ function addon:ExportBugsToString(data)
 	local serialized = Serializer:Serialize(data)
 	local compressed = LibDeflate:CompressDeflate(serialized, configForDeflate)
 	return "!BugSack!".. LibDeflate:EncodeForPrint(compressed)
+end
+
+function addon:ImportBugs(data)
+	if not self.Serialize or not LibDeflate then return end
+	local encoded = data:match("!BugSack!(.*)")
+	if not encoded then
+		return print("Not a BugSack export string")
+	end
+	local decoded = LibDeflate:DecodeForPrint(encoded)
+	if not decoded then
+		print("Error while decoding")
+	end
+	local decompressed = LibDeflate:DecompressDeflate(decoded)
+	if not decompressed then
+		print("Error while decompressing")
+	end
+	local success, deserialized = Serializer:Deserialize(decompressed)
+	if not success then
+		print("Error while deserializing")
+	end
+	local s = BugGrabber:GetSessionId()
+	for _, err in next, deserialized do
+		err.source = L["Import"]
+		err.session = s
+		BugGrabber:StoreError(err)
+	end
+	self:UpdateDisplay()
 end
 
 -- Sends the current session errors to another player using AceComm-3.0
