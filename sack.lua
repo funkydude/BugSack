@@ -375,7 +375,7 @@ local function createBugSack()
 		sendButton:SetText(L["Send bugs"])
 		sendButton:SetScript("OnClick", function()
 			local eo = currentSackContents[currentErrorIndex]
-			StaticPopup_Show("BugSackSendBugs", eo.session, nil, { session = eo.session})
+			StaticPopup_Show("BugSackSendBugs", eo.session, nil, eo.session)
 			window:Hide()
 		end)
 		exportButton = CreateFrame("Button", "BugSackExportButton", window, "UIPanelButtonTemplate")
@@ -384,8 +384,7 @@ local function createBugSack()
 		exportButton:SetFrameStrata("FULLSCREEN")
 		exportButton:SetText(L["Export bugs"])
 		exportButton:SetScript("OnClick", function()
-			local eo = currentSackContents[currentErrorIndex]
-			StaticPopup_Show("BugSackExportBugs")
+			StaticPopup_Show("BugSackExportBugs", nil, nil, currentSackContents)
 			window:Hide()
 		end)
 	end

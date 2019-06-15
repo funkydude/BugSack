@@ -118,10 +118,12 @@ do
 				hasEditBox = true,
 				editBoxWidth = 260,
 				wide = true,
-				OnShow = function(self)
-					local str = addon:ExportBugsToString()
-					self.editBox:SetText(str)
-					self.editBox:HighlightText()
+				OnShow = function(self, data)
+					local str = addon:ExportBugsToString(data)
+					if str then
+						self.editBox:SetText(str)
+						self.editBox:HighlightText()
+					end
 				end,
 				OnAccept = function(self)
 					self:Hide()
@@ -254,16 +256,9 @@ end
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
 local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
 local configForDeflate = {level = 9} -- the biggest bottleneck by far is in transmission and printing; so use maximal compression
-function addon:ExportBugsToString(session)
+function addon:ExportBugsToString(data)
 	if not self.Serialize or not LibDeflate then return end
-	local errors
-	if not session then
-		errors = BugGrabber:GetDB()
-	else
-		errors = self:GetErrors(session)
-	end
-	if not errors or #errors == 0 then return end
-	local serialized = Serializer:Serialize(errors)
+	local serialized = Serializer:Serialize(data)
 	local compressed = LibDeflate:CompressDeflate(serialized, configForDeflate)
 	return "!BugSack!".. LibDeflate:EncodeForPrint(compressed)
 end
