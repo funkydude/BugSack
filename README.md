@@ -9,7 +9,7 @@ BugSack eases the process of viewing bugs. It displays Lua errors that occurred 
 
 ## BugGrabber
 
-This addon REQUIRES [BugGrabber](https://mods.curse.com/addons/wow/bug-grabber) be installed, which is the addon that actually grabs the bugs.
+This addon REQUIRES [BugGrabber](https://www.curseforge.com/wow/addons/bug-grabber) be installed, which is the addon that actually grabs the bugs.
 
 ## Download
-https://mods.curse.com/addons/wow/bugsack
+https://www.curseforge.com/wow/addons/bugsack
