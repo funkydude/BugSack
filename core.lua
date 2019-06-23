@@ -282,31 +282,18 @@ function addon:Reset()
 	print(L["All stored bugs have been exterminated painfully."])
 end
 
-local LibDeflate = LibStub:GetLibrary("LibDeflate")
-local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
-local configForDeflate = {level = 9} -- the biggest bottleneck by far is in transmission and printing; so use maximal compression
 function addon:ExportBugsToString(data)
-	if not self.Serialize or not LibDeflate then return end
-	local serialized = Serializer:Serialize(data)
-	local compressed = LibDeflate:CompressDeflate(serialized, configForDeflate)
-	return "!BugSack!".. LibDeflate:EncodeForPrint(compressed)
+	if not self.Serialize then return end
+	return "!BugSack!" .. self:Serialize(data)
 end
 
 function addon:ImportBugs(data)
-	if not self.Serialize or not LibDeflate then return end
-	local encoded = data:match("!BugSack!(.*)")
-	if not encoded then
+	if not self.Serialize then return end
+	local serialized = data:match("!BugSack!(.*)")
+	if not serialized then
 		return print("Not a BugSack export string")
 	end
-	local decoded = LibDeflate:DecodeForPrint(encoded)
-	if not decoded then
-		print("Error while decoding")
-	end
-	local decompressed = LibDeflate:DecompressDeflate(decoded)
-	if not decompressed then
-		print("Error while decompressing")
-	end
-	local success, deserialized = Serializer:Deserialize(decompressed)
+	local success, deserialized = self:Deserialize(serialized)
 	if not success then
 		print("Error while deserializing")
 	end
