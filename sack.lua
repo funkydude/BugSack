@@ -393,7 +393,27 @@ local function createBugSack()
 		importButton:SetFrameStrata("FULLSCREEN")
 		importButton:SetText(L["Import"])
 		importButton:SetScript("OnClick", function()
-			StaticPopup_Show("BugSackImportBugs")
+			local popup = StaticPopup_Show("BugSackImportBugs")
+			local textBuffer, i, lastPaste = {}, 0, 0
+			local function clearBuffer(self)
+				self:SetScript('OnUpdate', nil)
+				if i > 10 then
+					local pasted = strtrim(table.concat(textBuffer))
+					popup.pasted = pasted
+					popup.editBox:SetText(strsub(pasted, 1, 2500));
+					popup.editBox:ClearFocus();
+				end
+			end
+			popup.editBox:SetScript('OnChar', function(self, c)
+				if lastPaste ~= GetTime() then
+					textBuffer, i, lastPaste = {}, 0, GetTime()
+					self:SetScript('OnUpdate', clearBuffer)
+				end
+				i = i + 1
+				textBuffer[i] = c
+			end)
+			popup.editBox:SetText("");
+			popup.editBox:SetMaxBytes(2500);
 		end)
 	end
 

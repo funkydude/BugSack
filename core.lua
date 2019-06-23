@@ -142,8 +142,9 @@ do
 					hideOnEscape = true,
 					hasEditBox = true,
 					OnAccept = function(self)
-						local encodedstring = self.editBox:GetText()
+						local encodedstring = self.pasted
 						addon:ImportBugs(encodedstring)
+						self.editBox:SetMaxBytes(nil)
 					end,
 					OnShow = function(self)
 						self.button1:Disable()
@@ -157,7 +158,7 @@ do
 						end
 					end,
 					enterClicksFirstButton = true,
-					--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
+					OnCancel = function() self.editBox:SetMaxBytes(nil) end, -- Need to wrap it so we don't pass |self| as an error argument to show().
 					preferredIndex = STATICPOPUP_NUMDIALOGS,
 				}
 			end
