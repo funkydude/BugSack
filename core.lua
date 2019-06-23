@@ -110,7 +110,7 @@ do
 		end
 		if type(popup.BugSackExportBugs) ~= "table" then
 			popup.BugSackExportBugs = {
-				text = L["Copy / Paste this string"],
+				text = L["Copy this string"],
 				button1 = CLOSE,
 				timeout = 0,
 				whileDead = true,
@@ -132,36 +132,6 @@ do
 				--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
 				preferredIndex = STATICPOPUP_NUMDIALOGS,
 			}
-			if type(popup.BugSackImportBugs) ~= "table" then
-				popup.BugSackImportBugs = {
-					text = L["Paste encoded string"],
-					button1 = L["Import"],
-					button2 = CLOSE,
-					timeout = 0,
-					whileDead = true,
-					hideOnEscape = true,
-					hasEditBox = true,
-					OnAccept = function(self)
-						local encodedstring = self.pasted
-						addon:ImportBugs(encodedstring)
-						self.editBox:SetMaxBytes(nil)
-					end,
-					OnShow = function(self)
-						self.button1:Disable()
-					end,
-					EditBoxOnTextChanged = function(self)
-						local t = self:GetText()
-						if t:len() > 2 and not t:find("%s") then
-							self:GetParent().button1:Enable()
-						else
-							self:GetParent().button1:Disable()
-						end
-					end,
-					enterClicksFirstButton = true,
-					OnCancel = function() self.editBox:SetMaxBytes(nil) end, -- Need to wrap it so we don't pass |self| as an error argument to show().
-					preferredIndex = STATICPOPUP_NUMDIALOGS,
-				}
-			end
 		end
 
 		if type(BugSackDB) ~= "table" then BugSackDB = {} end
@@ -284,27 +254,17 @@ function addon:Reset()
 end
 
 function addon:ExportBugsToString(data)
-	if not self.Serialize then return end
-	return "!BugSack!" .. self:Serialize(data)
-end
+	local output = ""
+	local formatStr = [[%s*** %s - %d/%d
 
-function addon:ImportBugs(data)
-	if not self.Serialize then return end
-	local serialized = data:match("!BugSack!(.*)")
-	if not serialized then
-		return print("Not a BugSack export string")
+%s
+
+]]
+	for i, eo in ipairs(data) do
+		output = formatStr:format(output, eo.time, i, #data, addon:FormatError(eo))
 	end
-	local success, deserialized = self:Deserialize(serialized)
-	if not success then
-		print("Error while deserializing")
-	end
-	local s = BugGrabber:GetSessionId()
-	for _, err in next, deserialized do
-		err.source = L["Import"]
-		err.session = s
-		BugGrabber:StoreError(err)
-	end
-	self:UpdateDisplay()
+
+	return output
 end
 
 -- Sends the current session errors to another player using AceComm-3.0

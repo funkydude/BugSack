@@ -19,7 +19,7 @@ local currentErrorObject = nil
 local tabs = nil
 
 local countLabel, sessionLabel, textArea = nil, nil, nil
-local nextButton, prevButton, sendButton, exportButton, importButton = nil, nil, nil, nil, nil
+local nextButton, prevButton, sendButton, exportButton = nil, nil, nil, nil
 local searchLabel, searchBox = nil, nil
 
 local sessionFormat = "%s - |cffff4411%s|r - |cff44ff44%d|r" -- <date> - <sent by> - <session id>
@@ -342,7 +342,7 @@ local function createBugSack()
 	nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate")
 	nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
 	nextButton:SetFrameStrata("FULLSCREEN")
-	nextButton:SetWidth(100)
+	nextButton:SetWidth(130)
 	nextButton:SetText(L["Next >"])
 	nextButton:SetScript("OnClick", function()
 		if IsShiftKeyDown() then
@@ -356,7 +356,7 @@ local function createBugSack()
 	prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate")
 	prevButton:SetPoint("BOTTOMLEFT", window, 14, 16)
 	prevButton:SetFrameStrata("FULLSCREEN")
-	prevButton:SetWidth(100)
+	prevButton:SetWidth(130)
 	prevButton:SetText(L["< Previous"])
 	prevButton:SetScript("OnClick", function()
 		if IsShiftKeyDown() then
@@ -370,7 +370,7 @@ local function createBugSack()
 	if addon.Serialize then
 		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
 		sendButton:SetPoint("LEFT", prevButton, "RIGHT")
-		sendButton:SetWidth(90)
+		sendButton:SetWidth(110)
 		sendButton:SetFrameStrata("FULLSCREEN")
 		sendButton:SetText(L["Send"])
 		sendButton:SetScript("OnClick", function()
@@ -380,40 +380,12 @@ local function createBugSack()
 		end)
 		exportButton = CreateFrame("Button", "BugSackExportButton", window, "UIPanelButtonTemplate")
 		exportButton:SetPoint("LEFT", sendButton, "RIGHT")
-		exportButton:SetWidth(90)
+		exportButton:SetPoint("RIGHT", nextButton, "LEFT")
 		exportButton:SetFrameStrata("FULLSCREEN")
 		exportButton:SetText(L["Export"])
 		exportButton:SetScript("OnClick", function()
 			StaticPopup_Show("BugSackExportBugs", nil, nil, currentSackContents)
 			window:Hide()
-		end)
-		importButton = CreateFrame("Button", "BugSackImportButton", window, "UIPanelButtonTemplate")
-		importButton:SetPoint("LEFT", exportButton, "RIGHT")
-		importButton:SetPoint("RIGHT", nextButton, "LEFT")
-		importButton:SetFrameStrata("FULLSCREEN")
-		importButton:SetText(L["Import"])
-		importButton:SetScript("OnClick", function()
-			local popup = StaticPopup_Show("BugSackImportBugs")
-			local textBuffer, i, lastPaste = {}, 0, 0
-			local function clearBuffer(self)
-				self:SetScript('OnUpdate', nil)
-				if i > 10 then
-					local pasted = strtrim(table.concat(textBuffer))
-					popup.pasted = pasted
-					popup.editBox:SetText(strsub(pasted, 1, 2500));
-					popup.editBox:ClearFocus();
-				end
-			end
-			popup.editBox:SetScript('OnChar', function(self, c)
-				if lastPaste ~= GetTime() then
-					textBuffer, i, lastPaste = {}, 0, GetTime()
-					self:SetScript('OnUpdate', clearBuffer)
-				end
-				i = i + 1
-				textBuffer[i] = c
-			end)
-			popup.editBox:SetText("");
-			popup.editBox:SetMaxBytes(2500);
 		end)
 	end
 
