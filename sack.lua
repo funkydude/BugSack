@@ -7,6 +7,7 @@ local window = nil
 
 -- What state is the sack in?
 local state = "BugSackTabAll"
+local bulk = false
 local searchResults = {}
 local searchThrough = nil
 
@@ -19,13 +20,15 @@ local currentErrorObject = nil
 local tabs = nil
 
 local countLabel, sessionLabel, textArea = nil, nil, nil
-local nextButton, prevButton, sendButton, exportButton = nil, nil, nil, nil
+local nextButton, prevButton, sendButton, bulkButton = nil, nil, nil, nil
 local searchLabel, searchBox = nil, nil
 
 local sessionFormat = "%s - |cffff4411%s|r - |cff44ff44%d|r" -- <date> - <sent by> - <session id>
 local countFormat = "%d/%d" -- 1/10
 local sourceFormat = L["Sent by %s (%s)"]
 local localFormat = L["Local (%s)"]
+
+local bulkItemsPerPage = 20
 
 -- Updates the total bug count and so forth.
 local lastState = nil
@@ -73,46 +76,66 @@ local function updateSackDisplay(forceRefresh)
 			end
 		end
 	end
-	if not eo then eo = currentSackContents[currentErrorIndex] end
-	if not eo then eo = currentSackContents[size] end
-	if currentSackSession == -1 and eo then currentSackSession = eo.session end
 
-	if size > 0 then
-		local source = nil
-		if eo.source then source = sourceFormat:format(eo.source, "error")
-		else source = localFormat:format("error") end
-		if eo.session == BugGrabber:GetSessionId() then
-			sessionLabel:SetText(sessionFormat:format(L["Today"], source, eo.session))
-		else
-			sessionLabel:SetText(sessionFormat:format(eo.time, source, eo.session))
+	if bulk then
+		local currentMinErrorIndex = currentErrorIndex - bulkItemsPerPage
+		if currentMinErrorIndex < 1 then
+			currentMinErrorIndex = 1
 		end
-		countLabel:SetText(countFormat:format(currentErrorIndex, size))
-		textArea:SetText(addon:FormatError(eo))
+		sessionLabel:SetText("")
+		countLabel:SetText(("%d-%d / %d"):format(currentMinErrorIndex, currentErrorIndex, size))
+		textArea:SetText(addon:FormatAllErrors(currentSackContents, currentErrorIndex, bulkItemsPerPage))
 
 		if currentErrorIndex >= size then
 			nextButton:Disable()
 		else
 			nextButton:Enable()
 		end
-		if currentErrorIndex <= 1 then
+		if currentErrorIndex - bulkItemsPerPage <= 1 then
 			prevButton:Disable()
 		else
 			prevButton:Enable()
 		end
-		if sendButton then sendButton:Enable() end
-		if exportButton then exportButton:Enable() end
 	else
-		countLabel:SetText()
-		if currentSackSession == BugGrabber:GetSessionId() then
-			sessionLabel:SetText(("%s (%d)"):format(L["Today"], BugGrabber:GetSessionId()))
+		if not eo then eo = currentSackContents[currentErrorIndex] end
+		if not eo then eo = currentSackContents[size] end
+		if currentSackSession == -1 and eo then currentSackSession = eo.session end
+
+		if size > 0 then
+			local source = nil
+			if eo.source then source = sourceFormat:format(eo.source, "error")
+			else source = localFormat:format("error") end
+			if eo.session == BugGrabber:GetSessionId() then
+				sessionLabel:SetText(sessionFormat:format(L["Today"], source, eo.session))
+			else
+				sessionLabel:SetText(sessionFormat:format(eo.time, source, eo.session))
+			end
+			countLabel:SetText(countFormat:format(currentErrorIndex, size))
+			textArea:SetText(addon:FormatError(eo))
+
+			if currentErrorIndex >= size then
+				nextButton:Disable()
+			else
+				nextButton:Enable()
+			end
+			if currentErrorIndex <= 1 then
+				prevButton:Disable()
+			else
+				prevButton:Enable()
+			end
+			if sendButton then sendButton:Enable() end
 		else
-			sessionLabel:SetText(("%d"):format(currentSackSession))
+			countLabel:SetText()
+			if currentSackSession == BugGrabber:GetSessionId() then
+				sessionLabel:SetText(("%s (%d)"):format(L["Today"], BugGrabber:GetSessionId()))
+			else
+				sessionLabel:SetText(("%d"):format(currentSackSession))
+			end
+			textArea:SetText(L["You have no bugs, yay!"])
+			nextButton:Disable()
+			prevButton:Disable()
+			if sendButton then sendButton:Disable() end
 		end
-		textArea:SetText(L["You have no bugs, yay!"])
-		nextButton:Disable()
-		prevButton:Disable()
-		if sendButton then sendButton:Disable() end
-		if exportButton then exportButton:Disable() end
 	end
 
 	for i, t in next, tabs do
@@ -348,7 +371,15 @@ local function createBugSack()
 		if IsShiftKeyDown() then
 			currentErrorIndex = #currentSackContents
 		else
-			currentErrorIndex = currentErrorIndex + 1
+			if bulk then
+				local size = #currentSackContents
+				currentErrorIndex = currentErrorIndex + bulkItemsPerPage
+				if currentErrorIndex > size then
+					currentErrorIndex = size
+				end
+			else
+				currentErrorIndex = currentErrorIndex + 1
+			end
 		end
 		updateSackDisplay()
 	end)
@@ -359,35 +390,50 @@ local function createBugSack()
 	prevButton:SetWidth(130)
 	prevButton:SetText(L["< Previous"])
 	prevButton:SetScript("OnClick", function()
+		local size = #currentSackContents
 		if IsShiftKeyDown() then
-			currentErrorIndex = 1
+			if bulk then
+				currentErrorIndex = bulkItemsPerPage >= size and size or bulkItemsPerPage
+			else
+				currentErrorIndex = 1
+			end
 		else
-			currentErrorIndex = currentErrorIndex - 1
+			if bulk then
+				currentErrorIndex = currentErrorIndex - bulkItemsPerPage
+				if currentErrorIndex < bulkItemsPerPage then
+					currentErrorIndex = bulkItemsPerPage
+				end
+				if currentErrorIndex > size then
+					currentErrorIndex = size
+				end
+			else
+				currentErrorIndex = currentErrorIndex - 1
+			end
 		end
 		updateSackDisplay()
 	end)
 
-	if addon.Serialize then
-		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
-		sendButton:SetPoint("LEFT", prevButton, "RIGHT")
-		sendButton:SetWidth(110)
-		sendButton:SetFrameStrata("FULLSCREEN")
-		sendButton:SetText(L["Send"])
-		sendButton:SetScript("OnClick", function()
-			local eo = currentSackContents[currentErrorIndex]
-			StaticPopup_Show("BugSackSendBugs", eo.session, nil, eo.session)
-			window:Hide()
-		end)
-		exportButton = CreateFrame("Button", "BugSackExportButton", window, "UIPanelButtonTemplate")
-		exportButton:SetPoint("LEFT", sendButton, "RIGHT")
-		exportButton:SetPoint("RIGHT", nextButton, "LEFT")
-		exportButton:SetFrameStrata("FULLSCREEN")
-		exportButton:SetText(L["Export"])
-		exportButton:SetScript("OnClick", function()
-			StaticPopup_Show("BugSackExportBugs", nil, nil, currentSackContents)
-			window:Hide()
-		end)
-	end
+	sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
+	sendButton:SetPoint("LEFT", prevButton, "RIGHT")
+	sendButton:SetWidth(110)
+	sendButton:SetFrameStrata("FULLSCREEN")
+	sendButton:SetText(L["Send"])
+	sendButton:SetScript("OnClick", function()
+		local eo = currentSackContents[currentErrorIndex]
+		StaticPopup_Show("BugSackSendBugs", eo.session, nil, eo.session)
+		window:Hide()
+	end)
+
+	bulkButton = CreateFrame("Button", "BugSackBulkButton", window, "UIPanelButtonTemplate")
+	bulkButton:SetPoint("LEFT", sendButton, "RIGHT")
+	bulkButton:SetPoint("RIGHT", nextButton, "LEFT")
+	bulkButton:SetFrameStrata("FULLSCREEN")
+	bulkButton:SetText((L["%d per %d"]):format(bulk and bulkItemsPerPage or 1, bulk and bulkItemsPerPage or 1))
+	bulkButton:SetScript("OnClick", function()
+		bulk = not bulk
+		bulkButton:SetText((L["%d per %d"]):format(bulk and bulkItemsPerPage or 1, bulk and bulkItemsPerPage or 1))
+		updateSackDisplay()
+	end)
 
 	local scroll = CreateFrame("ScrollFrame", "BugSackScroll", window, "UIPanelScrollFrameTemplate")
 	scroll:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)

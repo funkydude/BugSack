@@ -48,6 +48,7 @@ L["Wipe saved bugs"] = "Wipe saved bugs"
 L["X-Large"] = "X-Large"
 L["You have no bugs, yay!"] = "You have no bugs, yay!"
 L["You've received %d bugs from %s."] = "You've received %d bugs from %s."
+L["%d per %d"] = "%d per %d"
 
 local locale = GetLocale()
 if locale == "deDE" then

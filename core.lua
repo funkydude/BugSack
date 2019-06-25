@@ -108,31 +108,6 @@ do
 				preferredIndex = STATICPOPUP_NUMDIALOGS,
 			}
 		end
-		if type(popup.BugSackExportBugs) ~= "table" then
-			popup.BugSackExportBugs = {
-				text = L["Copy this string"],
-				button1 = CLOSE,
-				timeout = 0,
-				whileDead = true,
-				hideOnEscape = true,
-				hasEditBox = true,
-				editBoxWidth = 260,
-				wide = true,
-				OnShow = function(self, data)
-					local str = addon:ExportBugsToString(data)
-					if str then
-						self.editBox:SetText(str)
-						self.editBox:HighlightText()
-					end
-				end,
-				OnAccept = function(self)
-					self:Hide()
-				end,
-				enterClicksFirstButton = true,
-				--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
-				preferredIndex = STATICPOPUP_NUMDIALOGS,
-			}
-		end
 
 		if type(BugSackDB) ~= "table" then BugSackDB = {} end
 		local sv = BugSackDB
@@ -253,15 +228,19 @@ function addon:Reset()
 	print(L["All stored bugs have been exterminated painfully."])
 end
 
-function addon:ExportBugsToString(data)
+function addon:FormatAllErrors(data, index, itemsPerPage)
 	local output = ""
 	local formatStr = [[%s*** %s - %d/%d
 
 %s
 
 ]]
-	for i, eo in ipairs(data) do
-		output = formatStr:format(output, eo.time, i, #data, addon:FormatError(eo))
+	local size = #data
+	local i = index
+	while i > 0 and i >= index - itemsPerPage do
+		local eo = data[i]
+		output = formatStr:format(output, eo.time, i, size, addon:FormatError(eo))
+		i = i - 1
 	end
 
 	return output
