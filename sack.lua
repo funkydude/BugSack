@@ -314,15 +314,6 @@ local function createBugSack()
 	searchBox:SetTextInsets(4, 4, 0, 0)
 	searchBox:SetMaxLetters(50)
 	searchBox:SetFontObject("ChatFontNormal")
-	searchBox:SetBackdrop({
-		edgeFile = nil,
-		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-		insets = { left = 0, right = 0, top = 0, bottom = 0 },
-		tile = true,
-		tileSize = 16,
-		edgeSize = 0,
-	})
-	searchBox:SetBackdropColor(0, 0, 0, 0.5)
 	searchBox:SetScript("OnShow", function(self)
 		self:SetFocus()
 	end)
@@ -336,6 +327,10 @@ local function createBugSack()
 	searchBox:SetPoint("TOPLEFT", searchLabel, "TOPRIGHT", 6, 1)
 	searchBox:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
 	searchBox:Hide()
+
+	local searchBackdrop = searchBox:CreateTexture(nil, "BACKGROUND")
+	searchBackdrop:SetAllPoints()
+	searchBackdrop:SetColorTexture(0, 0, 0, 0.5)
 
 	nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate")
 	nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
