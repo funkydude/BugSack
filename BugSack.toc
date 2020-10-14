@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 90001
 ## Version: @project-version@
 ## Title: BugSack
 ## Notes: Toss those bugs inna sack.
