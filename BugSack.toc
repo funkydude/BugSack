@@ -1,4 +1,6 @@
 ## Interface: 90005
+## Interface-Classic: 11307
+## Interface-BCC: 20501
 ## Version: @project-version@
 ## Title: BugSack
 ## Notes: Toss those bugs inna sack.
