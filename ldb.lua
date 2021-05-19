@@ -20,8 +20,6 @@ function plugin.OnClick(self, button)
 	else
 		if IsShiftKeyDown() then
 			ReloadUI()
-		elseif IsAltKeyDown() then
-			addon:Reset()
 		elseif BugSackFrame and BugSackFrame:IsShown() then
 			addon:CloseSack()
 		else
@@ -37,7 +35,6 @@ hooksecurefunc(addon, "UpdateDisplay", function()
 end)
 
 do
-	local hint = L["|cffeda55fClick|r to open BugSack with the last bug. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack."]
 	local line = "%d. %s (x%d)"
 	function plugin.OnTooltipShow(tt)
 		local errs = addon:GetErrors(BugGrabber:GetSessionId())
@@ -51,7 +48,7 @@ do
 			end
 		end
 		tt:AddLine(" ")
-		tt:AddLine(hint, 0.2, 1, 0.2, 1)
+		tt:AddLine(L.minimapHint, 0.2, 1, 0.2, 1)
 	end
 end
 
