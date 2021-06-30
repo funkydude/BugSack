@@ -228,6 +228,24 @@ function addon:Reset()
 	print(L["All stored bugs have been exterminated painfully."])
 end
 
+function addon:FormatAllErrors(data, index, itemsPerPage)
+	local output = ""
+	local formatStr = [[%s*** %s - %d/%d
+
+%s
+
+]]
+	local size = #data
+	local i = index
+	while i > 0 and i >= index - itemsPerPage do
+		local eo = data[i]
+		output = formatStr:format(output, eo.time, i, size, addon:FormatError(eo))
+		i = i - 1
+	end
+
+	return output
+end
+
 -- Sends the current session errors to another player using AceComm-3.0
 function addon:SendBugsToUser(player, session)
 	if type(player) ~= "string" or player:trim():len() < 2 then

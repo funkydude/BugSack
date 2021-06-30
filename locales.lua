@@ -11,7 +11,9 @@ L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, whi
 L["chatFrameDesc"] = "Prints a reminder to the chat frame when an error is encountered. Doesn't print the whole error, just a reminder!"
 L["Chatframe output"] = "Chatframe output"
 L["Current session"] = "Current session"
+L["Copy this string"] = "Copy this string"
 L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d bugs have been sent to %s. He must have BugSack to be able to examine them."
+L["Export"] = "Export"
 L["Failure to deserialize incoming data from %s."] = "Failure to deserialize incoming data from %s."
 L["Filter addon mistakes"] = "Filter addon mistakes"
 L["filterDesc"] = "Whether BugSack should treat ADDON_ACTION_BLOCKED and ADDON_ACTION_FORBIDDEN events as bugs or not. If that doesn't make sense, just ignore this option."
@@ -46,6 +48,7 @@ L["Wipe saved bugs"] = "Wipe saved bugs"
 L["X-Large"] = "X-Large"
 L["You have no bugs, yay!"] = "You have no bugs, yay!"
 L["You've received %d bugs from %s."] = "You've received %d bugs from %s."
+L["%d per %d"] = "%d per %d"
 
 local locale = GetLocale()
 if locale == "deDE" then
