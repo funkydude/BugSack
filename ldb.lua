@@ -50,7 +50,7 @@ do
 			end
 		end
 		tt:AddLine(" ")
-		tt:AddLine(addon.db.altwipe and L.minimapHintAlt or L.minimapHint, 0.2, 1, 0.2, 1)
+		tt:AddLine(L.minimapHint, 0.2, 1, 0.2, 1)
 	end
 end
 

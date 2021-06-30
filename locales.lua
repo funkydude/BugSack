@@ -8,7 +8,6 @@ L["altWipeDesc"] = "Allows an alt-click on the minimap icon to wipe all stored b
 L["autoDesc"] = "Makes the BugSack open automatically when an error is encountered, but not while you are in combat."
 L["Auto popup"] = "Auto popup"
 L.minimapHint = "|cffeda55fClick|r to open BugSack with the last bug. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fRight-Click|r to open options."
-L.minimapHintAlt = "|cffeda55fClick|r to open BugSack with the last bug. |cffeda55fShift-Click|r to reload the user interface. |cffeda55fAlt-Click|r to clear the sack. |cffeda55fRight-Click|r to open options."
 L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"
 L["chatFrameDesc"] = "Prints a reminder to the chat frame when an error is encountered. Doesn't print the whole error, just a reminder!"
 L["Chatframe output"] = "Chatframe output"
@@ -54,7 +53,6 @@ local locale = GetLocale()
 if locale == "deDE" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d Fehler wurden an %s gesendet. Er muss BugSack haben, um in der Lage zu sein, die Fehler zu lesen."
 	L.minimapHint = "|cffeda55fKlicken|r, um BugSack mit dem letzten Fehler anzuzeigen. |cffeda55fShift-Klicken|r, um das UI neu zu laden. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55fKlicken|r, um BugSack mit dem letzten Fehler anzuzeigen. |cffeda55fShift-Klicken|r, um das UI neu zu laden. |cffeda55fAlt-Klicken|r, um alle Fehler zu löschen. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack benötigt das |r|cff44ff44!BugGrabber|r|cffff4411 Addon, das von der Seite heruntergeladen werden kann, wo du auch BugSack bekommen hast.|r"
 	L["< Previous"] = "< Vorheriger"
 	L["All bugs"] = "Alle Fehler"
@@ -102,7 +100,6 @@ if locale == "deDE" then
 elseif locale == "esES" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "Enviado %s errores a %s. Él o ella debe tener BugSack para verlos."
 	L.minimapHint = "|cffeda55fClic|r para abrir BugSack con el último error. |cffeda55fMayús clic|r para volver a cargar la interfaz. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55fClic|r para abrir BugSack con el último error. |cffeda55fMayús clic|r para volver a cargar la interfaz. |cffeda55fAlt clic|r para borrar todos errores. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack requirere el accesorio |r|cff44ff44!BugGrabber|r|cffff4411, que puedes descargar desde el mismo lugar que has descargado BugSack.|r"
 	L["< Previous"] = "< Previo"
 	L["All bugs"] = "Todos errores"
@@ -150,7 +147,6 @@ elseif locale == "esES" then
 elseif locale == "esMX" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "Enviado %s errores a %s. Él o ella debe tener BugSack para verlos."
 	L.minimapHint = "|cffeda55fClic|r para abrir BugSack con el último error. |cffeda55fMayús clic|r para volver a cargar la interfaz. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55fClic|r para abrir BugSack con el último error. |cffeda55fMayús clic|r para volver a cargar la interfaz. |cffeda55fAlt clic|r para borrar todos errores. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack requirere el accesorio |r|cff44ff44!BugGrabber|r|cffff4411, que puedes descargar desde el mismo lugar que has descargado BugSack.|r"
 	L["< Previous"] = "< Previo"
 	L["All bugs"] = "Todos errores"
@@ -198,7 +194,6 @@ elseif locale == "esMX" then
 elseif locale == "frFR" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d erreurs ont été transmises à %s. Il doit avoir BugSack pour pouvoir les examiner."
 	L.minimapHint = "|cffeda55fClic|r pour ouvrir BugSack sur la dernière erreur. |cffeda55fMaj-Clic|r pour recharger l'interface utilisateur. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55fClic|r pour ouvrir BugSack sur la dernière erreur. |cffeda55fMaj-Clic|r pour recharger l'interface utilisateur. |cffeda55fAlt-Clic|r pour effacer le contenu du sac. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack a besoin de l'addon |r|cff44ff44!BugGrabber|r|cffff4411, que vous pouvez télécharger depuis le même endroit que BugSack. Bonne chasse aux bugs!|r"
 	L["< Previous"] = "< Précédent"
 	L["All bugs"] = "Tous les bugs"
@@ -246,7 +241,6 @@ elseif locale == "frFR" then
 elseif locale == "koKR" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d개의 오류가 %s|1으로;로; 전송되었습니다. 오류를 분석하려면 BugSack 애드온이 있어야 합니다."
 	L.minimapHint = "|cffeda55f클릭|r : BugSack으로 최근 오류 보기. |cffeda55fShift-클릭|r : 사용자 인터페이스 다시 불러오기. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55f클릭|r : BugSack으로 최근 오류 보기. |cffeda55fShift-클릭|r : 사용자 인터페이스 다시 불러오기. |cffeda55fAlt-클릭|r : 저장된 모든 오류 제거. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack|r은 |cff44ff44!BugGrabber|r|cffff4411 애드온을 필요로 하며, BugSack과 동일한 곳에서 다운로드할 수 있습니다. 행복한 벌레 사냥되세요!|r"
 	L["< Previous"] = "< 이전"
 	L["All bugs"] = "모든 오류"
@@ -294,7 +288,6 @@ elseif locale == "koKR" then
 elseif locale == "ruRU" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d багов было отослано получателю %s. Получатель должен иметь установленный BugSack для просмотра."
 	L.minimapHint = "|cffeda55fКлик|r чтобы открыть BugSack с последним пойманным багом. |cffeda55fShift-Клик|r Перегрузить пользовательский интерфейс. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55fКлик|r чтобы открыть BugSack с последним пойманным багом. |cffeda55fShift-Клик|r Перегрузить пользовательский интерфейс. |cffeda55fAlt-Клик|r для очистки списка. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack'у необходим аддон |r|cff44ff44!BugGrabber|r|cffff4411, который можно скачать там же, где Вы взяли BugSack. Удачной охоты на баги!|r"
 	L["< Previous"] = "< Предыдущие"
 	L["All bugs"] = "Все баги"
@@ -342,7 +335,6 @@ elseif locale == "ruRU" then
 elseif locale == "zhCN" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d个错误已经发送给%s。他必须安装 BugSack 插件才能查看错误信息。"
 	L.minimapHint = "|cffeda55f点击|r打开 BugSack 及最后一错误信息。|cffeda55fShift-点击|r重新加载用户界面。 |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55f点击|r打开 BugSack 及最后一错误信息。|cffeda55fShift-点击|r重新加载用户界面。|cffeda55fAlt-点击|r清除储存错误信息。 |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack 需要 |r|cff44ff44!BugGrabber|r|cffff4411 插件, 你可以从相同地方下载 BugSack。猎虫愉快！|r"
 	L["< Previous"] = "<前一个"
 	L["All bugs"] = "全部错误"
@@ -390,7 +382,6 @@ elseif locale == "zhCN" then
 elseif locale == "zhTW" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d個錯誤已經傳送給%s。他必須有BugSack來查看錯誤訊息。"
 	L.minimapHint = "|cffeda55f點擊|r開啟BugSack最後錯誤訊息。|cffeda55fShift-點擊|r重新載入使用者介面。 |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55f點擊|r開啟BugSack最後錯誤訊息。|cffeda55fShift-點擊|r重新載入使用者介面。|cffeda55fAlt-點擊|r清除錯誤訊息。 |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack需要|r|cff44ff44!BugGrabber|r|cffff4411插件，你可以從你下載BugSack相同的地方來下載。獵蟲愉快!|r"
 	L["< Previous"] = "< 上一個"
 	L["All bugs"] = "全部錯誤"
@@ -438,7 +429,6 @@ elseif locale == "zhTW" then
 elseif locale == "ptBR" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d falhas foram enviadas para %s. Ele deve ter o BugSack para poder examiná-las."
 	L.minimapHint = "|cffeda55fClique|r para abrir o BugSack com a última falha. |cffeda55fShift+Clique|r para recarregar a interface de usuário. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55fClique|r para abrir o BugSack com a última falha. |cffeda55fShift+Clique|r para recarregar a interface de usuário. |cffeda55fAlt+Clique|r para limpar o saco. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack requer o addon |r|cff44ff44!BugGrabber|r|cffff4411, que você pode baixar do mesmo lugar que você baixou o BugSack. Feliz caça aos insetos (falhas)!|r"
 	L["< Previous"] = "< Anterior"
 	L["All bugs"] = "Todas as falhas"
@@ -486,7 +476,6 @@ elseif locale == "ptBR" then
 elseif locale == "itIT" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d bugs sono stati inviati a %s. Devi avere BugSack installato per poterli esaminarli."
 	L.minimapHint = "|cffeda55fFai click|r per aprire BugSack con l'ultimo bug. |cffeda55fFai Maiusc-Click|r per ricaricare gli addon. |cffeda55fRight-Click|r to open options."
-	L.minimapHintAlt = "|cffeda55fFai click|r per aprire BugSack con l'ultimo bug. |cffeda55fFai Maiusc-Click|r per ricaricare gli addon. |cffeda55fFai Alt-Click|r per eliminare i bug. |cffeda55fRight-Click|r to open options."
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack richiede l'addon |r|cff44ff44!BugGrabber|r|cffff4411, che puoi scaricare dallo stesso posto da cui hai scaricato BugSack.|r"
 	L["< Previous"] = "< Precedente"
 	L["All bugs"] = "Tutti i bug"
