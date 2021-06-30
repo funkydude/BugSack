@@ -118,6 +118,7 @@ do
 		if type(sv.chatframe) ~= "boolean" then sv.chatframe = false end
 		if type(sv.soundMedia) ~= "string" then sv.soundMedia = "BugSack: Fatality" end
 		if type(sv.fontSize) ~= "string" then sv.fontSize = "GameFontHighlight" end
+		if type(sv.altwipe) ~= "boolean" then sv.altwipe = false end
 		addon.db = sv
 
 		-- Make sure we grab any errors fired before bugsack loaded.

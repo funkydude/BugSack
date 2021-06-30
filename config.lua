@@ -116,6 +116,13 @@ frame:SetScript("OnShow", function(frame)
 	clear.tooltipText = L["Wipe saved bugs"]
 	clear.newbieText = L.wipeDesc
 
+	local altWipe = newCheckbox(
+		L["Minimap icon alt-click wipe"],
+		L.altWipeDesc,
+		function(self, value) addon.db.altwipe = value end)
+	altWipe:SetChecked(addon.db.altwipe)
+	altWipe:SetPoint("LEFT", clear, "RIGHT", 10, 0)
+
 	frame:SetScript("OnShow", nil)
 end)
 InterfaceOptions_AddCategory(frame)

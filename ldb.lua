@@ -20,6 +20,8 @@ function plugin.OnClick(self, button)
 	else
 		if IsShiftKeyDown() then
 			ReloadUI()
+		elseif IsAltKeyDown() and (addon.db.altwipe == true) then
+			addon:Reset()
 		elseif BugSackFrame and BugSackFrame:IsShown() then
 			addon:CloseSack()
 		else
