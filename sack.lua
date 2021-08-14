@@ -275,20 +275,28 @@ local function createBugSack()
 	sessionLabel:SetHighlightFontObject("GameFontHighlightLeft")
 	sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -1)
 	sessionLabel:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
+	sessionLabel:RegisterForClicks("LeftButtonUp", "LeftButtonDown", "RightButtonUp", "RightButtonDown")
 	sessionLabel:SetScript("OnHide", function()
 		window:StopMovingOrSizing()
 	end)
-	--[[sessionLabel:SetScript("OnMouseUp", function()
+	sessionLabel:SetScript("OnMouseUp", function()
 		window:StopMovingOrSizing()
 	end)
 	sessionLabel:SetScript("OnMouseDown", function()
 		window:StartMoving()
-	end)]]
+	end)
 	sessionLabel:SetScript("OnDoubleClick", function()
 		sessionLabel:Hide()
 		searchLabel:Show()
 		searchBox:Show()
 		searchThrough = currentSackContents
+	end)
+	sessionLabel:SetScript("OnClick", function(self, button)
+		if button ~= "RightButton" then
+			return
+		end
+		window:Hide()
+		InterfaceOptionsFrame_OpenToCategory(addonName)
 	end)
 	local quickTips = "|cff44ff44Double-click|r to filter bug reports. After you are done with the search results, return to the full sack by selecting a tab at the bottom. |cff44ff44Left-click|r and drag to move the window. |cff44ff44Right-click|r to close the sack and open the interface options for BugSack."
 	sessionLabel:SetScript("OnEnter", function(self)
