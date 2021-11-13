@@ -348,7 +348,7 @@ elseif locale == "ruRU" then
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
 elseif locale == "zhCN" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d个错误已经发送给%s。他必须安装 BugSack 插件才能查看错误信息。"
-	L.minimapHint = "|cffeda55f点击|r打开 BugSack 及最后一错误信息。|cffeda55fShift-点击|r重新加载用户界面。 |cffeda55f右击|r 打开选项。"
+	L.minimapHint = "|cffeda55f点击|r打开 BugSack 及最后一错误信息。|cffeda55fShift-点击|r重新加载用户界面。|cffeda55f右击|r 打开选项。"
 	L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack 需要 |r|cff44ff44!BugGrabber|r|cffff4411 插件, 你可以从相同地方下载 BugSack。猎虫愉快！|r"
 	L["< Previous"] = "<前一个"
 	L["All bugs"] = "全部错误"
