@@ -22,6 +22,7 @@
 ## X-Website: https://github.com/funkydude/BugSack
 ## X-Curse-Project-ID: 6273
 ## X-WoWI-ID: 5995
+## X-Wago-ID: rkGrrgGy
 ## X-BugGrabber-Display: BugSack
 
 embeds.xml
