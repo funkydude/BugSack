@@ -124,7 +124,8 @@ end
 hooksecurefunc(addon, "UpdateDisplay", function()
 	if not window or not window:IsShown() then return end
 	-- can't just hook it right in because it would pass |self| as forceRefresh
-	updateSackDisplay(true)
+	local forceRefresh = currentErrorIndex and currentSackContents and currentErrorIndex == #currentSackContents
+	updateSackDisplay(forceRefresh)
 end)
 
 -- Only invoked when actually clicking a tab
