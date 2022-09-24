@@ -266,7 +266,7 @@ local function createBugSack()
 	right:SetTexCoord(0.1171875, 0.2421875, 0, 1)
 
 	local close = CreateFrame("Button", nil, window, "UIPanelCloseButton")
-	close:SetPoint("TOPRIGHT", 2, 1)
+	close:SetPoint("TOPRIGHT", C_EditMode and -3 or 2, C_EditMode and -3 or 1)
 	close:SetScript("OnClick", addon.CloseSack)
 
 	countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
