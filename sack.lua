@@ -195,8 +195,6 @@ local function createBugSack()
 		currentSackContents = nil
 		PlaySound(845) -- SOUNDKIT.IG_QUEST_LOG_CLOSE
 	end)
-	local level = window:GetFrameLevel()
-	window:SetFrameLevel(level + 2)
 
 	local titlebg = window:CreateTexture(nil, "BORDER")
 	titlebg:SetTexture(251966) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background"
@@ -403,8 +401,8 @@ local function createBugSack()
 	scroll:SetScrollChild(textArea)
 
 	local all = CreateFrame("Button", "BugSackTabAll", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
-	all:SetFrameLevel(level)
-	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", C_EditMode and 10 or 0, 8)
+	all:SetFrameStrata("FULLSCREEN")
+	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", C_EditMode and 10 or 0, C_EditMode and 6 or 8)
 	all:SetText(L["All bugs"])
 	all:SetScript("OnLoad", nil)
 	all:SetScript("OnShow", nil)
@@ -412,7 +410,7 @@ local function createBugSack()
 	all.bugs = "all"
 
 	local session = CreateFrame("Button", "BugSackTabSession", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
-	session:SetFrameLevel(level)
+	session:SetFrameStrata("FULLSCREEN")
 	session:SetPoint("LEFT", all, "RIGHT")
 	session:SetText(L["Current session"])
 	session:SetScript("OnLoad", nil)
@@ -421,7 +419,7 @@ local function createBugSack()
 	session.bugs = "currentSession"
 
 	local last = CreateFrame("Button", "BugSackTabLast", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
-	last:SetFrameLevel(level)
+	last:SetFrameStrata("FULLSCREEN")
 	last:SetPoint("LEFT", session, "RIGHT")
 	last:SetText(L["Previous session"])
 	last:SetScript("OnLoad", nil)
