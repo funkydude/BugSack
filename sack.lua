@@ -195,6 +195,8 @@ local function createBugSack()
 		currentSackContents = nil
 		PlaySound(845) -- SOUNDKIT.IG_QUEST_LOG_CLOSE
 	end)
+	local level = window:GetFrameLevel()
+	window:SetFrameLevel(level + 2)
 
 	local titlebg = window:CreateTexture(nil, "BORDER")
 	titlebg:SetTexture(251966) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background"
@@ -400,17 +402,17 @@ local function createBugSack()
 
 	scroll:SetScrollChild(textArea)
 
-	local all = CreateFrame("Button", "BugSackTabAll", window, "CharacterFrameTabButtonTemplate")
-	all:SetFrameStrata("FULLSCREEN")
-	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", 0, 8)
+	local all = CreateFrame("Button", "BugSackTabAll", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
+	all:SetFrameLevel(level)
+	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", C_EditMode and 10 or 0, 8)
 	all:SetText(L["All bugs"])
 	all:SetScript("OnLoad", nil)
 	all:SetScript("OnShow", nil)
 	all:SetScript("OnClick", setActiveMethod)
 	all.bugs = "all"
 
-	local session = CreateFrame("Button", "BugSackTabSession", window, "CharacterFrameTabButtonTemplate")
-	session:SetFrameStrata("FULLSCREEN")
+	local session = CreateFrame("Button", "BugSackTabSession", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
+	session:SetFrameLevel(level)
 	session:SetPoint("LEFT", all, "RIGHT")
 	session:SetText(L["Current session"])
 	session:SetScript("OnLoad", nil)
@@ -418,8 +420,8 @@ local function createBugSack()
 	session:SetScript("OnClick", setActiveMethod)
 	session.bugs = "currentSession"
 
-	local last = CreateFrame("Button", "BugSackTabLast", window, "CharacterFrameTabButtonTemplate")
-	last:SetFrameStrata("FULLSCREEN")
+	local last = CreateFrame("Button", "BugSackTabLast", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
+	last:SetFrameLevel(level)
 	last:SetPoint("LEFT", session, "RIGHT")
 	last:SetText(L["Previous session"])
 	last:SetScript("OnLoad", nil)
@@ -428,7 +430,7 @@ local function createBugSack()
 	last.bugs = "previousSession"
 
 	tabs = {all, session, last}
-	local size = 500 / 3
+	local size = (C_EditMode and 480 or 500) / 3
 	for i, t in next, tabs do
 		PanelTemplates_TabResize(t, nil, size, size)
 		if i == 1 then
