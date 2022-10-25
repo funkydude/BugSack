@@ -15,36 +15,19 @@ jobs:
 
     steps:
       - name: Checkout addon
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 100
+          fetch-depth: 0
 
       - name: Run luacheck
         uses: BigWigsMods/actions/luacheck@master
         with:
           args: -qo 011
 
-      - name: Package Classic
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g classic
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Package BCC
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g bcc
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Package Retail
+      - name: Package
         uses: BigWigsMods/packager@master
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
           WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}

@@ -89,7 +89,7 @@ frame:SetScript("OnShow", function(frame)
 	BugSackFontSizeText:SetText(L["Font size"])
 
 	local dropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
-	dropdown:SetPoint("LEFT", fontSizeDropdown, "RIGHT", 150, 0)
+	dropdown:SetPoint("LEFT", fontSizeDropdown, "RIGHT", 140, 0)
 	dropdown.initialize = function()
 		wipe(info)
 		for _, sound in next, LibStub("LibSharedMedia-3.0"):List("sound") do
@@ -105,6 +105,13 @@ frame:SetScript("OnShow", function(frame)
 	end
 	BugSackSoundDropdownText:SetText(L["Sound"])
 
+	local master = newCheckbox(
+		L.useMaster,
+		L.useMasterDesc,
+		function(self, value) addon.db.useMaster = value end)
+		master:SetChecked(addon.db.useMaster)
+		master:SetPoint("LEFT", dropdown, "RIGHT", 140, 0)
+
 	local clear = CreateFrame("Button", "BugSackSaveButton", frame, "UIPanelButtonTemplate")
 	clear:SetText(L["Wipe saved bugs"])
 	clear:SetWidth(177)
@@ -115,6 +122,13 @@ frame:SetScript("OnShow", function(frame)
 	end)
 	clear.tooltipText = L["Wipe saved bugs"]
 	clear.newbieText = L.wipeDesc
+
+	local altWipe = newCheckbox(
+		L["Minimap icon alt-click wipe"],
+		L.altWipeDesc,
+		function(self, value) addon.db.altwipe = value end)
+	altWipe:SetChecked(addon.db.altwipe)
+	altWipe:SetPoint("LEFT", clear, "RIGHT", 10, 0)
 
 	frame:SetScript("OnShow", nil)
 end)
