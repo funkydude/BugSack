@@ -183,17 +183,135 @@ do
 end
 
 do
-	local function colorStack(ret)
+	local function hsl2argb(h,s,l)
+		local C = (1 - abs(2*l - 1)) * s
+		local X = C * (1 - abs((h/60)%2 - 1))
+		local m = l - C/2
+		local R_,G_,B_
+		if       0<=h and h<60  then R_,G_,B_=C,X,0
+		elseif  60<=h and h<120 then R_,G_,B_=X,C,0
+		elseif 120<=h and h<180 then R_,G_,B_=0,C,X
+		elseif 180<=h and h<240 then R_,G_,B_=0,X,C
+		elseif 240<=h and h<300 then R_,G_,B_=X,0,C
+		elseif 300<=h and h<360 then R_,G_,B_=C,0,X end
+		R,G,B = (R_+m)*255, (G_+m)*255,(B_+m)*255
+		return ("|c%02x%02x%02x"):format(R,G,B)
+	end
+	
+
+	local function colorStack_default(ret)
 		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
 		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face\\", "")
 		ret = ret:gsub("%.?%.?%.?\\?AddOns\\", "")
 		ret = ret:gsub("|([^chHr])", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("<(.-)>", "|cffffea00<%1>|r") -- Things wrapped in <>
+		--ret = ret:gsub("=%[C%]", "|cffaa88ff\131C\132|r") -- C code: color but escape the []
+		--ret = ret:gsub("\n@(.-\\)", "\n|cff00aa00%1|r") -- paths
 		ret = ret:gsub("%[(.-)%]", "|cffffea00[%1]|r") -- Things wrapped in []
 		ret = ret:gsub("([\"`'])(.-)([\"`'])", "|cff8888ff%1%2%3|r") -- Quotes
 		ret = ret:gsub(":(%d+)([%S\n])", ":|cff00ff00%1|r%2") -- Line numbers
 		ret = ret:gsub("([^\\]+%.lua)", "|cffffffff%1|r") -- Lua files
+		--ret = ret:gsub("\131","["):gsub("\132","]") -- unescape []
 		return ret
+	end
+
+	local function colorStack_compact(ret)
+		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
+		ret = "\n"..ret.."\n"  -- silly bandaid to match start-of-line with \n
+
+		--[[
+			[C code] :  in function `RunScript'
+			[string "@Interface\SharedXML\UIDropDownMenu.lua"]:71: in function `UIDropDownMenu_Initialize'
+			[string "@Interface\FrameXML\ChatFrame.lua"]:2174: in function `?'
+			[string "@Interface\FrameXML\EasyMenu.lua"]:21: in function `EasyMenu'
+			[string "EasyMenu("qqq")"]:1: in main chunk
+			[string "*:OnEnterPressed"]:1: in function <[string "*:OnEnterPressed"]:1>
+		--]]
+
+		local index=0
+		local out=""
+		
+		local addoncolors={addon='|cff88ff00',path='|cff77cc00',file='|cffffffff'}
+		local blizzcolors={addon='|cff9966ff',path='|cff9966ff',file='|cffbbbbff'}
+		local xmlcolors={obj="|cffff8888",handler='|cffffaaaa'}
+		local linecolor="|cff00ff00"
+		local vercolor="|cffffff00"
+
+		local function color_what(what,path,linenum)
+			what = what:gsub("<[iI]nterface\\[aA]dd[oO]ns\\","<")
+			what = what:gsub("in function (`)(.-)(')", "in function '|cff8888ff%2|r'") -- straighten quotes around function name
+			what = what:gsub("in function <(.-)>", function(s) -- function path and starting line
+				local file,linestart = s:match("([^\\/]+):(%d+)$")
+				if linestart then linestart=tonumber(linestart) end
+				if file and linestart then return "in function <"..addoncolors.file..file.."|r:"..linecolor..linestart.."|r>" end
+				return "in function <"..s..">"
+			end) -- Quotes
+			return what
+		end
+		
+		while (index<#ret) do  repeat
+			local st,en,line=strfind(ret,"(.-)%s*\n",index)
+			if not en then  index=#ret  break  end  -- really break
+			index = en + 1
+			
+			--line = line:gsub("\n%[string \"([^\n]+)\"%]:","%1:") -- remove the [string " "] wrapper
+
+			repeat
+				local what = line:match("^%[string \"=%[C%]\"%]:(.*)")  -- =[C]
+				if what then  -- C code
+					what = color_what(what)
+					line = ("%s[C code]|r: %s"):format(blizzcolors.addon,what)
+					break --out
+				end
+
+				local what = line:match("^%[string \"=%(tail call%)\"%]:(.*)")  -- =(tail call)
+				if what then  -- tail call?
+					line = ("%s[tail call]|r : %s"):format("|cffaaaaaa",what)
+					break --out
+				end
+
+				local path,linenum,what = line:match("^%[string \"@([^\"]+%.[lx][um][al] ?%[?v?[%d%.]*%]?)\"%]:(%d+): (.*)")  -- [string "@Interface\AddOns\file.lua [1.2.3]"]:123: error
+				if path then  -- interface code
+					local is_addon = (path:lower():match("^interface\\addons"))
+					what = color_what(what,path,linenum) -- needs path to properly trim the what
+					if is_addon then
+						local addon,folder,file,ver = path:match("^.-\\.-\\(.-)\\(.-)([^\\]+%.lua)( ?%[?[%d%.]*%]?)$")
+						if addon then
+							local colors=addoncolors
+							if addon and addon:lower():match("^blizzard_") then colors=blizzcolors end
+							line = ("%s%s|r%s\\%s|r%s%s|r%s%s|r:%s%d|r: %s"):format(colors.addon,addon, colors.path,folder, colors.file,file, vercolor,ver, linecolor,linenum, what)
+							break --out
+						end
+					else
+						local path,file = path:match("^.-\\(.-)([^\\]+%.lua)$")
+						line = ("%s%s|r%s%s|r:%s%d|r: %s"):format(blizzcolors.path,path, blizzcolors.file,file, linecolor,linenum, what)
+						break --out
+					end
+				end
+
+				local obj,handler,linenum,what = line:match("^%[string \"(%*):(On%w+)\"%]:(%d+): (.*)")  -- *:OnEnterPressed
+				if obj then
+					line = ("(XML) %s%s|r:%s%s|r:%s%d|r: %s"):format(xmlcolors.obj,obj, xmlcolors.handler,handler, linecolor,linenum, what)
+					break
+				end
+
+				local str,linenum,what = line:match("^%[string \"(.-)\"%]:(%d+): (.*)")  -- *:OnEnterPressed
+				if str then
+					line = ("(string) \"%s%s|r\":%s%d|r: %s"):format("|cffffffff",str, linecolor,linenum, what)
+					break
+				end
+			until true
+			out=out..(#out>0 and "\n" or "")..line
+		until true end
+
+		return out
+	end
+
+	local function colorStack(ret)
+		--if addon.db.stack_raw then return ret end
+		if addon.db.compactformat then return colorStack_compact(ret)
+		else return colorStack_default(ret)
+		end
 	end
 	addon.ColorStack = colorStack
 
@@ -213,17 +331,19 @@ do
 	end
 	addon.ColorLocals = colorLocals
 
-	local errorFormat = "%dx %s"
-	local errorFormatLocals = "%dx %s\n\nLocals:\n%s"
+	local errorFormat = "%dx %s\n\nStack:\n%s"
+	local errorFormatLocals = "%dx %s\n\nStack:\n%s\n\nLocals:\n%s"
 	function addon:FormatError(err)
 		if not err.locals then
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
+			local e = tostring(err.message)
+			local s = colorStack((err.stack and tostring(err.stack) or "-none-"))
 			local l = colorLocals(tostring(err.locals))
-			return errorFormat:format(err.counter or -1, s, l)
+			return errorFormat:format(err.counter or -1, e, s, l)
 		else
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
+			local e = tostring(err.message)
+			local s = colorStack((err.stack and tostring(err.stack) or "-none-"))
 			local l = colorLocals(tostring(err.locals))
-			return errorFormatLocals:format(err.counter or -1, s, l)
+			return errorFormatLocals:format(err.counter or -1, e, s, l)
 		end
 	end
 end

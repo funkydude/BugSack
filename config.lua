@@ -65,9 +65,16 @@ frame:SetScript("OnShow", function(frame)
 	mute:SetChecked(addon.db.mute)
 	mute:SetPoint("TOPLEFT", minimap, "BOTTOMLEFT", 0, -8)
 
+	local compactformat = newCheckbox(
+		L["Compact display format"],
+		L.compactFormatDesc,
+		function(self, value) addon.db.compactformat = value end)
+	compactformat:SetChecked(addon.db.compactformat)
+	compactformat:SetPoint("TOPLEFT", mute, "BOTTOMLEFT", 0, -8)
+
 	local info = {}
 	local fontSizeDropdown = CreateFrame("Frame", "BugSackFontSize", frame, "UIDropDownMenuTemplate")
-	fontSizeDropdown:SetPoint("TOPLEFT", mute, "BOTTOMLEFT", -15, -10)
+	fontSizeDropdown:SetPoint("TOPLEFT", compactformat, "BOTTOMLEFT", -15, -10)
 	fontSizeDropdown.initialize = function()
 		wipe(info)
 		local fonts = {"GameFontHighlightSmall", "GameFontHighlight", "GameFontHighlightMedium", "GameFontHighlightLarge"}
@@ -88,16 +95,16 @@ frame:SetScript("OnShow", function(frame)
 	end
 	BugSackFontSizeText:SetText(L["Font size"])
 
-	local dropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
-	dropdown:SetPoint("LEFT", fontSizeDropdown, "RIGHT", 140, 0)
-	dropdown.initialize = function()
+	local sounddropdown = CreateFrame("Frame", "BugSackSoundDropdown", frame, "UIDropDownMenuTemplate")
+	sounddropdown:SetPoint("LEFT", fontSizeDropdown, "RIGHT", 150, 0)
+	sounddropdown.initialize = function()
 		wipe(info)
 		for _, sound in next, LibStub("LibSharedMedia-3.0"):List("sound") do
 			info.text = sound
 			info.value = sound
 			info.func = function(self)
 				addon.db.soundMedia = self.value
-				BugSackSoundDropdownText:SetText(self:GetText())
+				sounddropdown:SetText(self:GetText())
 			end
 			info.checked = sound == addon.db.soundMedia
 			UIDropDownMenu_AddButton(info)

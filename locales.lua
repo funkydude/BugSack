@@ -11,6 +11,7 @@ L.minimapHint = "|cffeda55fClick|r to open BugSack with the last bug. |cffeda55f
 L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"] = "|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"
 L["chatFrameDesc"] = "Prints a reminder to the chat frame when an error is encountered. Doesn't print the whole error, just a reminder!"
 L["Chatframe output"] = "Chatframe output"
+L["compactFormatDesc"] = "Use a compact stack trace format."
 L["Current session"] = "Current session"
 L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d bugs have been sent to %s. He must have BugSack to be able to examine them."
 L["Failure to deserialize incoming data from %s."] = "Failure to deserialize incoming data from %s."
@@ -576,5 +577,7 @@ elseif locale == "itIT" then
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
 end
+
+setmetatable(L,{__index=function(t,k) return k end})
 
 addon.L = L
