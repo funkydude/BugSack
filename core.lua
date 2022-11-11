@@ -34,7 +34,7 @@ addon.healthCheck = true
 
 -- Sound
 local media = LibStub("LibSharedMedia-3.0")
-media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.ogg")
+media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\"..addonName.."\\Media\\error.ogg")
 
 -----------------------------------------------------------------------
 -- Utility

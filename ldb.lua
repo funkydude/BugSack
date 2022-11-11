@@ -8,7 +8,7 @@ if not ldb then return end
 local plugin = ldb:NewDataObject(addonName, {
 	type = "data source",
 	text = "0",
-	icon = "Interface\\AddOns\\BugSack\\Media\\icon",
+	icon = "Interface\\AddOns\\"..addonName.."\\Media\\icon",
 })
 
 local BugGrabber = BugGrabber
@@ -33,7 +33,7 @@ end
 hooksecurefunc(addon, "UpdateDisplay", function()
 	local count = #addon:GetErrors(BugGrabber:GetSessionId())
 	plugin.text = count
-	plugin.icon = count == 0 and "Interface\\AddOns\\BugSack\\Media\\icon" or "Interface\\AddOns\\BugSack\\Media\\icon_red"
+	plugin.icon = count == 0 and "Interface\\AddOns\\"..addonName.."\\Media\\icon" or "Interface\\AddOns\\"..addonName.."\\Media\\icon_red"
 end)
 
 do
