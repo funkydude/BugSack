@@ -182,7 +182,7 @@ do
 	end
 end
 
-do
+
 	local function hsl2argb(h,s,l)
 		local C = (1 - abs(2*l - 1)) * s
 		local X = C * (1 - abs((h/60)%2 - 1))
@@ -201,108 +201,146 @@ do
 
 	local function colorStack_default(ret)
 		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
-		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face\\", "")
-		ret = ret:gsub("%.?%.?%.?\\?AddOns\\", "")
+		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face/", "")
+		ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
 		ret = ret:gsub("|([^chHr])", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("<(.-)>", "|cffffea00<%1>|r") -- Things wrapped in <>
 		--ret = ret:gsub("=%[C%]", "|cffaa88ff\131C\132|r") -- C code: color but escape the []
-		--ret = ret:gsub("\n@(.-\\)", "\n|cff00aa00%1|r") -- paths
+		--ret = ret:gsub("\n@(.-/)", "\n|cff00aa00%1|r") -- paths
 		ret = ret:gsub("%[(.-)%]", "|cffffea00[%1]|r") -- Things wrapped in []
 		ret = ret:gsub("([\"`'])(.-)([\"`'])", "|cff8888ff%1%2%3|r") -- Quotes
 		ret = ret:gsub(":(%d+)([%S\n])", ":|cff00ff00%1|r%2") -- Line numbers
-		ret = ret:gsub("([^\\]+%.lua)", "|cffffffff%1|r") -- Lua files
+		ret = ret:gsub("([^/]+%.lua)", "|cffffffff%1|r") -- Lua files
 		--ret = ret:gsub("\131","["):gsub("\132","]") -- unescape []
 		return ret
 	end
 
-	local function colorStack_compact(ret)
-		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
-		ret = "\n"..ret.."\n"  -- silly bandaid to match start-of-line with \n
+	local function _cr(color,str) return str and #str>0 and "|c"..color..str.."|r" or "" end  -- not a huge overhead, so do use this for wrapping colors, just to be 100% sure you don't miss a |r.
+	local colors = {
+		addon = {addon='ff88ff00',path='FF559200',file='FFC4FF81',file2='FF92C25B'}, -- MyAddon /Folder/ File.lua
+		blizz = {addon='ff9966ff',path='FF563A8F',file='FFAB81FF',file2='FF9984C4',line='FFBAA7E0'}, -- Blizzard_CoreAddon /Folder/ File.lua
+		ccode = 'FF864AFF', -- [C]
+		tailcall = 'FF5C74FF', -- (tail call)
+		string = 'ffffffff', -- "string"
+		funcname = 'FFFFCF31',
+		xml = {obj="ffff8888",handler='ffffaaaa'}, -- <XMLWidget:OnSomeEvent>
+		line = "FFD0FF00", -- :123
+		line2 = "FFBDD162", -- :123
+		ver ="ffffff00", -- (1.0.0)
+		val = {
+			['nil'] = "FFCC00FF",
+			['true'] = "FF1EFF00",
+			['false'] = "FFFF0000",
+			num = "ffff7fff",
+			func = "ffffea00",
+			tablekey = "ffffff80"
+		}
+	}
+	local col = {}
+	do
+		local function wrapcolor(t,into)
+			for k,v in pairs(t) do
+				if type(v)=="string" then into[k]=function(str) return _cr(v,str) end
+				elseif type(v)=="table" then into[k]={} wrapcolor(v,into[k]) end
+			end
+		end
+		wrapcolor(colors,col)
+	end
 
+	local function color_path(path, addon,folder,file,isAddon,isBlizz)
+		if path and not addon and not file then
+			addon,folder,file,isAddon,isBlizz = ParseStack.parsePath(path)
+		end
+		if file then
+			local col_type = isBlizz and col.blizz or col.addon
+			return col_type.addon(addon or "") .. col_type.path((addon and "/" or "")..(folder and folder.."/" or "")) .. col_type.file(file)
+		end
 		--[[
-			[C code] :  in function `RunScript'
-			[string "@Interface\SharedXML\UIDropDownMenu.lua"]:71: in function `UIDropDownMenu_Initialize'
-			[string "@Interface\FrameXML\ChatFrame.lua"]:2174: in function `?'
-			[string "@Interface\FrameXML\EasyMenu.lua"]:21: in function `EasyMenu'
-			[string "EasyMenu("qqq")"]:1: in main chunk
-			[string "*:OnEnterPressed"]:1: in function <[string "*:OnEnterPressed"]:1>
+		else -- framexml or something
+			local folder,file = path:match("^.-/(.-)([^/]+%.[luaxm]+)$")
+			if folder then
+				return col.blizz.path(folder)..col.blizz.file(file)
+			end
+		end
 		--]]
+		return path
+	end
 
-		local index=0
+	local function colorStack_compact(stack)
+		stack = tostring(stack) or "" -- Yes, it gets called with nonstring from somewhere /mikk
+		stack = stack:gsub("^[%s\n]*","") -- trim leading space/lines
+
+		local parsed_stack = ParseStack and ParseStack.parseStack(stack)
+		if not parsed_stack then return stack end
+
 		local out=""
 		
-		local addoncolors={addon='|cff88ff00',path='|cff77cc00',file='|cffffffff'}
-		local blizzcolors={addon='|cff9966ff',path='|cff9966ff',file='|cffbbbbff'}
-		local xmlcolors={obj="|cffff8888",handler='|cffffaaaa'}
-		local linecolor="|cff00ff00"
-		local vercolor="|cffffff00"
-
-		local function color_what(what,path,linenum)
-			what = what:gsub("<[iI]nterface\\[aA]dd[oO]ns\\","<")
-			what = what:gsub("in function (`)(.-)(')", "in function '|cff8888ff%2|r'") -- straighten quotes around function name
-			what = what:gsub("in function <(.-)>", function(s) -- function path and starting line
-				local file,linestart = s:match("([^\\/]+):(%d+)$")
-				if linestart then linestart=tonumber(linestart) end
-				if file and linestart then return "in function <"..addoncolors.file..file.."|r:"..linecolor..linestart.."|r>" end
-				return "in function <"..s..">"
-			end) -- Quotes
-			return what
-		end
-		
-		while (index<#ret) do  repeat
-			local st,en,line=strfind(ret,"(.-)%s*\n",index)
-			if not en then  index=#ret  break  end  -- really break
-			index = en + 1
+		for i,entry in ipairs(parsed_stack) do
 			
-			--line = line:gsub("\n%[string \"([^\n]+)\"%]:","%1:") -- remove the [string " "] wrapper
+			-- color source first
+			local source,linenum,line
 
-			repeat
-				local what = line:match("^%[string \"=%[C%]\"%]:(.*)")  -- =[C]
-				if what then  -- C code
-					what = color_what(what)
-					line = ("%s[C code]|r: %s"):format(blizzcolors.addon,what)
-					break --out
+			if entry.source_type=="c" then
+				source = col.ccode("[C code]")
+				
+			elseif entry.source_type=="tailcall" then
+				source = col.tailcall("[tail call]")
+				
+			elseif entry.source_type=="lua" then
+				source = color_path(entry.source, entry.source_addon,entry.source_folder,entry.source_file,entry.source_is_addon,entry.source_is_blizz)
+				
+			elseif entry.source_type=="xml" then
+				if entry.source_file then
+					--"(XML) "..col.xml.obj(entry.source_file)..":"..col.line(entry.source_linenumx).." ("..col.xml.handler(entry.source_handler)..")"
+					source = col.addon.file(entry.source_file)..":"..col.line(entry.source_linenumx).." ("..col.xml.handler(entry.source_handler)..")"
+				else
+					source = col.blizz.file(entry.source:sub(2))
 				end
 
-				local what = line:match("^%[string \"=%(tail call%)\"%]:(.*)")  -- =(tail call)
-				if what then  -- tail call?
-					line = ("%s[tail call]|r : %s"):format("|cffaaaaaa",what)
-					break --out
-				end
+			elseif entry.source_type=="xml_inline" then
+				--source = "(XML) "..col.xml.obj(entry.source_file)..":"..col.line(entry.source_linenumx).." <"..col.xml.handler(entry.source_xmltag)..">"
+				source = color_path(entry.source, entry.source_addon,entry.source_folder,entry.source_file,entry.source_is_addon,entry.source_is_blizz).." <"..col.xml.handler(entry.source_xmltag)..">"
+								
+			elseif entry.source then
+				source = "\""..col.string(entry.source).."\""
+				-- source is plain string, leave it alone for now
+			end
 
-				local path,linenum,what = line:match("^%[string \"@([^\"]+%.[lx][um][al] ?%[?v?[%d%.]*%]?)\"%]:(%d+): (.*)")  -- [string "@Interface\AddOns\file.lua [1.2.3]"]:123: error
-				if path then  -- interface code
-					local is_addon = (path:lower():match("^interface\\addons"))
-					what = color_what(what,path,linenum) -- needs path to properly trim the what
-					if is_addon then
-						local addon,folder,file,ver = path:match("^.-\\.-\\(.-)\\(.-)([^\\]+%.lua)( ?%[?[%d%.]*%]?)$")
-						if addon then
-							local colors=addoncolors
-							if addon and addon:lower():match("^blizzard_") then colors=blizzcolors end
-							line = ("%s%s|r%s\\%s|r%s%s|r%s%s|r:%s%d|r: %s"):format(colors.addon,addon, colors.path,folder, colors.file,file, vercolor,ver, linecolor,linenum, what)
-							break --out
-						end
-					else
-						local path,file = path:match("^.-\\(.-)([^\\]+%.lua)$")
-						line = ("%s%s|r%s%s|r:%s%d|r: %s"):format(blizzcolors.path,path, blizzcolors.file,file, linecolor,linenum, what)
-						break --out
-					end
-				end
+			-- color linenum, if any
+			if entry.linenum then linenum=(entry.source_is_blizz and col.blizz.line or col.line)(entry.linenum) end
 
-				local obj,handler,linenum,what = line:match("^%[string \"(%*):(On%w+)\"%]:(%d+): (.*)")  -- *:OnEnterPressed
-				if obj then
-					line = ("(XML) %s%s|r:%s%s|r:%s%d|r: %s"):format(xmlcolors.obj,obj, xmlcolors.handler,handler, linecolor,linenum, what)
-					break
-				end
+			-- color function last
+			--scope = scope:gsub("<[iI]nterface/[aA]dd[oO]ns/","<")
+			if entry.function_name then
+				line="in function '"..(entry.source_is_blizz and col.blizz.file or col.funcname)(entry.function_name).."'" -- straighten quotes around function name					
+			
+			elseif entry.function_file then
+				line="in function <"..col.addon.file2(entry.function_file~=entry.source_file and entry.function_file or "")..":"..col.line2(entry.function_startline)..">"
+			
+			elseif entry.function_angle then
+				line="in function <"..col.funcname(entry.function_angle)..">"
+			
+			elseif entry.function_same then
+				line="inline"
+			
+			elseif entry.function_main then
+				line="in main chunk"
+			
+			elseif entry.function_unknown then
+				line="?"
 
-				local str,linenum,what = line:match("^%[string \"(.-)\"%]:(%d+): (.*)")  -- *:OnEnterPressed
-				if str then
-					line = ("(string) \"%s%s|r\":%s%d|r: %s"):format("|cffffffff",str, linecolor,linenum, what)
-					break
-				end
-			until true
-			out=out..(#out>0 and "\n" or "")..line
-		until true end
+			else
+				line=entry.function_raw
+			end
+
+			out=out..(#out>0 and "\n" or "")
+			if source then
+				out = out .. source .. (linenum and (":"..linenum) or "") .. (line and ": "..line or "")
+			else
+				out = out .. entry.raw
+			end
+
+		end
 
 		return out
 	end
@@ -317,36 +355,50 @@ do
 
 	local function colorLocals(ret)
 		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
-		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face\\", "")
-		ret = ret:gsub("%.?%.?%.?\\?AddOns\\", "")
+		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face/", "")
+		ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
 		ret = ret:gsub("|(%a)", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("> %@(.-):(%d+)", "> @|cffeda55f%1|r:|cff00ff00%2|r") -- Files/Line Numbers of locals
-		ret = ret:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1|cffffff80%2|r = ") -- Table keys
-		ret = ret:gsub("= (%-?[%d%p]+)\n", "= |cffff7fff%1|r\n") -- locals: number
-		ret = ret:gsub("= nil\n", "= |cffff7f7fnil|r\n") -- locals: nil
-		ret = ret:gsub("= true\n", "= |cffff9100true|r\n") -- locals: true
-		ret = ret:gsub("= false\n", "= |cffff9100false|r\n") -- locals: false
-		ret = ret:gsub("= <(.-)>", "= |cffffea00<%1>|r") -- Things wrapped in <>
+		ret = ret:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1"..col.val.tablekey("%2").." = ") -- Table keys
+		ret = ret:gsub("= (%-?[%d%p]+)\n", "= "..col.val.num("%1").."\n") -- locals: number
+		ret = ret:gsub("= nil\n", "= "..col.val['nil']("nil").."\n") -- locals: nil
+		ret = ret:gsub("= true\n", "= "..col.val['true']("true").."\n") -- locals: true
+		ret = ret:gsub("= false\n", "= "..col.val['false']("false").."\n") -- locals: false
+		ret = ret:gsub("= <(.-)>", "= "..col.val.func("<%1>")) -- Things wrapped in <>
 		return ret
 	end
 	addon.ColorLocals = colorLocals
 
-	local errorFormat = "%dx %s\n\nStack:\n%s"
-	local errorFormatLocals = "%dx %s\n\nStack:\n%s\n\nLocals:\n%s"
-	function addon:FormatError(err)
-		if not err.locals then
-			local e = tostring(err.message)
-			local s = colorStack((err.stack and tostring(err.stack) or "-none-"))
-			local l = colorLocals(tostring(err.locals))
-			return errorFormat:format(err.counter or -1, e, s, l)
-		else
-			local e = tostring(err.message)
-			local s = colorStack((err.stack and tostring(err.stack) or "-none-"))
-			local l = colorLocals(tostring(err.locals))
-			return errorFormatLocals:format(err.counter or -1, e, s, l)
-		end
+	local function colorMessage(ret)
+		ret = ret:gsub("^%[string \"(.-)\"%]:","%1:")
+		local path,linenum,message = ret:match("^([^:]+/[^:]+):([%d]+): (.+)")
+		if path then ret = color_path(path)..":"..col.line(linenum)..": "..message end
+		return ret
 	end
-end
+
+	local errorFormatMessage = _cr("ffffffff","%d").."x %s"
+	local errorFormatStack = "\n\nStack:\n%s"
+	local errorFormatLocals = "\n\nLocals:\n%s"
+	
+	function addon:FormatError(err)
+		-- if there's an extra stack stored in the error (some addons do this for their bug handling), extract it and append to the stack.
+
+		local stack = err.stack
+		local message = err.message
+
+		-- Zygor Guides
+		local msg,pre_stack = message:match("(.*)\n%-%- STACKTRACE: %-%-\n(.*)")
+		if msg then
+			message = msg
+			stack = pre_stack .. "---\n" .. (tostring(stack) or "")
+		end
+
+		local ret = errorFormatMessage:format(err.counter or -1, colorMessage(tostring(message)))
+		ret = ret .. errorFormatStack:format(colorStack(stack))
+		if err.locals then ret = ret .. errorFormatLocals:format(colorLocals(tostring(err.locals))) end
+		return ret
+	end
+
 
 function addon:Reset()
 	BugGrabber:Reset()
