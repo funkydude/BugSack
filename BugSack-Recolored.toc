@@ -1,6 +1,6 @@
 ## Interface: 100000
 ## Version: @project-version@
-## Title: BugSack
+## Title: BugSack Recolored
 ## Notes: Toss those bugs inna sack.
 ## Notes-deDE: Werft den Fehler in einen Sack.
 ## Notes-ruRU: Аддон ловит текущие ошибки в мешок.
@@ -12,14 +12,14 @@
 ## Notes-esMX: Mete esos errores en un saco.
 ## Notes-ptBR: Toss those bugs inna sack.
 ## Notes-itIT: Toss those bugs inna sack.
-## Author: Funkydude
+## Author: Sinus Pi <sinus@sinpi.net>
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
 
 ## X-Category: Development Tools
-## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti, Rabbit
+## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti, Rabbit, funkydude
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
-## X-Website: https://github.com/funkydude/BugSack
+## X-Website: https://github.com/SinusPi/BugSack-Recolored
 ## X-Curse-Project-ID: 6273
 ## X-WoWI-ID: 5995
 ## X-Wago-ID: rkGrrgGy
