@@ -27,6 +27,8 @@
 
 embeds.xml
 
+plugins.lua
+plugin_stack_recolored.lua
 locales.lua
 core.lua
 sack.lua
