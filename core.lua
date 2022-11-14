@@ -128,7 +128,8 @@ do
 
 		-- add our default formatter
 		addon.Plugins:RegisterFormatter({
-			name="Default",
+			name="default",
+			label="Default",
 			description="Classic BugSack stacktrace",
 			formatStack=addon.ColorStack,
 			formatMessage=addon.ColorMessage,

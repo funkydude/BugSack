@@ -134,9 +134,13 @@ local function colorStack(stack)
 end
 
 local function colorMessage(msg)
-	msg:gsub("^%[string \"(.-)\"%]:","%1:")
+	-- strip [string "..."]:
+	msg = msg:gsub("^%[string \"(.-)\"%]:","%1:")
+
+	-- color path:line, if present
 	local path,linenum,message = msg:match("^([^:]+/[^:]+):([%d]+): (.+)")
 	if path then msg = colorPath(path)..":"..col.line(linenum)..": "..message end
+
 	return msg
 end
 
@@ -161,10 +165,20 @@ local function colorLocals(locals)
 	return locals
 end
 
+local function preformatError(message,stack,locals)
+	local msg,pre_stack = message:match("(.*)\n%-%- STACKTRACE: %-%-\n(.*)")
+	if msg then
+		message = msg
+		stack = pre_stack .. "---\n" .. (tostring(stack) or "")
+	end
+	return message,stack,locals
+end
+
 addon.Plugins:RegisterFormatter({
 	name="Recolored",
 	description="Stack lines compacted and with color coding of source: internal or addon code.",
 	formatStack=colorStack,
 	formatMessage=formatMessage,
 	formatLocals=colorLocals,
+	preformatError=preformatError,
 })
