@@ -13,5 +13,5 @@ function addon.Plugins:RegisterFormatter(package)
 end
 
 function addon.Plugins:GetFormatter(name)
-	return addon.Plugins.formatters[name or BugSackDB.pluginStack] or addon.Plugins.formatters["default"]
+	return addon.Plugins.formatters[name or addon.db.pluginFormatter] or addon.Plugins.formatters["default"]
 end

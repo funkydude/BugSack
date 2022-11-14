@@ -175,7 +175,8 @@ local function preformatError(message,stack,locals)
 end
 
 addon.Plugins:RegisterFormatter({
-	name="Recolored",
+	name="compact",
+	label="Compact",
 	description="Stack lines compacted and with color coding of source: internal or addon code.",
 	formatStack=colorStack,
 	formatMessage=formatMessage,
