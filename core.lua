@@ -124,6 +124,7 @@ do
 		if type(sv.fontSize) ~= "string" then sv.fontSize = "GameFontHighlight" end
 		if type(sv.altwipe) ~= "boolean" then sv.altwipe = false end
 		if type(sv.useMaster) ~= "boolean" then sv.useMaster = false end
+		if type(sv.pluginFormatter) ~= "string" then sv.pluginFormatter = "default" end
 		addon.db = sv
 
 		-- add our default formatter
