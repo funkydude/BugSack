@@ -65,16 +65,27 @@ frame:SetScript("OnShow", function(frame)
 	mute:SetChecked(addon.db.mute)
 	mute:SetPoint("TOPLEFT", minimap, "BOTTOMLEFT", 0, -8)
 
-	local compactformat = newCheckbox(
-		L["Compact display format"],
-		L.compactFormatDesc,
-		function(self, value) addon.db.compactformat = value end)
-	compactformat:SetChecked(addon.db.compactformat)
-	compactformat:SetPoint("TOPLEFT", mute, "BOTTOMLEFT", 0, -8)
+	local info = {}
+	local pluginFormatterDropdown = CreateFrame("Frame", "BugSackPluginFormatter", frame, "UIDropDownMenuTemplate")
+	pluginFormatterDropdown:SetPoint("TOPLEFT", mute, "BOTTOMLEFT", -15, -10)
+	pluginFormatterDropdown.initialize = function()
+		for name,formatter in pairs(addon.Plugins.formatters) do
+			wipe(info)
+			info.text = formatter.label or formatter.name
+			info.value = formatter.name
+			info.func = function(self)
+				addon.db.pluginFormatter = self.value
+				addon:UpdateDisplay()
+			end
+			info.checked = name == addon.db.pluginFormatter
+			UIDropDownMenu_AddButton(info)
+		end
+	end
+	pluginFormatterDropdown.Text:SetText(L["Formatter plugin"])
 
 	local info = {}
 	local fontSizeDropdown = CreateFrame("Frame", "BugSackFontSize", frame, "UIDropDownMenuTemplate")
-	fontSizeDropdown:SetPoint("TOPLEFT", compactformat, "BOTTOMLEFT", -15, -10)
+	fontSizeDropdown:SetPoint("TOPLEFT", pluginFormatterDropdown or mute, "BOTTOMLEFT", -15, -10)
 	fontSizeDropdown.initialize = function()
 		wipe(info)
 		local fonts = {"GameFontHighlightSmall", "GameFontHighlight", "GameFontHighlightMedium", "GameFontHighlightLarge"}
