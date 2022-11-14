@@ -191,41 +191,18 @@ do
 	end
 end
 
-
-	local function hsl2argb(h,s,l)
-		local C = (1 - abs(2*l - 1)) * s
-		local X = C * (1 - abs((h/60)%2 - 1))
-		local m = l - C/2
-		local R_,G_,B_
-		if       0<=h and h<60  then R_,G_,B_=C,X,0
-		elseif  60<=h and h<120 then R_,G_,B_=X,C,0
-		elseif 120<=h and h<180 then R_,G_,B_=0,C,X
-		elseif 180<=h and h<240 then R_,G_,B_=0,X,C
-		elseif 240<=h and h<300 then R_,G_,B_=X,0,C
-		elseif 300<=h and h<360 then R_,G_,B_=C,0,X end
-		R,G,B = (R_+m)*255, (G_+m)*255,(B_+m)*255
-		return ("|c%02x%02x%02x"):format(R,G,B)
-	end
-	
-
-	function addon:colorStack_default(ret)
+do
+	local function colorStack(ret)
 		ret = tostring(ret) or "" -- Yes, it gets called with nonstring from somewhere /mikk
 		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face/", "")
 		ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
 		ret = ret:gsub("|([^chHr])", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("<(.-)>", "|cffffea00<%1>|r") -- Things wrapped in <>
-		--ret = ret:gsub("=%[C%]", "|cffaa88ff\131C\132|r") -- C code: color but escape the []
-		--ret = ret:gsub("\n@(.-/)", "\n|cff00aa00%1|r") -- paths
 		ret = ret:gsub("%[(.-)%]", "|cffffea00[%1]|r") -- Things wrapped in []
 		ret = ret:gsub("([\"`'])(.-)([\"`'])", "|cff8888ff%1%2%3|r") -- Quotes
 		ret = ret:gsub(":(%d+)([%S\n])", ":|cff00ff00%1|r%2") -- Line numbers
 		ret = ret:gsub("([^/]+%.lua)", "|cffffffff%1|r") -- Lua files
-		--ret = ret:gsub("\131","["):gsub("\132","]") -- unescape []
 		return ret
-	end
-
-	local function colorStack(ret)
-		addon.Plugins:GetFormatter()(ret)
 	end
 	addon.ColorStack = colorStack
 
@@ -235,49 +212,41 @@ end
 		ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
 		ret = ret:gsub("|(%a)", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("> %@(.-):(%d+)", "> @|cffeda55f%1|r:|cff00ff00%2|r") -- Files/Line Numbers of locals
-		ret = ret:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1"..col.val.tablekey("%2").." = ") -- Table keys
-		ret = ret:gsub("= (%-?[%d%p]+)\n", "= "..col.val.num("%1").."\n") -- locals: number
-		ret = ret:gsub("= nil\n", "= "..col.val['nil']("nil").."\n") -- locals: nil
-		ret = ret:gsub("= true\n", "= "..col.val['true']("true").."\n") -- locals: true
-		ret = ret:gsub("= false\n", "= "..col.val['false']("false").."\n") -- locals: false
-		ret = ret:gsub("= <(.-)>", "= "..col.val.func("<%1>")) -- Things wrapped in <>
+		ret = ret:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1|cffffff80%2|r = ") -- Table keys
+		ret = ret:gsub("= (%-?[%d%p]+)\n", "= |cffff7fff%1|r\n") -- locals: number
+		ret = ret:gsub("= nil\n", "= |cffff7f7fnil|r\n") -- locals: nil
+		ret = ret:gsub("= true\n", "= |cffff9100true|r\n") -- locals: true
+		ret = ret:gsub("= false\n", "= |cffff9100false|r\n") -- locals: false
+		ret = ret:gsub("= <(.-)>", "= |cffffea00<%1>|r") -- Things wrapped in <>
 		return ret
 	end
 	addon.ColorLocals = colorLocals
 
-	local function colorMessage(ret)
-		return ret:gsub("^%[string \"(.-)\"%]:","%1:")
-	end
-
 	local errorFormatMessage = "%dx %s"
+
+	local function colorMessage(counter,message)
+		message = message:gsub("^%[string \"(.-)\"%]:","%1:")
+		return errorFormatMessage:format(counter,message)
+	end
+	addon.ColorMessage = colorMessage
+
 	local errorFormatStack = "\n\nStack:\n%s"
 	local errorFormatLocals = "\n\nLocals:\n%s"
 
-	local function colorMessage(counter,message)
-		return errorFormatMessage:format(counter,message)
-	end
-	addon.FormatMessage = colorMessage
-	
 	function addon:FormatError(err)
-		-- if there's an extra stack stored in the error (some addons do this for their bug handling), extract it and append to the stack.
-
-		local stack = err.stack
-		local message = err.message
-
-		-- Zygor Guides
-		local msg,pre_stack = message:match("(.*)\n%-%- STACKTRACE: %-%-\n(.*)")
-		if msg then
-			message = msg
-			stack = pre_stack .. "---\n" .. (tostring(stack) or "")
-		end
-
 		local formatter = addon.Plugins:GetFormatter()
-		local ret = formatter.formatMessage(err.counter,message)
+		
+		local stack,message,locals = err.stack,err.message,err.locals
+
+		if formatter.preformatError then message,stack,locals=formatter.preformatError(message,stack,locals) end
+
+		local ret = ""
+		ret = ret .. formatter.formatMessage(err.counter or -1,message)
 		ret = ret .. errorFormatStack:format(formatter.formatStack(stack))
-		if err.locals then ret = ret .. errorFormatLocals:format(colorLocals(tostring(err.locals))) end
+		if locals then ret = ret .. errorFormatLocals:format(formatter.formatLocals(tostring(locals))) end
 		return ret
 	end
-
+end
 
 function addon:Reset()
 	BugGrabber:Reset()
