@@ -240,7 +240,7 @@ do
 		
 		local stack,message,locals = err.stack,err.message,err.locals
 
-		if formatter.preformatError then message,stack,locals=formatter.preformatError(message,stack,locals) end
+		message,stack,locals = formatter.preformatError(message,stack,locals)
 
 		local ret = ""
 		ret = ret .. formatter.formatMessage(err.counter or -1,message)

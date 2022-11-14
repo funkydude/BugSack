@@ -152,16 +152,17 @@ end
 
 local function colorLocals(locals)
 	locals = tostring(locals) or "" -- Yes, it gets called with nonstring from somewhere /mikk
-	locals = locals:gsub("[%.I][%.n][%.t][%.e][%.r]face/", "")
-	locals = locals:gsub("%.?%.?%.?/?AddOns/", "")
 	locals = locals:gsub("|(%a)", "||%1"):gsub("|$", "||") -- Pipes
-	locals = locals:gsub("> %@(.-):(%d+)", "> @|cffeda55f%1|r:|cff00ff00%2|r") -- Files/Line Numbers of locals
+	--locals = locals:gsub("> %@(.-):(%d+)", "> @|cffeda55f%1|r:|cff00ff00%2|r") -- Files/Line Numbers of locals
 	locals = locals:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1"..col.val.tablekey("%2").." = ") -- Table keys
 	locals = locals:gsub("= (%-?[%d%p]+)\n", "= "..col.val.num("%1").."\n") -- locals: number
 	locals = locals:gsub("= nil\n", "= "..col.val['nil']("nil").."\n") -- locals: nil
 	locals = locals:gsub("= true\n", "= "..col.val['true']("true").."\n") -- locals: true
 	locals = locals:gsub("= false\n", "= "..col.val['false']("false").."\n") -- locals: false
 	locals = locals:gsub("= <(.-)>", "= "..col.val.func("<%1>")) -- Things wrapped in <>
+	locals = locals:gsub("defined @(.-):(%d+)",function(path,line) return "defined @"..colorPath(path)..":"..col.line(line) end)
+	--locals = locals:gsub("@[%.I][%.n][%.t][%.e][%.r]face/", "")
+	--locals = locals:gsub("%.?%.?%.?/?AddOns/", "")
 	return locals
 end
 
@@ -182,4 +183,13 @@ addon.Plugins:RegisterFormatter({
 	formatMessage=formatMessage,
 	formatLocals=colorLocals,
 	preformatError=preformatError,
+})
+
+addon.Plugins:RegisterFormatter({
+	name="raw",
+	label="Raw",
+	description="Do not apply any formatting.",
+	--formatStack=function(...) return ... end,
+	--formatMessage=function(count,msg) return count.."x "..msg,
+	--formatLocals=identity,
 })
