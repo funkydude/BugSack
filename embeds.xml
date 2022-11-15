@@ -5,6 +5,8 @@
 <Script file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 <Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 
+<Script file="Libs\ParseStack.lua"/>
+
 <!--@no-lib-strip@-->
 <Include file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
 <Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
