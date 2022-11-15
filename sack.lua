@@ -320,7 +320,7 @@ local function createBugSack()
 	searchLabel:SetTextColor(1, 1, 1, 1)
 	searchLabel:Hide()
 
-	searchBox = CreateFrame("EditBox", nil, window, BackdropTemplateMixin and "BackdropTemplate")
+	searchBox = CreateFrame("EditBox", nil, window, "BackdropTemplate")
 	searchBox:SetTextInsets(4, 4, 0, 0)
 	searchBox:SetMaxLetters(50)
 	searchBox:SetFontObject("ChatFontNormal")
