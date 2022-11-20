@@ -27,6 +27,7 @@
 
 embeds.xml
 
+parsestack.lua
 plugins.lua
 plugin_stack_compact.lua
 locales.lua
