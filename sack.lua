@@ -177,7 +177,7 @@ local function createBugSack()
 	window:Hide()
 
 	window:SetFrameStrata("DIALOG")
-	window:SetWidth(500)
+	window:SetWidth(800)
 	window:SetHeight(310)
 	window:SetPoint("CENTER")
 	window:SetMovable(true)
@@ -320,10 +320,19 @@ local function createBugSack()
 	searchLabel:SetTextColor(1, 1, 1, 1)
 	searchLabel:Hide()
 
-	searchBox = CreateFrame("EditBox", nil, window)
+	searchBox = CreateFrame("EditBox", nil, window, "BackdropTemplate")
 	searchBox:SetTextInsets(4, 4, 0, 0)
 	searchBox:SetMaxLetters(50)
 	searchBox:SetFontObject("ChatFontNormal")
+	searchBox:SetBackdrop({
+		edgeFile = nil,
+		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+		insets = { left = 0, right = 0, top = 0, bottom = 0 },
+		tile = true,
+		tileSize = 16,
+		edgeSize = 1,
+	})
+	searchBox:SetBackdropColor(0, 0, 0, 0.5)
 	searchBox:SetScript("OnShow", function(self)
 		self:SetFocus()
 	end)
@@ -338,14 +347,11 @@ local function createBugSack()
 	searchBox:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
 	searchBox:Hide()
 
-	local searchBackdrop = searchBox:CreateTexture(nil, "BACKGROUND")
-	searchBackdrop:SetAllPoints()
-	searchBackdrop:SetColorTexture(0, 0, 0, 0.5)
-
 	nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate")
 	nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
 	nextButton:SetFrameStrata("FULLSCREEN")
-	nextButton:SetWidth(130)
+	nextButton:SetHeight(40)
+	nextButton:SetWidth(200)
 	nextButton:SetText(L["Next >"])
 	nextButton:SetScript("OnClick", function()
 		if IsShiftKeyDown() then
@@ -359,7 +365,8 @@ local function createBugSack()
 	prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate")
 	prevButton:SetPoint("BOTTOMLEFT", window, 14, 16)
 	prevButton:SetFrameStrata("FULLSCREEN")
-	prevButton:SetWidth(130)
+	prevButton:SetHeight(40)
+	prevButton:SetWidth(200)
 	prevButton:SetText(L["< Previous"])
 	prevButton:SetScript("OnClick", function()
 		if IsShiftKeyDown() then
@@ -375,6 +382,7 @@ local function createBugSack()
 		sendButton:SetPoint("LEFT", prevButton, "RIGHT")
 		sendButton:SetPoint("RIGHT", nextButton, "LEFT")
 		sendButton:SetFrameStrata("FULLSCREEN")
+		sendButton:SetHeight(40)
 		sendButton:SetText(L["Send bugs"])
 		sendButton:SetScript("OnClick", function()
 			local eo = currentSackContents[currentErrorIndex]
@@ -396,7 +404,7 @@ local function createBugSack()
 	textArea:SetMaxLetters(99999)
 	textArea:EnableMouse(true)
 	textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
-	textArea:SetWidth(450)
+	textArea:SetWidth(750)
 
 	scroll:SetScrollChild(textArea)
 
