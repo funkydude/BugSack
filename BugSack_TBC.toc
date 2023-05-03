@@ -15,6 +15,7 @@
 ## Author: Funkydude
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, !BugGrabber
+## IconTexture: Interface\AddOns\BugSack\Media\icon
 
 ## X-Category: Development Tools
 ## X-Credits: Archarodim, Zidomo, Rowne, Ramble, kergoth, ckknight, Gamefaq, thomasmo, damjau, Fritti, Rabbit
