@@ -59,7 +59,7 @@ frame:SetScript("OnShow", function(frame)
 	minimap:SetPoint("TOPLEFT", chatFrame, "BOTTOMLEFT", 0, -8)
 	minimap:SetChecked(not BugSackLDBIconDB.hide)
 
-	if AddonCompartmentFrame then
+	if ldbi:IsButtonCompartmentAvailable() then
 		local addonCompartment = newCheckbox(
 			L.addonCompartment,
 			L.addonCompartment_desc,
