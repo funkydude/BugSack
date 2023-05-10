@@ -53,6 +53,8 @@ L["You have no bugs, yay!"] = "You have no bugs, yay!"
 L["You've received %d bugs from %s."] = "You've received %d bugs from %s."
 L.useMaster = "Use 'Master' sound channel"
 L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+L.addonCompartment = "Addon compartment icon"
+L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 
 local locale = GetLocale()
 if locale == "deDE" then
@@ -107,6 +109,8 @@ if locale == "deDE" then
 	L["You've received %d bugs from %s."] = "Du hast %d Fehler von %s empfangen."
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "esES" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "Enviado %s errores a %s. Él o ella debe tener BugSack para verlos."
 	L.minimapHint = "|cffeda55fClic|r para abrir BugSack con el último error. |cffeda55fMayús clic|r para volver a cargar la interfaz. |cffeda55fRight-Click|r to open options."
@@ -159,6 +163,8 @@ elseif locale == "esES" then
 	L["You've received %d bugs from %s."] = "Has recibido %d errores por %s."
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "esMX" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "Enviado %s errores a %s. Él o ella debe tener BugSack para verlos."
 	L.minimapHint = "|cffeda55fClic|r para abrir BugSack con el último error. |cffeda55fMayús clic|r para volver a cargar la interfaz. |cffeda55fRight-Click|r to open options."
@@ -211,6 +217,8 @@ elseif locale == "esMX" then
 	L["You've received %d bugs from %s."] = "Has recibido %d errores por %s."
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "frFR" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d erreurs ont été transmises à %s. Il doit avoir BugSack pour pouvoir les examiner."
 	L.minimapHint = "|cffeda55fClic|r pour ouvrir BugSack sur la dernière erreur. |cffeda55fMaj-Clic|r pour recharger l'interface utilisateur. |cffeda55fRight-Click|r to open options."
@@ -263,6 +271,8 @@ elseif locale == "frFR" then
 	L["You've received %d bugs from %s."] = "Vous avez reçu %d erreurs de %s."
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "koKR" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d개의 버그를 %s님에게 보냈습니다. 버그를 검사하려면 BugSack이 설치되어 있어야 합니다."
 	L.minimapHint = "|cffeda55f클릭|r을 하면 최근 버그가 있는 BugSack을 엽니다. |cffeda55fShift-클릭|r을 하면 사용자 인터페이스를 다시 불러옵니다. |cffeda55f오른쪽-클릭|r을 하면 옵션을 엽니다."
@@ -315,6 +325,8 @@ elseif locale == "koKR" then
 	L["You've received %d bugs from %s."] = "%s님으로부터 %d개의 버그를 받았습니다."
 	L.useMaster = "'주' 음성 채널 사용"
 	L.useMasterDesc = "선택한 오류 소리를 기본 음성 채널 대신 '주' 음성 채널을 통해 재생합니다."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "ruRU" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d багов было отослано получателю %s. Получатель должен иметь установленный BugSack для просмотра."
 	L.minimapHint = "|cffeda55fЛевый щелчок|r Открыть BugSack с последним пойманным багом.\n|cffeda55fShift-щелчок|r Перегрузить пользовательский интерфейс.\n|cffeda55fПравый щелчок|r Открыть настройки."
@@ -367,6 +379,8 @@ elseif locale == "ruRU" then
 	L["You've received %d bugs from %s."] = "Вы получили %d багов от %s."
 	L.useMaster = "Использовать канал звука 'Master'"
 	L.useMasterDesc = "Воспроизводить выбранный звук ошибки в канале звука 'Master'."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "zhCN" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d个错误已经发送给%s。他必须安装 BugSack 插件才能查看错误信息。"
 	L.minimapHint = "|cffeda55f点击|r打开 BugSack 及最后一错误信息。|cffeda55fShift-点击|r重新加载用户界面。|cffeda55f右击|r 打开选项。"
@@ -419,6 +433,8 @@ elseif locale == "zhCN" then
 	L["You've received %d bugs from %s."] = "你已接收到%d个错误从%s。"
 	L.useMaster = "使用“主”声道"
 	L.useMasterDesc = "通过“主”声道而不是默认声道播放所选的错误音效。"
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "zhTW" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d個錯誤已經傳送給%s。他必須有BugSack來查看錯誤訊息。"
 	L.minimapHint = "|cffeda55f點擊|r開啟BugSack最後錯誤訊息。|cffeda55fShift-點擊|r重新載入使用者介面。 |cffeda55fRight-Click|r to open options."
@@ -471,6 +487,8 @@ elseif locale == "zhTW" then
 	L["You've received %d bugs from %s."] = "從%s收到%d個錯誤。"
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "ptBR" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d falhas foram enviadas para %s. Ele deve ter o BugSack para poder examiná-las."
 	L.minimapHint = "|cffeda55fClique|r para abrir o BugSack com a última falha. |cffeda55fShift+Clique|r para recarregar a interface de usuário. |cffeda55fRight-Click|r to open options."
@@ -523,6 +541,8 @@ elseif locale == "ptBR" then
 	L["You've received %d bugs from %s."] = "Você recebeu %d falhas de %s."
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 elseif locale == "itIT" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d bugs sono stati inviati a %s. Devi avere BugSack installato per poterli esaminarli."
 	L.minimapHint = "|cffeda55fFai click|r per aprire BugSack con l'ultimo bug. |cffeda55fFai Maiusc-Click|r per ricaricare gli addon. |cffeda55fRight-Click|r to open options."
@@ -575,6 +595,8 @@ elseif locale == "itIT" then
 	L["You've received %d bugs from %s."] = "Hai ricevuto %d bug da %s."
 	--L.useMaster = "Use 'Master' sound channel"
 	--L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
+	--L.addonCompartment = "Addon compartment icon"
+	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
 end
 
 addon.L = L
