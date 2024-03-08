@@ -82,8 +82,26 @@ frame:SetScript("OnShow", function(frame)
 	mute:SetPoint("TOPLEFT", minimap, "BOTTOMLEFT", 0, -8)
 
 	local info = {}
+	local pluginFormatterDropdown = CreateFrame("Frame", "BugSackPluginFormatter", frame, "UIDropDownMenuTemplate")
+	pluginFormatterDropdown:SetPoint("TOPLEFT", mute, "BOTTOMLEFT", -15, -10)
+	pluginFormatterDropdown.initialize = function()
+		for name,formatter in pairs(addon.Plugins.formatters) do
+			wipe(info)
+			info.text = formatter.label or formatter.name
+			info.value = formatter.name
+			info.func = function(self)
+				addon.db.pluginFormatter = self.value
+				addon:UpdateDisplay()
+			end
+			info.checked = name == addon.db.pluginFormatter
+			UIDropDownMenu_AddButton(info)
+		end
+	end
+	pluginFormatterDropdown.Text:SetText(L["Formatter plugin"])
+
+	local info = {}
 	local fontSizeDropdown = CreateFrame("Frame", "BugSackFontSize", frame, "UIDropDownMenuTemplate")
-	fontSizeDropdown:SetPoint("TOPLEFT", mute, "BOTTOMLEFT", -15, -10)
+	fontSizeDropdown:SetPoint("TOPLEFT", pluginFormatterDropdown, "BOTTOMLEFT", -15, -10)
 	fontSizeDropdown.initialize = function()
 		wipe(info)
 		local fonts = {"GameFontHighlightSmall", "GameFontHighlight", "GameFontHighlightMedium", "GameFontHighlightLarge"}
