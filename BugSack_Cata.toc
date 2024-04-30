@@ -1,4 +1,4 @@
-## Interface: 100206
+## Interface: 40400
 ## Version: @project-version@
 ## Title: BugSack
 ## Notes: Toss those bugs inna sack.
