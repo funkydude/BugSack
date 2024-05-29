@@ -124,7 +124,18 @@ do
 		if type(sv.fontSize) ~= "string" then sv.fontSize = "GameFontHighlight" end
 		if type(sv.altwipe) ~= "boolean" then sv.altwipe = false end
 		if type(sv.useMaster) ~= "boolean" then sv.useMaster = false end
+		if type(sv.pluginFormatter) ~= "string" then sv.pluginFormatter = "default" end
 		addon.db = sv
+
+		-- add our default formatter
+		addon.Plugins:RegisterFormatter({
+			name="default",
+			label="Default",
+			description="Classic BugSack stacktrace",
+			formatStack=addon.ColorStack,
+			formatMessage=addon.ColorMessage,
+			formatLocals=addon.ColorLocals,
+		})
 
 		-- Make sure we grab any errors fired before bugsack loaded.
 		local session = addon:GetErrors(BugGrabber:GetSessionId())
@@ -213,18 +224,29 @@ do
 	end
 	addon.ColorLocals = colorLocals
 
-	local errorFormat = "%dx %s"
-	local errorFormatLocals = "%dx %s\n\nLocals:\n%s"
+	local errorFormatMessage = "%dx %s"
+
+	local function colorMessage(counter,message)
+		message = message:gsub("^%[string \"(.-)\"%]:","%1:")
+		return errorFormatMessage:format(counter,message)
+	end
+	addon.ColorMessage = colorMessage
+
+	local errorFormatStack = "\n\nStack:\n%s"
+	local errorFormatLocals = "\n\nLocals:\n%s"
+
 	function addon:FormatError(err)
-		if not err.locals then
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
-			local l = colorLocals(tostring(err.locals))
-			return errorFormat:format(err.counter or -1, s, l)
-		else
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
-			local l = colorLocals(tostring(err.locals))
-			return errorFormatLocals:format(err.counter or -1, s, l)
-		end
+		local formatter = addon.Plugins:GetFormatter()
+		
+		local message,stack,locals = err.message,err.stack,err.locals
+
+		message,stack,locals = formatter.preformatError(message,stack,locals)
+
+		local ret = ""
+		ret = ret .. formatter.formatMessage(err.counter or -1,message)
+		ret = ret .. errorFormatStack:format(formatter.formatStack(stack))
+		if locals then ret = ret .. errorFormatLocals:format(formatter.formatLocals(tostring(locals))) end
+		return ret
 	end
 end
 
