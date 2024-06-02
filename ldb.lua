@@ -13,10 +13,21 @@ local plugin = ldb:NewDataObject(addonName, {
 
 local BugGrabber = BugGrabber
 
+-- Function to open the Interface Options to a specific category
+local function openInterfaceOptionsToCategory(category)
+    if Settings and Settings.OpenToCategory then
+        -- New API in Dragonflight and beyond
+        Settings.OpenToCategory(category)
+    else
+        -- Fallback for older versions
+        InterfaceOptionsFrame_OpenToCategory(category)
+    end
+end
+
 function plugin.OnClick(self, button)
 	if button == "RightButton" then
-		InterfaceOptionsFrame_OpenToCategory(addonName)
-		InterfaceOptionsFrame_OpenToCategory(addonName)
+		openInterfaceOptionsToCategory(addonName)
+		openInterfaceOptionsToCategory(addonName)
 	else
 		if IsShiftKeyDown() then
 			ReloadUI()
@@ -62,4 +73,3 @@ f:SetScript("OnEvent", function()
 	icon:Register(addonName, plugin, BugSackLDBIconDB)
 end)
 f:RegisterEvent("PLAYER_LOGIN")
-
