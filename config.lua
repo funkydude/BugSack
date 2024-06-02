@@ -11,7 +11,7 @@ frame.name = addonName
 frame:Hide()
 local ldbi = LibStub("LibDBIcon-1.0")
 
-frame:SetScript("OnShow", function(frame)
+local function setupConfigFrame(frame)
     local function newCheckbox(label, description, onClick)
         local check = CreateFrame("CheckButton", "BugSackCheck" .. label, frame, "InterfaceOptionsCheckButtonTemplate")
         check:SetScript("OnClick", function(self)
@@ -148,8 +148,11 @@ frame:SetScript("OnShow", function(frame)
         function(self, value) addon.db.altwipe = value end)
     altWipe:SetChecked(addon.db.altwipe)
     altWipe:SetPoint("LEFT", clear, "RIGHT", 10, 0)
+end
 
-    frame:SetScript("OnShow", nil)
+frame:SetScript("OnShow", function(self)
+    setupConfigFrame(self)
+    self:SetScript("OnShow", nil) -- Ensure this setup runs only once
 end)
 
 local category
@@ -163,7 +166,6 @@ end
 if category then
     category.ID = frame.name
     Settings.RegisterAddOnCategory(category)
-    Settings.OpenToCategory(category)
 else
     print("Error: Unable to register the settings category for", addonName)
 end
