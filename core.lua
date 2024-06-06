@@ -142,8 +142,12 @@ do
 			if msg == "show" then
 				addon:OpenSack()
 			else
-				InterfaceOptionsFrame_OpenToCategory(addonName)
-				InterfaceOptionsFrame_OpenToCategory(addonName)
+				if InterfaceOptionsFrame_OpenToCategory then
+					InterfaceOptionsFrame_OpenToCategory(addonName)
+					InterfaceOptionsFrame_OpenToCategory(addonName)
+				else
+					Settings.OpenToCategory(addon.settingsCategory.ID)
+				end
 			end
 		end
 		SLASH_BugSack1 = "/bugsack"
