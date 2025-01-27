@@ -19,7 +19,7 @@ local currentErrorObject = nil
 local tabs = nil
 
 local countLabel, sessionLabel, textArea = nil, nil, nil
-local nextButton, prevButton, sendButton = nil, nil, nil
+local nextButton, prevButton, sendButton, copyButton = nil, nil, nil, nil
 local searchLabel, searchBox = nil, nil
 
 local sessionFormat = "%s - |cffff4411%s|r - |cff44ff44%d|r" -- <date> - <sent by> - <session id>
@@ -100,6 +100,7 @@ local function updateSackDisplay(forceRefresh)
 			prevButton:Enable()
 		end
 		if sendButton then sendButton:Enable() end
+		if copyButton then copyButton:Enable() end
 	else
 		countLabel:SetText()
 		if currentSackSession == BugGrabber:GetSessionId() then
@@ -111,6 +112,7 @@ local function updateSackDisplay(forceRefresh)
 		nextButton:Disable()
 		prevButton:Disable()
 		if sendButton then sendButton:Disable() end
+		if copyButton then copyButton:Disable() end
 	end
 
 	for i, t in next, tabs do
@@ -356,7 +358,7 @@ local function createBugSack()
 	nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
 	nextButton:SetFrameStrata("FULLSCREEN")
 	nextButton:SetHeight(40)
-	nextButton:SetWidth(200)
+	nextButton:SetWidth(150)
 	nextButton:SetText(L["Next >"])
 	nextButton:SetScript("OnClick", function()
 		if IsShiftKeyDown() then
@@ -366,12 +368,12 @@ local function createBugSack()
 		end
 		updateSackDisplay()
 	end)
-
+	
 	prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate")
 	prevButton:SetPoint("BOTTOMLEFT", window, 14, 16)
 	prevButton:SetFrameStrata("FULLSCREEN")
 	prevButton:SetHeight(40)
-	prevButton:SetWidth(200)
+	prevButton:SetWidth(150)
 	prevButton:SetText(L["< Previous"])
 	prevButton:SetScript("OnClick", function()
 		if IsShiftKeyDown() then
@@ -381,13 +383,18 @@ local function createBugSack()
 		end
 		updateSackDisplay()
 	end)
-
+	
+	local buttonWidth = 150
+	local spacing = 10
+	local totalWidth = buttonWidth * 4 + spacing * 3
+	local startX = (window:GetWidth() - totalWidth) / 2
+	
 	if addon.Serialize then
 		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
-		sendButton:SetPoint("LEFT", prevButton, "RIGHT")
-		sendButton:SetPoint("RIGHT", nextButton, "LEFT")
+		sendButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", startX + buttonWidth + spacing, 16)
 		sendButton:SetFrameStrata("FULLSCREEN")
 		sendButton:SetHeight(40)
+		sendButton:SetWidth(buttonWidth)
 		sendButton:SetText(L["Send bugs"])
 		sendButton:SetScript("OnClick", function()
 			local eo = currentSackContents[currentErrorIndex]
@@ -396,6 +403,16 @@ local function createBugSack()
 			window:Hide()
 		end)
 	end
+	
+	copyButton = CreateFrame("Button", "BugSackCopyButton", window, "UIPanelButtonTemplate")
+	copyButton:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", startX + (buttonWidth + spacing) * 2, 16)
+	copyButton:SetFrameStrata("FULLSCREEN")
+	copyButton:SetHeight(40)
+	copyButton:SetWidth(buttonWidth)
+	copyButton:SetText(L["Copy All Errors"])
+	copyButton:SetScript("OnClick", function()
+		addon:ShowCopyDialog()
+	end)
 
 	local scroll = CreateFrame("ScrollFrame", "BugSackScroll", window, "UIPanelScrollFrameTemplate")
 	scroll:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
@@ -482,3 +499,48 @@ function addon:OpenSack()
 	show()
 end
 
+function addon:ShowCopyDialog()
+    if not self.copyDialog then
+        local f = CreateFrame("Frame", "BugSackCopyDialog", UIParent, "BackdropTemplate")
+        f:SetPoint("CENTER")
+        f:SetSize(700, 500)
+        f:SetFrameStrata("FULLSCREEN_DIALOG")
+        f:SetBackdrop({
+            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+            tile = true, tileSize = 32, edgeSize = 32,
+            insets = { left = 11, right = 12, top = 12, bottom = 11 }
+        })
+        f:SetBackdropColor(0, 0, 0, 1)
+        f:Hide()
+
+        local scrollArea = CreateFrame("ScrollFrame", "BugSackCopyScroll", f, "UIPanelScrollFrameTemplate")
+        scrollArea:SetPoint("TOPLEFT", 12, -30)
+        scrollArea:SetPoint("BOTTOMRIGHT", -30, 40)
+
+        local editBox = CreateFrame("EditBox", "BugSackCopyEditBox", scrollArea)
+        editBox:SetMultiLine(true)
+        editBox:SetFontObject(ChatFontNormal)
+        editBox:SetWidth(scrollArea:GetWidth())
+        editBox:SetScript("OnEscapePressed", function() f:Hide() end)
+        scrollArea:SetScrollChild(editBox)
+
+        local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
+        close:SetPoint("TOPRIGHT", -5, -5)
+
+        self.copyDialog = f
+    end
+
+    local editBox = _G.BugSackCopyEditBox
+    local allErrors = ""
+    local separator = "\n\n--- Next Error ---\n\n"
+
+    for i, err in ipairs(self:GetErrors(BugGrabber:GetSessionId())) do
+        allErrors = allErrors .. self:FormatError(err) .. separator
+    end
+
+    editBox:SetText(allErrors)
+    editBox:HighlightText()
+
+    self.copyDialog:Show()
+end
