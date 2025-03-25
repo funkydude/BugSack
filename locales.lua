@@ -13,6 +13,7 @@ L["chatFrameDesc"] = "Prints a reminder to the chat frame when an error is encou
 L["Chatframe output"] = "Chatframe output"
 L["Current session"] = "Current session"
 L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d bugs have been sent to %s. He must have BugSack to be able to examine them."
+L["Formatter plugin"] = "Formatter plugin"
 L["Failure to deserialize incoming data from %s."] = "Failure to deserialize incoming data from %s."
 L["Filter"] = "Filter"
 L["Filter addon mistakes"] = "Filter addon mistakes"
@@ -598,5 +599,7 @@ elseif locale == "itIT" then
 	L.addonCompartment = "Icona compartimento Addon"
 	L.addonCompartment_desc = "Crea una voce menù nella 'Lista Compartimento Addon' per BugSack."
 end
+
+setmetatable(L,{__index=function(t,k) return k end})
 
 addon.L = L
