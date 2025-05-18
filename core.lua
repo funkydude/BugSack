@@ -219,14 +219,14 @@ do
 
 	local errorFormat = "%dx %s"
 	local errorFormatLocals = "%dx %s\n\nLocals:\n%s"
-	function addon:FormatError(err)
+	function addon:FormatError(err, unprintableLocals)
 		if not err.locals then
 			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
 			local l = colorLocals(tostring(err.locals))
 			return errorFormat:format(err.counter or -1, s, l)
 		else
 			local s = colorStack(tostring(err.message) .. (err.stack and "\n"..tostring(err.stack) or ""))
-			local l = colorLocals(tostring(err.locals))
+			local l = unprintableLocals and "Skipped because of unprintable characters" or colorLocals(tostring(err.locals))
 			return errorFormatLocals:format(err.counter or -1, s, l)
 		end
 	end

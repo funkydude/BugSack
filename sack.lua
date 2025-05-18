@@ -88,6 +88,9 @@ local function updateSackDisplay(forceRefresh)
 		end
 		countLabel:SetText(countFormat:format(currentErrorIndex, size))
 		textArea:SetText(addon:FormatError(eo))
+		if textArea:GetText() == "" then
+			textArea:SetText(addon:FormatError(eo, true))
+		end
 
 		if currentErrorIndex >= size then
 			nextButton:Disable()
