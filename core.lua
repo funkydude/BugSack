@@ -109,7 +109,7 @@ do
 				end,
 				enterClicksFirstButton = true,
 				--OnCancel = function() show() end, -- Need to wrap it so we don't pass |self| as an error argument to show().
-				preferredIndex = STATICPOPUP_NUMDIALOGS,
+				preferredIndex = 1,
 			}
 		end
 
