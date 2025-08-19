@@ -3,7 +3,7 @@
 ## Title: BugSack
 ## Notes: Toss those bugs inna sack.
 ## Notes-deDE: Werft den Fehler in einen Sack.
-## Notes-ruRU: Аддон ловит текущие ошибки в мешок.
+## Notes-ruRU: Собирает информацию об ошибках и ловит их в мешок.
 ## Notes-zhCN: 错误信息收集器。
 ## Notes-zhTW: 集中顯示錯誤訊息，避免中斷遊戲。
 ## Notes-koKR: 애드온에서 발생하는 버그를 자루에 넣어 버리세요.
