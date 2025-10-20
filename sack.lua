@@ -1,5 +1,7 @@
 local addonName, addon = ...
-if not addon.healthCheck then return end
+if not addon.healthCheck then
+	return
+end
 local L = addon.L
 
 -- The sack
@@ -30,7 +32,9 @@ local localFormat = L["Local (%s)"]
 -- Updates the total bug count and so forth.
 local lastState = nil
 local function updateSackDisplay(forceRefresh)
-	if state ~= lastState then forceRefresh = true end
+	if state ~= lastState then
+		forceRefresh = true
+	end
 	lastState = state
 
 	if forceRefresh then
@@ -73,14 +77,23 @@ local function updateSackDisplay(forceRefresh)
 			end
 		end
 	end
-	if not eo then eo = currentSackContents[currentErrorIndex] end
-	if not eo then eo = currentSackContents[size] end
-	if currentSackSession == -1 and eo then currentSackSession = eo.session end
+	if not eo then
+		eo = currentSackContents[currentErrorIndex]
+	end
+	if not eo then
+		eo = currentSackContents[size]
+	end
+	if currentSackSession == -1 and eo then
+		currentSackSession = eo.session
+	end
 
 	if size > 0 then
 		local source = nil
-		if eo.source then source = sourceFormat:format(eo.source, "error")
-		else source = localFormat:format("error") end
+		if eo.source then
+			source = sourceFormat:format(eo.source, "error")
+		else
+			source = localFormat:format("error")
+		end
 		if eo.session == BugGrabber:GetSessionId() then
 			sessionLabel:SetText(sessionFormat:format(L["Today"], source, eo.session))
 		else
@@ -99,7 +112,9 @@ local function updateSackDisplay(forceRefresh)
 		else
 			prevButton:Enable()
 		end
-		if sendButton then sendButton:Enable() end
+		if sendButton then
+			sendButton:Enable()
+		end
 	else
 		countLabel:SetText()
 		if currentSackSession == BugGrabber:GetSessionId() then
@@ -110,7 +125,9 @@ local function updateSackDisplay(forceRefresh)
 		textArea:SetText(L["You have no bugs, yay!"])
 		nextButton:Disable()
 		prevButton:Disable()
-		if sendButton then sendButton:Disable() end
+		if sendButton then
+			sendButton:Disable()
+		end
 	end
 
 	for i, t in next, tabs do
@@ -122,7 +139,9 @@ local function updateSackDisplay(forceRefresh)
 	end
 end
 hooksecurefunc(addon, "UpdateDisplay", function()
-	if not window or not window:IsShown() then return end
+	if not window or not window:IsShown() then
+		return
+	end
 	-- can't just hook it right in because it would pass |self| as forceRefresh
 	local forceRefresh = currentErrorIndex and currentSackContents and currentErrorIndex == #currentSackContents
 	updateSackDisplay(forceRefresh)
@@ -298,12 +317,7 @@ local function createBugSack()
 			return
 		end
 		window:Hide()
-		if InterfaceOptionsFrame_OpenToCategory then
-			InterfaceOptionsFrame_OpenToCategory(addonName)
-			InterfaceOptionsFrame_OpenToCategory(addonName)
-		else
-			Settings.OpenToCategory(addon.settingsCategory.ID)
-		end
+		Settings.OpenToCategory(addon.settingsCategory:GetID())
 	end)
 	local quickTips = L["quickTipsDesc"]
 	sessionLabel:SetScript("OnEnter", function(self)
@@ -319,7 +333,7 @@ local function createBugSack()
 	end)
 
 	searchLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	searchLabel:SetText(L["Filter"]..":")
+	searchLabel:SetText(L["Filter"] .. ":")
 	searchLabel:SetJustifyH("LEFT")
 	searchLabel:SetPoint("TOPLEFT", titlebg, 6, -3)
 	searchLabel:SetTextColor(1, 1, 1, 1)
@@ -402,7 +416,7 @@ local function createBugSack()
 	scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
 	textArea = CreateFrame("EditBox", "BugSackScrollText", scroll)
-	textArea:SetTextColor(.5, .5, .5, 1)
+	textArea:SetTextColor(0.5, 0.5, 0.5, 1)
 	textArea:SetAutoFocus(false)
 	textArea:SetMultiLine(true)
 	textArea:SetFontObject(_G[addon.db.fontSize] or GameFontHighlightSmall)
@@ -413,7 +427,12 @@ local function createBugSack()
 
 	scroll:SetScrollChild(textArea)
 
-	local all = CreateFrame("Button", "BugSackTabAll", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
+	local all = CreateFrame(
+		"Button",
+		"BugSackTabAll",
+		window,
+		C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+	)
 	all:SetFrameStrata("FULLSCREEN")
 	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", C_EditMode and 10 or 0, C_EditMode and 6 or 8)
 	all:SetText(L["All bugs"])
@@ -422,7 +441,12 @@ local function createBugSack()
 	all:SetScript("OnClick", setActiveMethod)
 	all.bugs = "all"
 
-	local session = CreateFrame("Button", "BugSackTabSession", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
+	local session = CreateFrame(
+		"Button",
+		"BugSackTabSession",
+		window,
+		C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+	)
 	session:SetFrameStrata("FULLSCREEN")
 	session:SetPoint("LEFT", all, "RIGHT")
 	session:SetText(L["Current session"])
@@ -431,7 +455,12 @@ local function createBugSack()
 	session:SetScript("OnClick", setActiveMethod)
 	session.bugs = "currentSession"
 
-	local last = CreateFrame("Button", "BugSackTabLast", window, C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate")
+	local last = CreateFrame(
+		"Button",
+		"BugSackTabLast",
+		window,
+		C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+	)
 	last:SetFrameStrata("FULLSCREEN")
 	last:SetPoint("LEFT", session, "RIGHT")
 	last:SetText(L["Previous session"])
@@ -440,7 +469,7 @@ local function createBugSack()
 	last:SetScript("OnClick", setActiveMethod)
 	last.bugs = "previousSession"
 
-	tabs = {all, session, last}
+	tabs = { all, session, last }
 	local size = (C_EditMode and 480 or 500) / 3
 	for i, t in next, tabs do
 		PanelTemplates_TabResize(t, nil, size, size)
@@ -481,4 +510,3 @@ function addon:OpenSack()
 	end]]
 	show()
 end
-
