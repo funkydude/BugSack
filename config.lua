@@ -203,10 +203,48 @@ local function InitializeSettings()
 			end
 		end
 
-		-- Create dropdown button
+		-- sound preview button
+		if not frame.previewButton then
+			frame.previewButton = CreateFrame("Button", nil, frame)
+			frame.previewButton:SetSize(20, 20)
+			frame.previewButton:SetPoint("LEFT", frame, "CENTER", -74, 0)
+			frame.previewButton:SetHeight(26)
+
+			local previewIcon = frame.previewButton:CreateTexture(nil, "ARTWORK")
+			previewIcon:SetAllPoints()
+			previewIcon:SetTexture("Interface\\Common\\VoiceChat-Speaker")
+			previewIcon:SetVertexColor(0.8, 0.8, 0.8)
+
+			frame.previewButton:SetScript("OnEnter", function(control)
+				previewIcon:SetVertexColor(1, 1, 1)
+				GameTooltip:SetOwner(control, "ANCHOR_TOP")
+				GameTooltip:SetText(L["Preview Sound"])
+				GameTooltip:Show()
+			end)
+
+			frame.previewButton:SetScript("OnLeave", function(control)
+				previewIcon:SetVertexColor(0.8, 0.8, 0.8)
+				GameTooltip:Hide()
+			end)
+
+			-- Play current sound on click
+			frame.previewButton:SetScript("OnClick", function(control)
+				local media = LibStub("LibSharedMedia-3.0")
+				local currentSound = GetSoundValue()
+				local soundFile = media:Fetch("sound", currentSound)
+				if soundFile then
+					if addon.db.useMaster then
+						PlaySoundFile(soundFile, "Master")
+					else
+						PlaySoundFile(soundFile)
+					end
+				end
+			end)
+		end
+
 		if not frame.soundDropdown then
 			frame.soundDropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
-			frame.soundDropdown:SetPoint("LEFT", frame, "CENTER", -48, 0)
+			frame.soundDropdown:SetPoint("LEFT", frame.previewButton, "RIGHT", 5, 0)
 			frame.soundDropdown:SetPoint("RIGHT", frame, "RIGHT", -20, 0)
 			frame.soundDropdown:SetHeight(26)
 
@@ -216,8 +254,8 @@ local function InitializeSettings()
 
 				local sounds = LibStub("LibSharedMedia-3.0"):List("sound")
 				for _, sound in next, sounds do
-					local function OnSelection(sound)
-						SetSoundValue(sound)
+					local function OnSelection(soundValue)
+						SetSoundValue(soundValue)
 						UpdateDropdownText()
 					end
 					rootDescription:CreateRadio(sound, IsSoundSelected, OnSelection, sound)
@@ -279,8 +317,8 @@ local function InitializeSettings()
 		nil -- gameDataFunc
 	)
 
-	local layout = SettingsPanel:GetLayout(category)
-	layout:AddInitializer(wipeButtonInitializer)
+	local addonLayout = SettingsPanel:GetLayout(category)
+	addonLayout:AddInitializer(wipeButtonInitializer)
 
 	Settings.RegisterAddOnCategory(category)
 end
