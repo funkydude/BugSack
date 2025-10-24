@@ -218,7 +218,7 @@ local function InitializeSettings()
 			frame.previewButton:SetScript("OnEnter", function(control)
 				previewIcon:SetVertexColor(1, 1, 1)
 				GameTooltip:SetOwner(control, "ANCHOR_TOP")
-				GameTooltip:SetText("Preview Sound")
+				GameTooltip:SetText(L["Preview Sound"])
 				GameTooltip:Show()
 			end)
 
