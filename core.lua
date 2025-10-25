@@ -102,18 +102,19 @@ do
 				hideOnEscape = true,
 				hasEditBox = true,
 				OnAccept = function(self, data)
-					local recipient = self.editBox:GetText()
+					local recipient = self:GetEditBox():GetText()
 					addon:SendBugsToUser(recipient, data)
 				end,
 				OnShow = function(self)
-					self.button1:Disable()
+					self:GetButton1():Disable()
 				end,
 				EditBoxOnTextChanged = function(self)
 					local t = self:GetText()
+					local dialog = self:GetParent()
 					if t:len() > 2 and not t:find("%s") then
-						self:GetParent().button1:Enable()
+						dialog:GetButton1():Enable()
 					else
-						self:GetParent().button1:Disable()
+						dialog:GetButton1():Disable()
 					end
 				end,
 				enterClicksFirstButton = true,
