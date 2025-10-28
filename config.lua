@@ -112,8 +112,8 @@ local function InitializeSettings()
 		local fonts =
 			{ "GameFontHighlightSmall", "GameFontHighlight", "GameFontHighlightMedium", "GameFontHighlightLarge" }
 		addon.db.fontSize = fonts[value]
-		if _G.BugSackFrameScrollText then
-			_G.BugSackFrameScrollText:SetFontObject(_G[fonts[value]])
+		if _G.BugSackScrollText then
+			_G.BugSackScrollText:SetFontObject(_G[fonts[value]])
 		end
 	end
 
