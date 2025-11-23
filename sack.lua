@@ -431,7 +431,7 @@ local function createBugSack()
 		"Button",
 		"BugSackTabAll",
 		window,
-		C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+		"CharacterFrameTabButtonTemplate" -- Always use this one
 	)
 	all:SetFrameStrata("FULLSCREEN")
 	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", C_EditMode and 10 or 0, C_EditMode and 6 or 8)
@@ -445,7 +445,7 @@ local function createBugSack()
 		"Button",
 		"BugSackTabSession",
 		window,
-		C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+		"CharacterFrameTabButtonTemplate" -- Always use this one
 	)
 	session:SetFrameStrata("FULLSCREEN")
 	session:SetPoint("LEFT", all, "RIGHT")
@@ -459,7 +459,7 @@ local function createBugSack()
 		"Button",
 		"BugSackTabLast",
 		window,
-		C_EditMode and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+		"CharacterFrameTabButtonTemplate" -- Always use this one
 	)
 	last:SetFrameStrata("FULLSCREEN")
 	last:SetPoint("LEFT", session, "RIGHT")
