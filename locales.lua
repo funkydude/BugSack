@@ -331,8 +331,8 @@ elseif locale == "koKR" then
 	L["You've received %d bugs from %s."] = "%s님으로부터 %d개의 버그를 받았습니다."
 	L.useMaster = "'주' 음성 채널 사용"
 	L.useMasterDesc = "선택한 오류 소리를 기본 음성 채널 대신 '주' 음성 채널을 통해 재생합니다."
-	--L.addonCompartment = "Addon compartment icon"
-	--L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
+	L.addonCompartment = "애드온 보관함 아이콘"
+	L.addonCompartment_desc = "'애드온 보관함'에 BugSack 메뉴 항목을 생성합니다."
 elseif locale == "ruRU" then
 	L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."] = "%d багов было отослано получателю %s. Получатель должен иметь установленный BugSack для просмотра."
 	L.minimapHint = "|cffeda55f[ЛКМ]|r - открыть BugSack с последним пойманным багом.\n|cffeda55f[Shift+ЛКМ]|r - перезагрузить интерфейс.\n|cffeda55f[ПКМ]|r - открыть настройки."
