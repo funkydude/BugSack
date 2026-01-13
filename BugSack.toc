@@ -28,6 +28,7 @@
 
 embeds.xml
 
+retail.lua [AllowLoadGameType mainline]
 locales.lua
 core.lua
 sack.lua
