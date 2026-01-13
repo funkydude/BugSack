@@ -23,6 +23,7 @@
 ## Category-esMX: Herramientas de Desarrollo
 ## Category-frFR: Outils de Développement
 ## Category-itIT: Strumenti di sviluppo
+## Category-koKR: Development Tools
 ## Category-ptBR: Ferramentas de Desenvolvimento
 ## Category-ruRU: Инструменты разработки
 ## Category-zhCN: 开发工具
