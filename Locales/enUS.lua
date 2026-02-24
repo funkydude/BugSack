@@ -66,8 +66,6 @@ L["Minimap.MiddleClickAction"] = "Toggle Sound"
 L["Minimap.ShiftClick"] = "Shift + Click"
 L["Minimap.ShiftClickAction"] = "Reload Interface"
 L["Minimap.ShiftMiddleClick"] = "Shift + Middle-Click"
-L["Minimap.ShiftMiddleClickAction"] = "Clear Bugs"
-L["Minimap.AltClick"] = "Alt-Click"
-L["Minimap.AltClickAction"] = "Wipe Bugs"
+L["Minimap.ShiftMiddleClickAction"] = "Erase Bugs"
 
 addon.L = L

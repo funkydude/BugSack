@@ -68,7 +68,5 @@ L["Minimap.ShiftClick"] = "Maiusc + Clic"
 L["Minimap.ShiftClickAction"] = "Ricarica interfaccia"
 L["Minimap.ShiftMiddleClick"] = "Maiusc + Clic-Centrale"
 L["Minimap.ShiftMiddleClickAction"] = "Svuota bugs"
-L["Minimap.AltClick"] = "Alt + Clic"
-L["Minimap.AltClickAction"] = "Cancella bugs"
 
 addon.L = L

@@ -68,7 +68,5 @@ L["Minimap.ShiftClick"] = "Shift-클릭"
 L["Minimap.ShiftClickAction"] = "인터페이스 새로고침"
 L["Minimap.ShiftMiddleClick"] = "Shift-가운데 클릭"
 L["Minimap.ShiftMiddleClickAction"] = "버그 지우기"
-L["Minimap.AltClick"] = "Alt-클릭"
-L["Minimap.AltClickAction"] = "버그 초기화"
 
 addon.L = L

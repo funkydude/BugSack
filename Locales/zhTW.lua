@@ -68,7 +68,5 @@ L["Minimap.ShiftClick"] = "Shift-點擊"
 L["Minimap.ShiftClickAction"] = "重載介面"
 L["Minimap.ShiftMiddleClick"] = "Shift-中擊"
 L["Minimap.ShiftMiddleClickAction"] = "清除錯誤"
-L["Minimap.AltClick"] = "Alt-點擊"
-L["Minimap.AltClickAction"] = "擦除錯誤"
 
 addon.L = L

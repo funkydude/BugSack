@@ -68,7 +68,5 @@ L["Minimap.ShiftClick"] = "Shift + ЛКМ"
 L["Minimap.ShiftClickAction"] = "Перезагрузить интерфейс"
 L["Minimap.ShiftMiddleClick"] = "Shift + СКМ"
 L["Minimap.ShiftMiddleClickAction"] = "Очистить ошибки"
-L["Minimap.AltClick"] = "Alt + ЛКМ"
-L["Minimap.AltClickAction"] = "Удалить ошибки"
 
 addon.L = L

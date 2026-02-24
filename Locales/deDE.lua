@@ -68,7 +68,5 @@ L["Minimap.ShiftClick"] = "Shift + Klick"
 L["Minimap.ShiftClickAction"] = "Interface neu laden"
 L["Minimap.ShiftMiddleClick"] = "Shift + Mittelklick"
 L["Minimap.ShiftMiddleClickAction"] = "Fehler leeren"
-L["Minimap.AltClick"] = "Alt-Klick"
-L["Minimap.AltClickAction"] = "Fehler löschen"
 
 addon.L = L
