@@ -77,19 +77,19 @@ do
 
         tt:AddLine(" ")
 
-        tt:AddDoubleLine("|cffeda55fClick|r", "Open")
+		tt:AddDoubleLine("|cff00BBFFClick|r", "|cffFFFFFFOpen|r")
         tt:AddLine(" ")
 
-        tt:AddDoubleLine("|cffeda55fRight-Click|r", "Options")
+        tt:AddDoubleLine("|cff00BBFFRight-Click|r", "|cffFFFFFFOptions|r")
         tt:AddLine(" ")
 
-        tt:AddDoubleLine("|cffeda55fMiddle-Click|r", "Toggle Mute")
+        tt:AddDoubleLine("|cff00BBFFMiddle-Click|r", "|cffFFFFFFToggle Mute|r")
         tt:AddLine(" ")
 
-        tt:AddDoubleLine("|cffeda55fShift + Click|r", "Reload Interface")
+        tt:AddDoubleLine("|cff00BBFFShift + Click|r", "|cffFFFFFFReload Interface|r")
         tt:AddLine(" ")
 
-        tt:AddDoubleLine("|cffeda55fShift + Middle-Click|r", "Clear Bugs")
+        tt:AddDoubleLine("|cff00BBFFShift + Middle-Click|r", "|cffFFFFFFClear Bugs|r")
     end
 end
 
