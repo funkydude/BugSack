@@ -37,8 +37,6 @@ function dataObject.OnClick(self, button)
     else
         if IsShiftKeyDown() then
             ReloadUI()
-        elseif IsAltKeyDown() then
-            addon:Reset()
         elseif BugSackFrame and BugSackFrame:IsShown() then
             addon:CloseSack()
         else

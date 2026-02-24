@@ -7,7 +7,7 @@
 ## X-License: All Rights Reserved
 ## SavedVariables: BugSackDB, BugSackLDBIconDB
 ## RequiredDeps: !BugGrabber
-## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0
+## OptionalDeps: Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibSharedMedia-3.0
 
 ## BugSack Includes
 Includes\LibStub\LibStub.lua
@@ -19,7 +19,7 @@ Includes\LibDBIcon-1.0\lib.xml
 Includes\LibSharedMedia-3.0\lib.xml
 
 ## BugSack
-retail.lua
+Retail.lua
 Locales\enUS.lua
 Locales\deDE.lua
 Locales\esES.lua
