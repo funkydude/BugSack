@@ -243,17 +243,43 @@ do
 	end
 	addon.ColorLocals = colorLocals
 
-	local errorFormat = "%dx %s"
-	local errorFormatLocals = "%dx %s\n\nLocals:\n%s"
+	local errorFormat = "Build: %s\nAddon: %s\n\n%dx %s"
+	local errorFormatLocals = "Build: %s\nAddon: %s\n\n%dx %s\n\nLocals:\n%s"
+
+	-- Helper function to extract addon name and version from the error path
+	local function GetErrorMetadata(err)
+		local text = tostring(err.message) .. (err.stack and "\n" .. tostring(err.stack) or "")
+		-- Extract the addon folder name from the path (e.g., Interface\AddOns\DBM-Core\...)
+		local addonName = text:match("[Aa][Dd][Dd][Oo][Nn][Ss][/\\]([^/\\]+)")
+
+		if addonName then
+			-- C_AddOns is required for modern WoW; fallback to GetAddOnMetadata for older clients
+			local getMeta = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+			local version = getMeta and getMeta(addonName, "Version")
+			
+			if version then
+				return addonName .. " (" .. version .. ")"
+			end
+			return addonName
+		end
+		
+		return "Unknown"
+	end
+
 	function addon:FormatError(err)
+		-- Grab the current WoW client build info
+		local wowVersion, wowBuild = GetBuildInfo()
+		local buildStr = wowVersion .. " (" .. wowBuild .. ")"
+		local addonStr = GetErrorMetadata(err)
+
+		-- Format the stack and locals using BugSack's coloring functions
+		local s = colorStack(tostring(err.message) .. (err.stack and "\n" .. tostring(err.stack) or ""))
+		local l = colorLocals(tostring(err.locals) or "")
+
 		if not err.locals then
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n" .. tostring(err.stack) or ""))
-			local l = colorLocals(tostring(err.locals) or "")
-			return errorFormat:format(err.counter or -1, s, l)
+			return errorFormat:format(buildStr, addonStr, err.counter or -1, s)
 		else
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n" .. tostring(err.stack) or ""))
-			local l = colorLocals(tostring(err.locals) or "")
-			return errorFormatLocals:format(err.counter or -1, s, l)
+			return errorFormatLocals:format(buildStr, addonStr, err.counter or -1, s, l)
 		end
 	end
 end
