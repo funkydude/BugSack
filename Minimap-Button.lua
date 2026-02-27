@@ -49,7 +49,7 @@ hooksecurefunc(
     addon,
     "UpdateDisplay",
     function()
-        local errorCount = #addon:GetErrors(BugGrabber:GetSessionId())
+        local errorCount = #addon:GetErrors()
         dataObject.text = errorCount
         dataObject.icon = errorCount == 0 and addon.ICON_GREEN or addon.ICON_RED
     end
@@ -67,18 +67,23 @@ do
         tooltip:AddLine(addonName)
         tooltip:AddLine(" ")
 
-        local errors = addon:GetErrors(BugGrabber:GetSessionId())
+        local errors = addon:GetErrors()
         if #errors == 0 then
             tooltip:AddLine(L["General.NoBugs"], 1, 1, 1)
         else
-            for index, errorEntry in ipairs(errors) do
+            local displayedCount = 0
+            for i = #errors, 1, -1 do
+                local errorEntry = errors[i]
+                displayedCount = displayedCount + 1
+
                 tooltip:AddLine(
-                    tooltipLineFormat:format(index, addon.ColorStack(errorEntry.message), errorEntry.counter),
+                    tooltipLineFormat:format(i, addon.ColorStack(errorEntry.message), errorEntry.counter),
                     0.5,
                     0.5,
                     0.5
                 )
-                if index > 8 then
+
+                if displayedCount >= 8 then
                     break
                 end
             end
@@ -123,6 +128,8 @@ registrationFrame:SetScript(
 
         BugSackLDBIconDB = BugSackLDBIconDB or {}
         dataBrokerIcon:Register(addonName, dataObject, BugSackLDBIconDB)
+        
+        addon:UpdateDisplay()
     end
 )
 registrationFrame:RegisterEvent("PLAYER_LOGIN")

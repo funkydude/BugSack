@@ -19,7 +19,7 @@ addon.colors = {
     prefix = "#ff259054",
     red = "#ffff4411",
     white = "#ffffffff",
-    yellow = "#ffffea00",
+    yellow = "#ffffea00"
 }
 
 function addon:Colorize(text, hexColor)
@@ -299,11 +299,35 @@ do
     addon.ColorLocals = colorLocals
 
     local ERROR_FORMAT =
-        "Build: %s\nAdd-on: %s\n\n## Reported By\nServer: %s\nCharacter: %s\nStatus: %s\nZone & Subzone: %s\n-- Note this information is pulled from the current character, and may not be relevant.\n\n%dx %s"
+        "### Client & Suspected Add-on\n\nBuild: %s\nAdd-on: %s\n\n### Reported By\n\nServer: %s\nCharacter: %s\nStatus: %s\nZone & Subzone: %s\nBugGrabber: %s\nBugSack: %s\n-- Note this information is pulled from the current character, and may not be relevant.\n\n### Reported Error\n\n```lua\n%dx %s\n```\n\n### Installed Add-ons\n\n%s"
+
     local ERROR_FORMAT_WITH_LOCALS =
-        "Build: %s\nAdd-on: %s\n\n## Reported By\nServer: %s\nCharacter: %s\nStatus: %s\nZone & Subzone: %s\n-- Note this information is pulled from the current character, and may not be relevant.\n\n%dx %s\n\nLocals:\n%s"
+        "### Client & Suspected Add-on\n\nBuild: %s\nAdd-on: %s\n\n### Reported By\n\nServer: %s\nCharacter: %s\nStatus: %s\nZone & Subzone: %s\nBugGrabber: %s\nBugSack: %s\n-- Note this information is pulled from the current character, and may not be relevant.\n\n### Reported Error\n\n```lua\n%dx %s\n\nLocals:\n%s\n```\n\n### Installed Add-ons\n\n%s"
 
     local getMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+
+    local function GetInstalledAddonsList()
+        local getNum = C_AddOns and C_AddOns.GetNumAddOns or GetNumAddOns
+        local getInfo = C_AddOns and C_AddOns.GetAddOnInfo or GetAddOnInfo
+
+        local list = {}
+        for i = 1, getNum() do
+            local name = getInfo(i)
+            if name then
+                local version = getMetadata(name, "Version") or "Unknown"
+                table.insert(list, name .. ", " .. version)
+            end
+        end
+
+        table.sort(
+            list,
+            function(a, b)
+                return string.lower(a) < string.lower(b)
+            end
+        )
+
+        return table.concat(list, "\n")
+    end
 
     local function GetErrorMetadata(errorEntry)
         local text = tostring(errorEntry.message) .. (errorEntry.stack and "\n" .. tostring(errorEntry.stack) or "")
@@ -332,7 +356,7 @@ do
         local classLocalized = UnitClass("player") or "Unknown"
         local raceLocalized = UnitRace("player") or "Unknown"
         local level = UnitLevel("player") or "??"
-        local charString = charName .. ", " .. classLocalized .. ", " .. raceLocalized .. ", Level " .. level
+        local charString = charName .. ", " .. raceLocalized .. ", " .. classLocalized .. ", Level " .. level
 
         local isGhost = UnitIsGhost("player")
         local isDead = UnitIsDead("player")
@@ -359,6 +383,11 @@ do
             colorStack(tostring(errorEntry.message) .. (errorEntry.stack and "\n" .. tostring(errorEntry.stack) or ""))
         local coloredLocals = colorLocals(tostring(errorEntry.locals) or "")
 
+        -- FETCH NEW DATA HERE
+        local bgVersion = getMetadata and getMetadata("!BugGrabber", "Version") or "Unknown"
+        local bsVersion = getMetadata and getMetadata("BugSack", "Version") or "Unknown"
+        local addonInstalledList = GetInstalledAddonsList()
+
         if not errorEntry.locals then
             return ERROR_FORMAT:format(
                 buildString,
@@ -367,8 +396,11 @@ do
                 charString,
                 statusString,
                 zoneString,
+                bgVersion,
+                bsVersion,
                 errorEntry.counter or -1,
-                coloredStack
+                coloredStack,
+                addonInstalledList
             )
         else
             return ERROR_FORMAT_WITH_LOCALS:format(
@@ -378,9 +410,12 @@ do
                 charString,
                 statusString,
                 zoneString,
+                bgVersion,
+                bsVersion,
                 errorEntry.counter or -1,
                 coloredStack,
-                coloredLocals
+                coloredLocals,
+                addonInstalledList
             )
         end
     end
