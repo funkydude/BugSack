@@ -2,10 +2,13 @@ package-as: BugSack
 wowi-archive-previous: no
 
 externals:
-    Libs/AceComm-3.0: https://repos.wowace.com/wow/ace3/trunk/AceComm-3.0
-    Libs/AceSerializer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceSerializer-3.0
-    Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
-    Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
+    Includes/LibStub: https://repos.wowace.com/wow/libstub/trunk
+    Includes/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+    Includes/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
+    Includes/AceComm-3.0: https://repos.wowace.com/wow/ace3/trunk/AceComm-3.0
+    Includes/AceSerializer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceSerializer-3.0
+    Includes/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+    Includes/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
 
 ignore:
   - Media/error.wav
