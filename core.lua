@@ -45,7 +45,7 @@ local onError
 do
 	local lastError = nil
 	function onError()
-		if not lastError or GetTime() > (lastError + 2) then
+		if not lastError or GetTime() > (lastError + (InCombatLockdown() and 60 or 3)) then
 			if not addon.db.mute then
 				local sound = media:Fetch("sound", addon.db.soundMedia)
 				if addon.db.useMaster then
