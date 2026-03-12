@@ -495,7 +495,9 @@ local function show()
 end
 
 function addon:CloseSack()
-	window:Hide()
+	if window and window:IsShown() then
+		window:Hide()
+	end
 end
 
 function addon:OpenSack()

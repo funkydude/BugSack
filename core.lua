@@ -256,8 +256,9 @@ do
 end
 
 function addon:Reset()
-	addon:CloseSack()
+	self:CloseSack()
 	BugGrabber:Reset()
+	self:UpdateDisplay()
 	print(L["All stored bugs have been exterminated painfully."])
 end
 
