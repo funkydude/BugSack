@@ -98,7 +98,7 @@ local function updateSackDisplay(forceRefresh)
 		if eo.session == BugGrabber:GetSessionId() then
 			sessionLabel:SetText(sessionFormat:format(L["Today"], source, eo.session))
 		else
-			sessionLabel:SetText(sessionFormat:format(eo.time, source, eo.session))
+			sessionLabel:SetText(sessionFormat:format(type(eo.time) == "number" and date("%Y/%m/%d %H:%M:%S", eo.time) or tostring(eo.time), source, eo.session))
 		end
 		countLabel:SetText(countFormat:format(currentErrorIndex, size))
 		textArea:SetText(addon:FormatError(eo))
