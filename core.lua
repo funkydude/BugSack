@@ -73,6 +73,7 @@ end
 
 do
 	local eventFrame = CreateFrame("Frame")
+	local tbl = {}
 	eventFrame:SetScript("OnEvent", function(self, event, loadedAddon)
 		if loadedAddon ~= addonName then
 			return
@@ -163,7 +164,8 @@ do
 		end
 
 		-- Set up our error event handler
-		BugGrabber.RegisterCallback(addon, "BugGrabber_BugGrabbed", onError)
+		EventRegistry:RegisterCallback("BugGrabber.BugGrabbed", onError, tbl)
+		EventRegistry:TriggerEvent("BugGrabber.DisplayRegistered")
 
 		-- Initialize settings now that database is ready
 		if addon.InitializeSettings then
