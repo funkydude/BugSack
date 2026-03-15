@@ -43,9 +43,13 @@ media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\" .. addonName 
 
 local onError
 do
-	local lastError = nil
-	function onError()
-		if not lastError or GetTime() > (lastError + (InCombatLockdown() and 60 or 3)) then
+	local prevError = GetTime()-10
+	local errorList = {}
+	function onError(_, errorID)
+		local t = GetTime()
+		if t - prevError > 3 and (not errorList[errorID] or t - errorList[errorID] > 30) then
+			errorList[errorID] = t
+			prevError = t
 			if not addon.db.mute then
 				local sound = media:Fetch("sound", addon.db.soundMedia)
 				if addon.db.useMaster then
@@ -57,7 +61,6 @@ do
 			if addon.db.chatframe then
 				print(L["There's a bug in your soup!"])
 			end
-			lastError = GetTime()
 		end
 		-- If the frame is shown, we need to update it.
 		if (addon.db.auto and not InCombatLockdown()) or (BugSackFrame and BugSackFrame:IsShown()) then
@@ -156,7 +159,21 @@ do
 		-- Make sure we grab any errors fired before bugsack loaded.
 		local session = addon:GetErrors(BugGrabber:GetSessionId())
 		if #session > 0 then
-			onError()
+			if not addon.db.mute then
+				local sound = media:Fetch("sound", addon.db.soundMedia)
+				if addon.db.useMaster then
+					PlaySoundFile(sound, "Master")
+				else
+					PlaySoundFile(sound)
+				end
+			end
+			if addon.db.chatframe then
+				print(L["There's a bug in your soup!"])
+			end
+			if addon.db.auto then
+				addon:OpenSack()
+			end
+			addon:UpdateDisplay()
 		end
 
 		if addon.RegisterComm then
