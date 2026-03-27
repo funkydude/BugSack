@@ -196,8 +196,9 @@ local function createBugSack()
 	window = CreateFrame("Frame", "BugSackFrame", UIParent)
 	window:Hide()
 
+	local defaultLevel = 1000
 	window:SetFrameStrata("DIALOG")
-	window:SetFrameLevel(1000)
+	window:SetFrameLevel(defaultLevel)
 	window:SetWidth(800)
 	window:SetHeight(310)
 	window:SetPoint("CENTER")
@@ -285,6 +286,7 @@ local function createBugSack()
 	right:SetTexCoord(0.1171875, 0.2421875, 0, 1)
 
 	local close = CreateFrame("Button", nil, window, "UIPanelCloseButton")
+	close:SetFrameLevel(defaultLevel+1)
 	close:SetPoint("TOPRIGHT", isRetail and -3 or 2, isRetail and -3 or 1)
 	close:SetScript("OnClick", addon.CloseSack)
 
