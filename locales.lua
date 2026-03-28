@@ -56,6 +56,8 @@ L.useMaster = "Use 'Master' sound channel"
 L.useMasterDesc = "Play the chosen error sound over the 'Master' sound channel instead of the default one."
 L.addonCompartment = "Addon compartment icon"
 L.addonCompartment_desc = "Creates a menu entry in the 'Addon Compartment' for BugSack."
+L["Default to current session"] = "Default to current session"
+L.defaultCurrentSessionDesc = "When opening BugSack, show bugs from the current session instead of all sessions."
 
 local locale = GetLocale()
 if locale == "deDE" then

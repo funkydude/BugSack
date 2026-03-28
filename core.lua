@@ -154,6 +154,9 @@ do
 		if type(sv.useMaster) ~= "boolean" then
 			sv.useMaster = false
 		end
+		if type(sv.defaultCurrentSession) ~= "boolean" then
+			sv.defaultCurrentSession = false
+		end
 		addon.db = sv
 
 		-- Make sure we grab any errors fired before bugsack loaded.
