@@ -503,10 +503,13 @@ function addon:OpenSack()
 		return
 	end
 
-	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
-	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
-	--[[if not currentSackContents then
-		currentSackContents = BugGrabber:GetDB(currentSackSession)
-	end]]
+	-- Reset to configured default tab on each open
+	if addon.db.defaultCurrentSession then
+		state = "BugSackTabSession"
+	else
+		state = "BugSackTabAll"
+	end
+	lastState = nil
+
 	show()
 end
