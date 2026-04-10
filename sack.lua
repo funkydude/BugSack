@@ -218,6 +218,8 @@ local function createBugSack()
 		PlaySound(845) -- SOUNDKIT.IG_QUEST_LOG_CLOSE
 	end)
 
+	tinsert(UISpecialFrames, "BugSackFrame")
+
 	local titlebg = window:CreateTexture(nil, "BORDER")
 	titlebg:SetTexture(251966) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background"
 	titlebg:SetPoint("TOPLEFT", 9, -6)
