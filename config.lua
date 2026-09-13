@@ -21,6 +21,18 @@ local function InitializeSettings()
 	)
 	Settings.CreateCheckbox(category, autoPopupSetting, L.autoDesc)
 
+	-- Default to current session setting
+	local defaultCurrentSessionSetting = Settings.RegisterAddOnSetting(
+		category,
+		"BUGSACK_DEFAULT_CURRENT_SESSION",
+		"defaultCurrentSession",
+		addon.db,
+		Settings.VarType.Boolean,
+		L["Default to current session"],
+		Settings.Default.False
+	)
+	Settings.CreateCheckbox(category, defaultCurrentSessionSetting, L.defaultCurrentSessionDesc)
+
 	-- Chatframe output setting
 	local chatFrameSetting = Settings.RegisterAddOnSetting(
 		category,
