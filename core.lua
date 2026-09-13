@@ -261,14 +261,21 @@ do
 
 	local errorFormat = "%dx %s"
 	local errorFormatLocals = "%dx %s\n\nLocals:\n%s"
+	local EscapeDecimalNonPrintables = C_StringUtil and C_StringUtil.EscapeDecimalNonPrintables or function(err) return err end
 	function addon:FormatError(err)
 		if not err.locals then
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n" .. tostring(err.stack) or ""))
-			local l = colorLocals(tostring(err.locals) or "")
-			return errorFormat:format(err.counter or -1, s, l)
+			local message = EscapeDecimalNonPrintables(err.message)
+			local stack = err.stack and EscapeDecimalNonPrintables(err.stack) or ""
+
+			local s = colorStack(message .. "\n" .. stack)
+			return errorFormat:format(err.counter or -1, s)
 		else
-			local s = colorStack(tostring(err.message) .. (err.stack and "\n" .. tostring(err.stack) or ""))
-			local l = colorLocals(tostring(err.locals) or "")
+			local message = EscapeDecimalNonPrintables(err.message)
+			local stack = err.stack and EscapeDecimalNonPrintables(err.stack) or ""
+			local locals = EscapeDecimalNonPrintables(err.locals)
+
+			local s = colorStack(message .. "\n" .. stack)
+			local l = colorLocals(locals)
 			return errorFormatLocals:format(err.counter or -1, s, l)
 		end
 	end
