@@ -4,6 +4,8 @@ if not addon.healthCheck then
 end
 local L = addon.L
 local isRetail = addon.isRetail
+local isForever = addon.isForever
+local isModern = isRetail and true or isForever and true or false
 
 -- The sack
 local window = nil
@@ -287,7 +289,7 @@ local function createBugSack()
 
 	local close = CreateFrame("Button", nil, window, "UIPanelCloseButton")
 	close:SetFrameLevel(defaultLevel+1)
-	close:SetPoint("TOPRIGHT", isRetail and -3 or 2, isRetail and -3 or 1)
+	close:SetPoint("TOPRIGHT", isModern and -3 or 2, isModern and -3 or 1)
 	close:SetScript("OnClick", addon.CloseSack)
 
 	countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -432,7 +434,7 @@ local function createBugSack()
 		"Button",
 		"BugSackTabAll",
 		window,
-		isRetail and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+		isRetail and "CharacterFrameTabTemplate" or isForever and "PanelTabButtonTemplate" or "CharacterFrameTabButtonTemplate"
 	)
 	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", isRetail and 10 or 0, isRetail and 6 or 8)
 	all:SetText(L["All bugs"])
@@ -445,7 +447,7 @@ local function createBugSack()
 		"Button",
 		"BugSackTabSession",
 		window,
-		isRetail and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+		isRetail and "CharacterFrameTabTemplate" or isForever and "PanelTabButtonTemplate" or "CharacterFrameTabButtonTemplate"
 	)
 	session:SetPoint("LEFT", all, "RIGHT")
 	session:SetText(L["Current session"])
@@ -458,7 +460,7 @@ local function createBugSack()
 		"Button",
 		"BugSackTabLast",
 		window,
-		isRetail and "CharacterFrameTabTemplate" or "CharacterFrameTabButtonTemplate"
+		isRetail and "CharacterFrameTabTemplate" or isForever and "PanelTabButtonTemplate" or "CharacterFrameTabButtonTemplate"
 	)
 	last:SetPoint("LEFT", session, "RIGHT")
 	last:SetText(L["Previous session"])
@@ -468,7 +470,7 @@ local function createBugSack()
 	last.bugs = "previousSession"
 
 	tabs = { all, session, last }
-	local size = (isRetail and 480 or 500) / 3
+	local size = (isModern and 480 or 500) / 3
 	for i, t in next, tabs do
 		PanelTemplates_TabResize(t, nil, size, size)
 		if i == 1 then
