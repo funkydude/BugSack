@@ -41,7 +41,7 @@
 embeds.xml
 
 retail.lua [AllowLoadGameType standard]
-forever.lua [AllowLoadGameType camelot]
+forever.lua [ExcludeLoadGameType standard, classic][AllowLoadGameType camelot]
 locales.lua
 core.lua
 sack.lua
