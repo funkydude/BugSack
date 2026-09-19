@@ -195,7 +195,7 @@ local function filterSack(editbox)
 end
 
 local function createBugSack()
-	window = CreateFrame("Frame", "BugSackFrame", UIParent)
+	window = CreateFrame("Frame", "BugSackFrame", UIParent, isModern and "PortraitFrameTemplate" or nil)
 	window:Hide()
 
 	local defaultLevel = 1000
@@ -208,6 +208,13 @@ local function createBugSack()
 	window:EnableMouse(true)
 	window:RegisterForDrag("LeftButton")
 	window:SetClampedToScreen(true)
+	if isModern then
+		window:SetTitleOffsets(0, 0)
+		window:SetBorder("HeldBagLayout")
+		window:SetPortraitTextureSizeAndOffset(38, -5, 0)
+		window:SetPortraitTextureRaw(133642)
+		window.CloseButton:UnregisterAllEvents() -- Remove events registered by the template
+	end
 	window:SetScript("OnDragStart", window.StartMoving)
 	window:SetScript("OnDragStop", window.StopMovingOrSizing)
 	window:SetScript("OnShow", function()
@@ -220,88 +227,102 @@ local function createBugSack()
 		PlaySound(845) -- SOUNDKIT.IG_QUEST_LOG_CLOSE
 	end)
 
-	local titlebg = window:CreateTexture(nil, "BORDER")
-	titlebg:SetTexture(251966) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background"
-	titlebg:SetPoint("TOPLEFT", 9, -6)
-	titlebg:SetPoint("BOTTOMRIGHT", window, "TOPRIGHT", -28, -24)
+	local titlebg
+	if not isModern then
+		titlebg = window:CreateTexture(nil, "BORDER")
+		titlebg:SetTexture(251966) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Title-Background"
+		titlebg:SetPoint("TOPLEFT", 9, -6)
+		titlebg:SetPoint("BOTTOMRIGHT", window, "TOPRIGHT", -28, -24)
 
-	local dialogbg = window:CreateTexture(nil, "BACKGROUND")
-	dialogbg:SetTexture(136548) --"Interface\\PaperDollInfoFrame\\UI-Character-CharacterTab-L1"
-	dialogbg:SetPoint("TOPLEFT", 8, -12)
-	dialogbg:SetPoint("BOTTOMRIGHT", -6, 8)
-	dialogbg:SetTexCoord(0.255, 1, 0.29, 1)
+		local dialogbg = window:CreateTexture(nil, "BACKGROUND")
+		dialogbg:SetTexture(136548) --"Interface\\PaperDollInfoFrame\\UI-Character-CharacterTab-L1"
+		dialogbg:SetPoint("TOPLEFT", 8, -12)
+		dialogbg:SetPoint("BOTTOMRIGHT", -6, 8)
+		dialogbg:SetTexCoord(0.255, 1, 0.29, 1)
 
-	local topleft = window:CreateTexture(nil, "BORDER")
-	topleft:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	topleft:SetWidth(64)
-	topleft:SetHeight(64)
-	topleft:SetPoint("TOPLEFT")
-	topleft:SetTexCoord(0.501953125, 0.625, 0, 1)
+		local topleft = window:CreateTexture(nil, "BORDER")
+		topleft:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		topleft:SetWidth(64)
+		topleft:SetHeight(64)
+		topleft:SetPoint("TOPLEFT")
+		topleft:SetTexCoord(0.501953125, 0.625, 0, 1)
 
-	local topright = window:CreateTexture(nil, "BORDER")
-	topright:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	topright:SetWidth(64)
-	topright:SetHeight(64)
-	topright:SetPoint("TOPRIGHT")
-	topright:SetTexCoord(0.625, 0.75, 0, 1)
+		local topright = window:CreateTexture(nil, "BORDER")
+		topright:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		topright:SetWidth(64)
+		topright:SetHeight(64)
+		topright:SetPoint("TOPRIGHT")
+		topright:SetTexCoord(0.625, 0.75, 0, 1)
 
-	local top = window:CreateTexture(nil, "BORDER")
-	top:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	top:SetHeight(64)
-	top:SetPoint("TOPLEFT", topleft, "TOPRIGHT")
-	top:SetPoint("TOPRIGHT", topright, "TOPLEFT")
-	top:SetTexCoord(0.25, 0.369140625, 0, 1)
+		local top = window:CreateTexture(nil, "BORDER")
+		top:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		top:SetHeight(64)
+		top:SetPoint("TOPLEFT", topleft, "TOPRIGHT")
+		top:SetPoint("TOPRIGHT", topright, "TOPLEFT")
+		top:SetTexCoord(0.25, 0.369140625, 0, 1)
 
-	local bottomleft = window:CreateTexture(nil, "BORDER")
-	bottomleft:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	bottomleft:SetWidth(64)
-	bottomleft:SetHeight(64)
-	bottomleft:SetPoint("BOTTOMLEFT")
-	bottomleft:SetTexCoord(0.751953125, 0.875, 0, 1)
+		local bottomleft = window:CreateTexture(nil, "BORDER")
+		bottomleft:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		bottomleft:SetWidth(64)
+		bottomleft:SetHeight(64)
+		bottomleft:SetPoint("BOTTOMLEFT")
+		bottomleft:SetTexCoord(0.751953125, 0.875, 0, 1)
 
-	local bottomright = window:CreateTexture(nil, "BORDER")
-	bottomright:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	bottomright:SetWidth(64)
-	bottomright:SetHeight(64)
-	bottomright:SetPoint("BOTTOMRIGHT")
-	bottomright:SetTexCoord(0.875, 1, 0, 1)
+		local bottomright = window:CreateTexture(nil, "BORDER")
+		bottomright:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		bottomright:SetWidth(64)
+		bottomright:SetHeight(64)
+		bottomright:SetPoint("BOTTOMRIGHT")
+		bottomright:SetTexCoord(0.875, 1, 0, 1)
 
-	local bottom = window:CreateTexture(nil, "BORDER")
-	bottom:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	bottom:SetHeight(64)
-	bottom:SetPoint("BOTTOMLEFT", bottomleft, "BOTTOMRIGHT")
-	bottom:SetPoint("BOTTOMRIGHT", bottomright, "BOTTOMLEFT")
-	bottom:SetTexCoord(0.376953125, 0.498046875, 0, 1)
+		local bottom = window:CreateTexture(nil, "BORDER")
+		bottom:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		bottom:SetHeight(64)
+		bottom:SetPoint("BOTTOMLEFT", bottomleft, "BOTTOMRIGHT")
+		bottom:SetPoint("BOTTOMRIGHT", bottomright, "BOTTOMLEFT")
+		bottom:SetTexCoord(0.376953125, 0.498046875, 0, 1)
 
-	local left = window:CreateTexture(nil, "BORDER")
-	left:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	left:SetWidth(64)
-	left:SetPoint("TOPLEFT", topleft, "BOTTOMLEFT")
-	left:SetPoint("BOTTOMLEFT", bottomleft, "TOPLEFT")
-	left:SetTexCoord(0.001953125, 0.125, 0, 1)
+		local left = window:CreateTexture(nil, "BORDER")
+		left:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		left:SetWidth(64)
+		left:SetPoint("TOPLEFT", topleft, "BOTTOMLEFT")
+		left:SetPoint("BOTTOMLEFT", bottomleft, "TOPLEFT")
+		left:SetTexCoord(0.001953125, 0.125, 0, 1)
 
-	local right = window:CreateTexture(nil, "BORDER")
-	right:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
-	right:SetWidth(64)
-	right:SetPoint("TOPRIGHT", topright, "BOTTOMRIGHT")
-	right:SetPoint("BOTTOMRIGHT", bottomright, "TOPRIGHT")
-	right:SetTexCoord(0.1171875, 0.2421875, 0, 1)
+		local right = window:CreateTexture(nil, "BORDER")
+		right:SetTexture(251963) --"Interface\\PaperDollInfoFrame\\UI-GearManager-Border"
+		right:SetWidth(64)
+		right:SetPoint("TOPRIGHT", topright, "BOTTOMRIGHT")
+		right:SetPoint("BOTTOMRIGHT", bottomright, "TOPRIGHT")
+		right:SetTexCoord(0.1171875, 0.2421875, 0, 1)
 
-	local close = CreateFrame("Button", nil, window, "UIPanelCloseButton")
-	close:SetFrameLevel(defaultLevel+1)
-	close:SetPoint("TOPRIGHT", isModern and -3 or 2, isModern and -3 or 1)
-	close:SetScript("OnClick", addon.CloseSack)
+		local close = CreateFrame("Button", nil, window, "UIPanelCloseButton")
+		close:SetFrameLevel(defaultLevel+1)
+		close:SetPoint("TOPRIGHT", isModern and -3 or 2, isModern and -3 or 1)
+		close:SetScript("OnClick", addon.CloseSack)
+	end
 
-	countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	countLabel:SetPoint("TOPRIGHT", titlebg, -6, -3)
+	if isModern then
+		countLabel = window.TitleContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		countLabel:SetPoint("RIGHT", window.CloseButton, "LEFT", -5, 0)
+	else
+		countLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+		countLabel:SetPoint("TOPRIGHT", titlebg, -6, -3)
+	end
 	countLabel:SetJustifyH("RIGHT")
 	countLabel:SetTextColor(1, 1, 1, 1)
 
-	sessionLabel = CreateFrame("Button", nil, window)
+	if isModern then
+		sessionLabel = CreateFrame("Button", nil, window.TitleContainer)
+		sessionLabel:SetPoint("TOPLEFT", window.TitleContainer, "TOPLEFT", 40, isRetail and -2 or 0)
+		sessionLabel:SetPoint("BOTTOMRIGHT", window.TitleContainer, "BOTTOMRIGHT", -60, 0)
+	else
+		sessionLabel = CreateFrame("Button", nil, window)
+		sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -1)
+		sessionLabel:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
+	end
 	sessionLabel:SetNormalFontObject("GameFontNormalLeft")
 	sessionLabel:SetHighlightFontObject("GameFontHighlightLeft")
-	sessionLabel:SetPoint("TOPLEFT", titlebg, 6, -1)
-	sessionLabel:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
 	sessionLabel:RegisterForClicks("LeftButtonUp", "LeftButtonDown", "RightButtonUp", "RightButtonDown")
 	sessionLabel:SetScript("OnHide", function()
 		window:StopMovingOrSizing()
@@ -338,26 +359,40 @@ local function createBugSack()
 		end
 	end)
 
-	searchLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	if isModern then
+		searchLabel = window.TitleContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		searchLabel:SetPoint("TOPLEFT", window.TitleContainer, "TOPLEFT", 40, isRetail and -2 or 0)
+		searchLabel:SetPoint("BOTTOMLEFT", window.TitleContainer, "BOTTOMLEFT", 40, 0)
+	else
+		searchLabel = window:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+		searchLabel:SetPoint("TOPLEFT", titlebg, 6, -3)
+	end
 	searchLabel:SetText(L["Filter"] .. ":")
 	searchLabel:SetJustifyH("LEFT")
-	searchLabel:SetPoint("TOPLEFT", titlebg, 6, -3)
 	searchLabel:SetTextColor(1, 1, 1, 1)
 	searchLabel:Hide()
 
-	searchBox = CreateFrame("EditBox", nil, window, "BackdropTemplate")
+	if isModern then
+		searchBox = CreateFrame("EditBox", nil, window.TitleContainer)
+		searchBox:SetPoint("TOPLEFT", searchLabel, "TOPRIGHT", 6, 1)
+		searchBox:SetPoint("BOTTOMRIGHT", window.TitleContainer, "BOTTOMRIGHT", -60, 0)
+	else
+		searchBox = CreateFrame("EditBox", nil, window, "BackdropTemplate")
+		searchBox:SetPoint("TOPLEFT", searchLabel, "TOPRIGHT", 6, 1)
+		searchBox:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
+		searchBox:SetBackdrop({
+			edgeFile = nil,
+			bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+			insets = { left = 0, right = 0, top = 0, bottom = 0 },
+			tile = true,
+			tileSize = 16,
+			edgeSize = 1,
+		})
+		searchBox:SetBackdropColor(0, 0, 0, 0.5)
+	end
 	searchBox:SetTextInsets(4, 4, 0, 0)
 	searchBox:SetMaxLetters(50)
 	searchBox:SetFontObject("ChatFontNormal")
-	searchBox:SetBackdrop({
-		edgeFile = nil,
-		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-		insets = { left = 0, right = 0, top = 0, bottom = 0 },
-		tile = true,
-		tileSize = 16,
-		edgeSize = 1,
-	})
-	searchBox:SetBackdropColor(0, 0, 0, 0.5)
 	searchBox:SetScript("OnShow", function(self)
 		self:SetFocus()
 	end)
@@ -368,12 +403,15 @@ local function createBugSack()
 	searchBox:SetScript("OnEscapePressed", clearSearch)
 	searchBox:SetScript("OnTextChanged", filterSack)
 	searchBox:SetAutoFocus(false)
-	searchBox:SetPoint("TOPLEFT", searchLabel, "TOPRIGHT", 6, 1)
-	searchBox:SetPoint("BOTTOMRIGHT", titlebg, "BOTTOMRIGHT", -26, 1)
 	searchBox:Hide()
 
-	nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate")
-	nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
+	if isModern then
+		nextButton = CreateFrame("Button", "BugSackNextButton", window, "SharedButtonTemplate")
+		nextButton:SetPoint("BOTTOMRIGHT", window, isRetail and -5 or -8, isRetail and 5 or 8)
+	else
+		nextButton = CreateFrame("Button", "BugSackNextButton", window, "UIPanelButtonTemplate")
+		nextButton:SetPoint("BOTTOMRIGHT", window, -11, 16)
+	end
 	nextButton:SetHeight(40)
 	nextButton:SetWidth(200)
 	nextButton:SetText(L["Next >"])
@@ -386,8 +424,13 @@ local function createBugSack()
 		updateSackDisplay()
 	end)
 
-	prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate")
-	prevButton:SetPoint("BOTTOMLEFT", window, 14, 16)
+	if isModern then
+		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "SharedButtonTemplate")
+		prevButton:SetPoint("BOTTOMLEFT", window, isRetail and 5 or 8, isRetail and 5 or 8)
+	else
+		prevButton = CreateFrame("Button", "BugSackPrevButton", window, "UIPanelButtonTemplate")
+		prevButton:SetPoint("BOTTOMLEFT", window, 14, 16)
+	end
 	prevButton:SetHeight(40)
 	prevButton:SetWidth(200)
 	prevButton:SetText(L["< Previous"])
@@ -401,7 +444,7 @@ local function createBugSack()
 	end)
 
 	if addon.Serialize then
-		sendButton = CreateFrame("Button", "BugSackSendButton", window, "UIPanelButtonTemplate")
+		sendButton = CreateFrame("Button", "BugSackSendButton", window, isModern and "SharedButtonTemplate" or "UIPanelButtonTemplate")
 		sendButton:SetPoint("LEFT", prevButton, "RIGHT")
 		sendButton:SetPoint("RIGHT", nextButton, "LEFT")
 		sendButton:SetHeight(40)
@@ -414,12 +457,23 @@ local function createBugSack()
 		end)
 	end
 
-	local scroll = CreateFrame("ScrollFrame", "BugSackScroll", window, "UIPanelScrollFrameTemplate")
-	scroll:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
-	scroll:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
+	if isModern then
+		local scrollArea = CreateFrame("ScrollFrame", nil, window, "ScrollFrameTemplate")
+		scrollArea:SetPoint("TOPLEFT", window, "TOPLEFT", 8, -42)
+		scrollArea:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", isRetail and -22 or -20, 2)
 
-	textArea = CreateFrame("EditBox", "BugSackScrollText", scroll)
-	textArea:SetTextColor(0.5, 0.5, 0.5, 1)
+		textArea = CreateFrame("EditBox", "BugSackScrollText", scrollArea)
+		scrollArea:SetScrollChild(textArea)
+		textArea:SetTextColor(1, 1, 1, 1)
+	else
+		local scrollArea = CreateFrame("ScrollFrame", nil, window, "UIPanelScrollFrameTemplate")
+		scrollArea:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
+		scrollArea:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
+
+		textArea = CreateFrame("EditBox", "BugSackScrollText", scrollArea)
+		scrollArea:SetScrollChild(textArea)
+		textArea:SetTextColor(0.5, 0.5, 0.5, 1)
+	end
 	textArea:SetAutoFocus(false)
 	textArea:SetMultiLine(true)
 	textArea:SetFontObject(_G[addon.db.fontSize] or GameFontHighlightSmall)
@@ -428,55 +482,71 @@ local function createBugSack()
 	textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
 	textArea:SetWidth(750)
 
-	scroll:SetScrollChild(textArea)
+	if isModern then
+		local allBugsTab = CreateFrame("Button", "BugSackTabAll", window, "PanelTabButtonTemplate")
+		allBugsTab:SetPoint("BOTTOMLEFT", 10, -30)
+		allBugsTab:SetClampedToScreen(true)
+		allBugsTab.Text:SetText(L["All bugs"])
+		allBugsTab:SetScript("OnClick", setActiveMethod)
+		allBugsTab.bugs = "all"
 
-	local all = CreateFrame(
-		"Button",
-		"BugSackTabAll",
-		window,
-		isRetail and "CharacterFrameTabTemplate" or isForever and "PanelTabButtonTemplate" or "CharacterFrameTabButtonTemplate"
-	)
-	all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", isRetail and 10 or 0, isRetail and 6 or 8)
-	all:SetText(L["All bugs"])
-	all:SetScript("OnLoad", nil)
-	all:SetScript("OnShow", nil)
-	all:SetScript("OnClick", setActiveMethod)
-	all.bugs = "all"
+		local currentSessionTab = CreateFrame("Button", "BugSackTabSession", window, "PanelTabButtonTemplate")
+		currentSessionTab:SetPoint("LEFT", allBugsTab, "RIGHT", 4, 0)
+		currentSessionTab:SetClampedToScreen(true)
+		currentSessionTab.Text:SetText(L["Current session"])
+		currentSessionTab:SetScript("OnClick", setActiveMethod)
+		currentSessionTab.bugs = "currentSession"
 
-	local session = CreateFrame(
-		"Button",
-		"BugSackTabSession",
-		window,
-		isRetail and "CharacterFrameTabTemplate" or isForever and "PanelTabButtonTemplate" or "CharacterFrameTabButtonTemplate"
-	)
-	session:SetPoint("LEFT", all, "RIGHT")
-	session:SetText(L["Current session"])
-	session:SetScript("OnLoad", nil)
-	session:SetScript("OnShow", nil)
-	session:SetScript("OnClick", setActiveMethod)
-	session.bugs = "currentSession"
+		local previousSessionTab = CreateFrame("Button", "BugSackTabLast", window, "PanelTabButtonTemplate")
+		previousSessionTab:SetPoint("LEFT", currentSessionTab, "RIGHT", 4, 0)
+		previousSessionTab:SetClampedToScreen(true)
+		previousSessionTab.Text:SetText(L["Previous session"])
+		previousSessionTab:SetScript("OnClick", setActiveMethod)
+		previousSessionTab.bugs = "previousSession"
 
-	local last = CreateFrame(
-		"Button",
-		"BugSackTabLast",
-		window,
-		isRetail and "CharacterFrameTabTemplate" or isForever and "PanelTabButtonTemplate" or "CharacterFrameTabButtonTemplate"
-	)
-	last:SetPoint("LEFT", session, "RIGHT")
-	last:SetText(L["Previous session"])
-	last:SetScript("OnLoad", nil)
-	last:SetScript("OnShow", nil)
-	last:SetScript("OnClick", setActiveMethod)
-	last.bugs = "previousSession"
+		tabs = { allBugsTab, currentSessionTab, previousSessionTab }
+		for i = 1, #tabs do
+			local tab = tabs[i]
+			if i == 1 then
+				PanelTemplates_SelectTab(tab)
+			else
+				PanelTemplates_DeselectTab(tab)
+			end
+		end
+	else
+		local all = CreateFrame("Button", "BugSackTabAll", window, "CharacterFrameTabButtonTemplate")
+		all:SetPoint("TOPLEFT", window, "BOTTOMLEFT", isRetail and 10 or 0, isRetail and 6 or 8)
+		all:SetText(L["All bugs"])
+		all:SetScript("OnLoad", nil)
+		all:SetScript("OnShow", nil)
+		all:SetScript("OnClick", setActiveMethod)
+		all.bugs = "all"
 
-	tabs = { all, session, last }
-	local size = (isModern and 480 or 500) / 3
-	for i, t in next, tabs do
-		PanelTemplates_TabResize(t, nil, size, size)
-		if i == 1 then
-			PanelTemplates_SelectTab(t)
-		else
-			PanelTemplates_DeselectTab(t)
+		local session = CreateFrame("Button", "BugSackTabSession", window, "CharacterFrameTabButtonTemplate")
+		session:SetPoint("LEFT", all, "RIGHT")
+		session:SetText(L["Current session"])
+		session:SetScript("OnLoad", nil)
+		session:SetScript("OnShow", nil)
+		session:SetScript("OnClick", setActiveMethod)
+		session.bugs = "currentSession"
+
+		local last = CreateFrame("Button", "BugSackTabLast", window, "CharacterFrameTabButtonTemplate")
+		last:SetPoint("LEFT", session, "RIGHT")
+		last:SetText(L["Previous session"])
+		last:SetScript("OnLoad", nil)
+		last:SetScript("OnShow", nil)
+		last:SetScript("OnClick", setActiveMethod)
+		last.bugs = "previousSession"
+
+		tabs = { all, session, last }
+		local size = 500 / 3
+		for i, t in next, tabs do
+			PanelTemplates_TabResize(t, nil, size, size)
+			if i == 1 then
+				PanelTemplates_SelectTab(t)
+			else
+				PanelTemplates_DeselectTab(t)
+			end
 		end
 	end
 end
