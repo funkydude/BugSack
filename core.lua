@@ -234,10 +234,11 @@ do
 	local function colorStack(ret)
 		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face/", "")
 		ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
+		ret = ret:gsub("%.%.%.dOns/", "")
 		ret = ret:gsub("|([^chHr])", "||%1"):gsub("|$", "||") -- Pipes
-		ret = ret:gsub("<(.-)>", "|cffffea00<%1>|r") -- Things wrapped in <>
+		ret = ret:gsub("<([^>]+)>", "|cffffea00<%1>|r") -- Things wrapped in <>
 		ret = ret:gsub("%[(.-)%]", "|cffffea00[%1]|r") -- Things wrapped in []
-		ret = ret:gsub("([\"`'])(.-)([\"`'])", "|cff8888ff%1%2%3|r") -- Quotes
+		ret = ret:gsub("([\"`'])(.-)%1", "|cff8888ff%0|r") -- Quotes
 		ret = ret:gsub(":(%d+)([%S\n])", ":|cff00ff00%1|r%2") -- Line numbers
 		ret = ret:gsub("([^/]+%.lua)", "|cffffffff%1|r") -- Lua files
 		return ret
@@ -245,16 +246,14 @@ do
 	addon.ColorStack = colorStack
 
 	local function colorLocals(ret)
-		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face/", "")
-		ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
 		ret = ret:gsub("|(%a)", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("> %@(.-):(%d+)", "> @|cffeda55f%1|r:|cff00ff00%2|r") -- Files/Line Numbers of locals
-		ret = ret:gsub("(%s-)([%a_%(][%a_%d%*%)]+) = ", "%1|cffffff80%2|r = ") -- Table keys
-		ret = ret:gsub("= (%-?[%d%p]+)\n", "= |cffff7fff%1|r\n") -- locals: number
-		ret = ret:gsub("= nil\n", "= |cffff7f7fnil|r\n") -- locals: nil
-		ret = ret:gsub("= true\n", "= |cffff9100true|r\n") -- locals: true
-		ret = ret:gsub("= false\n", "= |cffff9100false|r\n") -- locals: false
-		ret = ret:gsub("= <(.-)>", "= |cffffea00<%1>|r") -- Things wrapped in <>
+		ret = ret:gsub("(\n +)([^=\"\n]+)=", "%1|cffffff80%2|r=") -- Table keys
+		ret = ret:gsub("=(%-?%d%d*%.?%d*)\n", "=|cffff7fff%1|r\n") -- locals: number (5 or -5 or -5.5)
+		ret = ret:gsub("=nil\n", "=|cffff7f7fnil|r\n") -- locals: nil
+		ret = ret:gsub("=true\n", "=|cffff9100true|r\n") -- locals: true
+		ret = ret:gsub("=false\n", "=|cffff9100false|r\n") -- locals: false
+		ret = ret:gsub("=<([^>]+)>", "=|cffffea00<%1>|r") -- Things wrapped in <>
 		return ret
 	end
 	addon.ColorLocals = colorLocals
