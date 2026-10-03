@@ -7,6 +7,7 @@ local ldbi = LibStub("LibDBIcon-1.0")
 
 local category, layout = Settings.RegisterVerticalLayoutCategory(addonName)
 addon.settingsCategory = category
+Settings.RegisterAddOnCategory(category)
 
 local function InitializeSettings()
 	-- Auto popup setting
@@ -319,8 +320,20 @@ local function InitializeSettings()
 
 	local addonLayout = SettingsPanel:GetLayout(category)
 	addonLayout:AddInitializer(wipeButtonInitializer)
-
-	Settings.RegisterAddOnCategory(category)
 end
 
-addon.InitializeSettings = InitializeSettings
+-- Build the settings lazily to avoid taint issues
+hooksecurefunc(SettingsPanel, "SetCurrentCategory", function(_, selected)
+	if selected == category and InitializeSettings then
+        InitializeSettings()
+		InitializeSettings = nil
+	end
+end)
+
+function addon:OpenSettings()
+	if InCombatLockdown() then
+		addon:Print(L["Leave combat to open BugSack settings."])
+		return
+	end
+	Settings.OpenToCategory(category:GetID())
+end

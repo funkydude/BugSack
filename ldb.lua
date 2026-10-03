@@ -19,7 +19,7 @@ local BugGrabber = BugGrabber
 
 function plugin.OnClick(self, button)
 	if button == "RightButton" then
-		Settings.OpenToCategory(addon.settingsCategory:GetID())
+		addon:OpenSettings()
 	else
 		if IsShiftKeyDown() then
 			ReloadUI()

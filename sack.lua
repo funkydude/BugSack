@@ -344,7 +344,7 @@ local function createBugSack()
 			return
 		end
 		window:Hide()
-		Settings.OpenToCategory(addon.settingsCategory:GetID())
+		addon:OpenSettings()
 	end)
 	local quickTips = L["quickTipsDesc"]
 	sessionLabel:SetScript("OnEnter", function(self)

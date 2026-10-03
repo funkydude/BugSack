@@ -4,11 +4,11 @@ local addonName, addon = ...
 -- Make sure we are prepared
 --
 
-local function print(...)
+function addon:Print(...)
 	_G.print("|cff259054BugSack:|r", ...)
 end
 if not LibStub then
-	print("BugSack requires LibStub.")
+	addon:Print("BugSack requires LibStub.")
 	return
 end
 
@@ -20,7 +20,7 @@ if not BugGrabber then
 	local f = CreateFrame("Frame")
 	f:SetScript("OnEvent", function()
 		RaidNotice_AddMessage(RaidWarningFrame, msg, { r = 1, g = 0.3, b = 0.1 })
-		print(msg)
+		addon:Print(msg)
 		f:UnregisterEvent("PLAYER_ENTERING_WORLD")
 		f:SetScript("OnEvent", nil)
 		f = nil
@@ -59,7 +59,7 @@ do
 				end
 			end
 			if addon.db.chatframe then
-				print(L["There's a bug in your soup!"])
+				addon:Print(L["There's a bug in your soup!"])
 			end
 		end
 		-- If the frame is shown, we need to update it.
@@ -168,7 +168,7 @@ do
 				end
 			end
 			if addon.db.chatframe then
-				print(L["There's a bug in your soup!"])
+				addon:Print(L["There's a bug in your soup!"])
 			end
 			if addon.db.auto then
 				addon:OpenSack()
@@ -184,17 +184,12 @@ do
 		EventRegistry:RegisterCallback("BugGrabber.BugGrabbed", onError, tbl)
 		EventRegistry:TriggerEvent("BugGrabber.DisplayRegistered")
 
-		-- Initialize settings now that database is ready
-		if addon.InitializeSettings then
-			addon.InitializeSettings()
-		end
-
 		SlashCmdList.BugSack = function(msg)
 			msg = msg:lower()
 			if msg == "show" then
 				addon:OpenSack()
 			else
-				Settings.OpenToCategory(addon.settingsCategory:GetID())
+				addon:OpenSettings()
 			end
 		end
 		SLASH_BugSack1 = "/bugsack"
@@ -284,7 +279,7 @@ function addon:Reset()
 	self:CloseSack()
 	BugGrabber:Reset()
 	self:UpdateDisplay()
-	print(L["All stored bugs have been exterminated painfully."])
+	addon:Print(L["All stored bugs have been exterminated painfully."])
 end
 
 -- Sends the current session errors to another player using AceComm-3.0
@@ -303,7 +298,7 @@ function addon:SendBugsToUser(player, session)
 	local sz = self:Serialize(errors)
 	self:SendCommMessage("BugSack", sz, "WHISPER", player, "BULK")
 
-	print(L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."]:format(#errors, player))
+	addon:Print(L["%d bugs have been sent to %s. He must have BugSack to be able to examine them."]:format(#errors, player))
 end
 
 function addon:OnBugComm(prefix, message, _, sender)
@@ -313,7 +308,7 @@ function addon:OnBugComm(prefix, message, _, sender)
 
 	local good, deSz = self:Deserialize(message)
 	if not good then
-		print(L["Failure to deserialize incoming data from %s."]:format(sender))
+		addon:Print(L["Failure to deserialize incoming data from %s."]:format(sender))
 		return
 	end
 
@@ -325,7 +320,7 @@ function addon:OnBugComm(prefix, message, _, sender)
 		BugGrabber:StoreError(err)
 	end
 
-	print(L["You've received %d bugs from %s."]:format(#deSz, sender))
+	addon:Print(L["You've received %d bugs from %s."]:format(#deSz, sender))
 
 	wipe(deSz)
 	deSz = nil
@@ -346,14 +341,14 @@ do
 		-- using the addon communication channel.
 		if retrievedErrors[id] then return retrievedErrors[id] end
 		transmit("FETCH", player, id)
-		print(L.ERROR_INCOMING:format(id, player))
+		addon:Print(L.ERROR_INCOMING:format(id, player))
 	end
 
 	local fakeAddon, comm, serializer = nil, nil, nil
 	local function commBugCatcher(prefix, message, distribution, sender)
 		local good, deSz = fakeAddon:Deserialize(message)
 		if not good then
-			print("damnit")
+			addon:Print("damnit")
 			return
 		end
 		retrievedErrors[deSz.originalId] = deSz
@@ -391,9 +386,9 @@ do
 				transmit("FAIL", sender, argument)
 			end
 		elseif command == "FAIL" then
-			print(L.ERROR_FAILED_FETCH:format(argument, sender))
+			addon:Print(L.ERROR_FAILED_FETCH:format(argument, sender))
 		elseif command == "BUG" then
-			print(L.CRIPPLED_ERROR:format(sender, argument))
+			addon:Print(L.CRIPPLED_ERROR:format(sender, argument))
 		end
 	end
 end]]
