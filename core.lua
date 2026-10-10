@@ -232,13 +232,14 @@ end
 
 do
 	local function colorStack(ret)
-		ret = ret:gsub("[%.I][%.n][%.t][%.e][%.r]face/", "")
-		ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
-		ret = ret:gsub("%.%.%.dOns/", "")
+		ret = ret:gsub("Interface/AddOns/", "")
+		-- These need worked on
+		--ret = ret:gsub("%.?%.?%.?/?AddOns/", "")
+		--ret = ret:gsub("%.%.%.dOns/", "")
 		ret = ret:gsub("|([^chHr])", "||%1"):gsub("|$", "||") -- Pipes
 		ret = ret:gsub("<([^>]+)>", "|cffffea00<%1>|r") -- Things wrapped in <>
 		ret = ret:gsub("%[(.-)%]", "|cffffea00[%1]|r") -- Things wrapped in []
-		ret = ret:gsub("([\"`'])[^\n ]+%1", "|cff8888ff%0|r") -- Quotes
+		ret = ret:gsub("([\"`'])[^\n ]+%1", "|cff8888ff%0|r") -- Quotes "" or '' or ``
 		ret = ret:gsub(":(%d+)([%S\n])", ":|cff00ff00%1|r%2") -- Line numbers
 		ret = ret:gsub("([^/]+%.lua)", "|cffffffff%1|r") -- Lua files
 		return ret
