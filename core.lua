@@ -185,8 +185,8 @@ do
 		EventRegistry:TriggerEvent("BugGrabber.DisplayRegistered")
 
 		-- Initialize settings now that database is ready
-		if addon.InitializeSettings then
-			addon.InitializeSettings()
+		if addon.InitializeBlizzSettings then
+			addon.InitializeBlizzSettings()
 		end
 
 		SlashCmdList.BugSack = function(msg)
@@ -194,7 +194,7 @@ do
 			if msg == "show" then
 				addon:OpenSack()
 			else
-				Settings.OpenToCategory(addon.settingsCategory:GetID())
+				addon:OpenConfig()
 			end
 		end
 		SLASH_BugSack1 = "/bugsack"
@@ -281,7 +281,6 @@ do
 end
 
 function addon:Reset()
-	self:CloseSack()
 	BugGrabber:Reset()
 	self:UpdateDisplay()
 	print(L["All stored bugs have been exterminated painfully."])

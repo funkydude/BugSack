@@ -24,6 +24,7 @@ local currentErrorObject = nil
 local tabs = nil
 
 local countLabel, sessionLabel, textArea = nil, nil, nil
+local scrollArea, optionsFrame, wipeButton = nil, nil, nil
 local nextButton, prevButton, sendButton = nil, nil, nil
 local searchLabel, searchBox = nil, nil
 
@@ -39,6 +40,30 @@ local function updateSackDisplay(forceRefresh)
 		forceRefresh = true
 	end
 	lastState = state
+
+	for i, t in next, tabs do
+		if state == t:GetName() then
+			PanelTemplates_SelectTab(t)
+		else
+			PanelTemplates_DeselectTab(t)
+		end
+	end
+
+	local isOptions = state == "BugSackTabOptions"
+	optionsFrame:SetShown(isOptions)
+	scrollArea:SetShown(not isOptions)
+	nextButton:SetShown(not isOptions)
+	prevButton:SetShown(not isOptions)
+	if sendButton then
+		sendButton:SetShown(not isOptions)
+	end
+	wipeButton:SetShown(isOptions)
+	if isOptions then
+		wipeButton:SetEnabled(#addon:GetErrors() > 0)
+		sessionLabel:SetText(addonName .. " " .. OPTIONS)
+		countLabel:SetText()
+		return
+	end
 
 	if forceRefresh then
 		currentErrorObject = nil
@@ -130,14 +155,6 @@ local function updateSackDisplay(forceRefresh)
 		prevButton:Disable()
 		if sendButton then
 			sendButton:Disable()
-		end
-	end
-
-	for i, t in next, tabs do
-		if state == t:GetName() then
-			PanelTemplates_SelectTab(t)
-		else
-			PanelTemplates_DeselectTab(t)
 		end
 	end
 end
@@ -343,8 +360,7 @@ local function createBugSack()
 		if button ~= "RightButton" then
 			return
 		end
-		window:Hide()
-		Settings.OpenToCategory(addon.settingsCategory:GetID())
+		setActiveMethod("BugSackTabOptions")
 	end)
 	local quickTips = L["quickTipsDesc"]
 	sessionLabel:SetScript("OnEnter", function(self)
@@ -457,8 +473,26 @@ local function createBugSack()
 		end)
 	end
 
+	wipeButton = CreateFrame("Button", "BugSackWipeButton", window, isModern and "SharedButtonTemplate" or "UIPanelButtonTemplate")
+	wipeButton:SetPoint("LEFT", prevButton, "RIGHT")
+	wipeButton:SetPoint("RIGHT", nextButton, "LEFT")
+	wipeButton:SetHeight(40)
+	wipeButton:SetText(L["Wipe saved bugs"])
+	wipeButton:SetScript("OnClick", function()
+		addon:Reset()
+	end)
+	wipeButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:AddLine(L["Wipe saved bugs"])
+		GameTooltip:AddLine(L.wipeDesc, 1, 1, 1, 1)
+		GameTooltip:Show()
+	end)
+	wipeButton:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+
 	if isModern then
-		local scrollArea = CreateFrame("ScrollFrame", nil, window, "ScrollFrameTemplate")
+		scrollArea = CreateFrame("ScrollFrame", nil, window, "ScrollFrameTemplate")
 		scrollArea:SetPoint("TOPLEFT", window, "TOPLEFT", 8, -42)
 		scrollArea:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", isRetail and -22 or -20, 2)
 
@@ -466,7 +500,7 @@ local function createBugSack()
 		scrollArea:SetScrollChild(textArea)
 		textArea:SetTextColor(1, 1, 1, 1)
 	else
-		local scrollArea = CreateFrame("ScrollFrame", nil, window, "UIPanelScrollFrameTemplate")
+		scrollArea = CreateFrame("ScrollFrame", nil, window, "UIPanelScrollFrameTemplate")
 		scrollArea:SetPoint("TOPLEFT", window, "TOPLEFT", 16, -36)
 		scrollArea:SetPoint("BOTTOMRIGHT", nextButton, "TOPRIGHT", -24, 8)
 
@@ -481,6 +515,10 @@ local function createBugSack()
 	textArea:EnableMouse(true)
 	textArea:SetScript("OnEscapePressed", textArea.ClearFocus)
 	textArea:SetWidth(750)
+
+	optionsFrame = CreateFrame("Frame", nil, window)
+	optionsFrame:SetAllPoints(scrollArea)
+	addon:CreateOptionsTab(optionsFrame)
 
 	if isModern then
 		local allBugsTab = CreateFrame("Button", "BugSackTabAll", window, "PanelTabButtonTemplate")
@@ -504,7 +542,13 @@ local function createBugSack()
 		previousSessionTab:SetScript("OnClick", setActiveMethod)
 		previousSessionTab.bugs = "previousSession"
 
-		tabs = { allBugsTab, currentSessionTab, previousSessionTab }
+		local optionsTab = CreateFrame("Button", "BugSackTabOptions", window, "PanelTabButtonTemplate")
+		optionsTab:SetPoint("LEFT", previousSessionTab, "RIGHT", 4, 0)
+		optionsTab:SetClampedToScreen(true)
+		optionsTab.Text:SetText(OPTIONS)
+		optionsTab:SetScript("OnClick", setActiveMethod)
+
+		tabs = { allBugsTab, currentSessionTab, previousSessionTab, optionsTab }
 		for i = 1, #tabs do
 			local tab = tabs[i]
 			if i == 1 then
@@ -538,7 +582,14 @@ local function createBugSack()
 		last:SetScript("OnClick", setActiveMethod)
 		last.bugs = "previousSession"
 
-		tabs = { all, session, last }
+		local options = CreateFrame("Button", "BugSackTabOptions", window, "CharacterFrameTabButtonTemplate")
+		options:SetPoint("LEFT", last, "RIGHT")
+		options:SetText(OPTIONS)
+		options:SetScript("OnLoad", nil)
+		options:SetScript("OnShow", nil)
+		options:SetScript("OnClick", setActiveMethod)
+
+		tabs = { all, session, last, options }
 		local size = 500 / 3
 		for i, t in next, tabs do
 			PanelTemplates_TabResize(t, nil, size, size)
@@ -574,11 +625,19 @@ function addon:OpenSack()
 		-- Window is already open, we just need to update various texts.
 		return
 	end
+	if state == "BugSackTabOptions" then
+		state = "BugSackTabAll"
+	end
 
 	-- XXX we should show the most recent error (from this session) that has not previously been shown in the sack
 	-- XXX so, 5 errors are caught, the user clicks the icon, we start it at the first of those 5 errors.
 	--[[if not currentSackContents then
 		currentSackContents = BugGrabber:GetDB(currentSackSession)
 	end]]
+	show()
+end
+
+function addon:OpenConfig()
+	state = "BugSackTabOptions"
 	show()
 end
