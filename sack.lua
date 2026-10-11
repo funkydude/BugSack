@@ -356,17 +356,11 @@ local function createBugSack()
 		searchBox:Show()
 		searchThrough = currentSackContents
 	end)
-	sessionLabel:SetScript("OnClick", function(self, button)
-		if button ~= "RightButton" then
-			return
-		end
-		setActiveMethod("BugSackTabOptions")
-	end)
-	local quickTips = L["quickTipsDesc"]
 	sessionLabel:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", -8, 8)
-		GameTooltip:AddLine(L["Quick tips"])
-		GameTooltip:AddLine(quickTips, 1, 1, 1, 1)
+		GameTooltip:AddLine(addonName)
+		GameTooltip:AddLine(L.quickTipsDoubleClick, 1, 1, 1, 1)
+		GameTooltip:AddLine(L.quickTipsLeftClick, 1, 1, 1, 1)
 		GameTooltip:Show()
 	end)
 	sessionLabel:SetScript("OnLeave", function(self)
