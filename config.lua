@@ -163,26 +163,3 @@ function addon:CreateOptionsTab(parent)
 		end
 	end)
 end
-
-local function InitializeBlizzSettings()
-	-- The interface options panel only holds a button that opens the Options tab of the sack
-	local panel = CreateFrame("Frame")
-
-	local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-	title:SetPoint("TOPLEFT", 16, -16)
-	title:SetText(addonName)
-
-	local open = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-	open:SetSize(160, 26)
-	open:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -12)
-	open:SetText(L["Open BugSack"])
-	open:SetScript("OnClick", function()
-		addon:OpenConfig()
-	end)
-
-	local category = Settings.RegisterCanvasLayoutCategory(panel, addonName)
-	addon.settingsCategory = category
-	Settings.RegisterAddOnCategory(category)
-end
-
-addon.InitializeBlizzSettings = InitializeBlizzSettings

@@ -184,11 +184,6 @@ do
 		EventRegistry:RegisterCallback("BugGrabber.BugGrabbed", onError, tbl)
 		EventRegistry:TriggerEvent("BugGrabber.DisplayRegistered")
 
-		-- Initialize settings now that database is ready
-		if addon.InitializeBlizzSettings then
-			addon.InitializeBlizzSettings()
-		end
-
 		SlashCmdList.BugSack = function(msg)
 			msg = msg:lower()
 			if msg == "show" then
