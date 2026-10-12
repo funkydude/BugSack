@@ -230,7 +230,7 @@ elseif locale == "frFR" then
 	L["autoDesc"] = "Ouvre automatiquement BugSack lorsqu’une erreur est détectée, sauf en combat."
 	L["Auto popup"] = "Popup automatique"
 	L.minimapHint = "|cffeda55fCliquez|r pour ouvrir BugSack avec le dernier bug\n|cffeda55fMaj + Clic droit|r pour recharger l’interface\n|cffeda55fClic droit|r pour ouvrir les options"
-	L.bugGrabberMissing = "BugSack nécessite l’AddOn |cFF33FF99!BugGrabber|r, que vous pouvez télécharger au même endroit que BugSack."
+	L.bugGrabberMissing = "BugSack nécessite l’AddOn |cFF33FF99!BugGrabber|r, que vous pouvez télécharger au même endroit que BugSack. Bonne chasse aux bugs !"
 	L["chatFrameDesc"] = "Affiche un rappel dans la fenêtre de discussion lorsqu’une erreur est détectée. N’affiche pas toute l’erreur, juste un rappel !"
 	L["Chatframe output"] = "Sortie vers la fenêtre de discussion"
 	L["Current session"] = "Session actuelle"
