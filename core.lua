@@ -5,7 +5,7 @@ local addonName, addon = ...
 --
 
 local function print(...)
-	_G.print("|cff259054BugSack:|r", ...)
+	_G.print("|cFF33FF99BugSack:|r", ...)
 end
 if not LibStub then
 	print("BugSack requires LibStub.")
@@ -15,17 +15,21 @@ end
 local L = addon.L
 local BugGrabber = BugGrabber
 if not BugGrabber then
-	local msg =
-		L["|cffff4411BugSack requires the |r|cff44ff44!BugGrabber|r|cffff4411 addon, which you can download from the same place you got BugSack. Happy bug hunting!|r"]
 	local f = CreateFrame("Frame")
-	f:SetScript("OnEvent", function()
-		RaidNotice_AddMessage(RaidWarningFrame, msg, { r = 1, g = 0.3, b = 0.1 })
-		print(msg)
-		f:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		f:SetScript("OnEvent", nil)
-		f = nil
+	local Timer = C_Timer.After
+	f:SetScript("OnEvent", function(self, event)
+		self:UnregisterEvent(event)
+		self:SetScript("OnEvent", nil)
+		Timer(0, function() -- Timers aren't fully functional until 1 frame after loading is done, this ensures the message stays onscreen for 20 seconds as desired
+			print(L.bugGrabberMissing)
+			if RaidWarningUtil and RaidWarningUtil.AddMessage then
+				RaidWarningUtil.AddMessage(L.bugGrabberMissing, { r = 1, g = 1, b = 1 }, 20)
+			else
+				RaidNotice_AddMessage(RaidBossEmoteFrame, L.bugGrabberMissing, { r = 1, g = 1, b = 1 }, 20)
+			end
+		end)
 	end)
-	f:RegisterEvent("PLAYER_ENTERING_WORLD")
+	f:RegisterEvent("LOADING_SCREEN_DISABLED")
 	return
 end
 
@@ -35,7 +39,7 @@ addon.healthCheck = true
 
 -- Sound
 local media = LibStub("LibSharedMedia-3.0")
-media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\" .. addonName .. "\\Media\\error.ogg")
+media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.ogg")
 
 -----------------------------------------------------------------------
 -- Utility
