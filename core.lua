@@ -38,8 +38,8 @@ _G[addonName] = addon
 addon.healthCheck = true
 
 -- Sound
-local media = LibStub("LibSharedMedia-3.0")
-media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.ogg")
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+LibSharedMedia:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\BugSack\\Media\\error.ogg")
 
 -----------------------------------------------------------------------
 -- Utility
@@ -55,7 +55,7 @@ do
 			errorList[errorID] = t
 			prevError = t
 			if not addon.db.mute then
-				local sound = media:Fetch("sound", addon.db.soundMedia)
+				local sound = LibSharedMedia:Fetch("sound", addon.db.soundMedia)
 				if addon.db.useMaster then
 					PlaySoundFile(sound, "Master")
 				else
@@ -336,7 +336,23 @@ do
 	if type(sv.soundMedia) ~= "string" then
 		sv.soundMedia = "BugSack: Fatality"
 	end
-	if type(sv.fontSize) ~= "string" then
+	if not LibSharedMedia:IsValid("sound", sv.soundMedia) then -- Don't immediately reset, wait for all addons to load their media
+		local f = CreateFrame("Frame")
+		f:SetScript("OnEvent", function(self, event)
+			self:UnregisterEvent(event)
+			self:SetScript("OnEvent", nil)
+			if not LibSharedMedia:IsValid("sound", sv.soundMedia) then
+				sv.soundMedia = "BugSack: Fatality"
+			end
+		end)
+		f:RegisterEvent("PLAYER_LOGIN")
+	end
+	if type(sv.fontSize) ~= "string" or (
+		sv.fontSize ~= "GameFontHighlightSmall" and
+		sv.fontSize ~= "GameFontHighlight" and
+		sv.fontSize ~= "GameFontHighlightMedium" and
+		sv.fontSize ~= "GameFontHighlightLarge"
+	) then
 		sv.fontSize = "GameFontHighlight"
 	end
 	if type(sv.altwipe) ~= "boolean" then
@@ -351,7 +367,7 @@ do
 	local session = addon:GetErrors(BugGrabber:GetSessionId())
 	if #session > 0 then
 		if not addon.db.mute then
-			local sound = media:Fetch("sound", addon.db.soundMedia)
+			local sound = LibSharedMedia:Fetch("sound", addon.db.soundMedia)
 			if addon.db.useMaster then
 				PlaySoundFile(sound, "Master")
 			else

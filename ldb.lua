@@ -4,15 +4,11 @@ if not addon.healthCheck then
 end
 local L = addon.L
 
-local ldb = LibStub:GetLibrary("LibDataBroker-1.1", true)
-if not ldb then
-	return
-end
-
+local ldb = LibStub("LibDataBroker-1.1")
 local plugin = ldb:NewDataObject(addonName, {
 	type = "data source",
 	text = "0",
-	icon = "Interface\\AddOns\\" .. addonName .. "\\Media\\icon",
+	icon = "Interface\\AddOns\\BugSack\\Media\\icon",
 })
 
 local BugGrabber = BugGrabber
@@ -36,8 +32,8 @@ end
 hooksecurefunc(addon, "UpdateDisplay", function()
 	local count = #addon:GetErrors(BugGrabber:GetSessionId())
 	plugin.text = count
-	plugin.icon = count == 0 and "Interface\\AddOns\\" .. addonName .. "\\Media\\icon"
-		or "Interface\\AddOns\\" .. addonName .. "\\Media\\icon_red"
+	plugin.icon = count == 0 and "Interface\\AddOns\\BugSack\\Media\\icon"
+		or "Interface\\AddOns\\BugSack\\Media\\icon_red"
 end)
 
 do
@@ -60,15 +56,8 @@ do
 	end
 end
 
-local f = CreateFrame("Frame")
-f:SetScript("OnEvent", function()
-	local icon = LibStub("LibDBIcon-1.0", true)
-	if not icon then
-		return
-	end
-	if not BugSackLDBIconDB then
-		BugSackLDBIconDB = {}
-	end
-	icon:Register(addonName, plugin, BugSackLDBIconDB)
-end)
-f:RegisterEvent("PLAYER_LOGIN")
+local icon = LibStub("LibDBIcon-1.0")
+if type(BugSackLDBIconDB) ~= "table" then
+	BugSackLDBIconDB = {}
+end
+icon:Register(addonName, plugin, BugSackLDBIconDB)
